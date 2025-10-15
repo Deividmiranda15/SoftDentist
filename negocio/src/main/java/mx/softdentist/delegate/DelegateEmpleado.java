@@ -8,19 +8,19 @@ import java.util.List;
 public class DelegateEmpleado {
 
 public Empleado login(String password, String correo){
-    Empleado usuario = new Empleado();
+    Empleado empleado = new Empleado();
     List<Empleado> usuarios = ServiceLocator.getInstanceEmpleadoDAO().findAll();
 
     for(Empleado us:usuarios){
         if(us.getContrasena().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)){
-            usuario = us;
+            empleado = us;
         }
     }
-    return usuario;
+    return empleado;
 }
 
-public void saveUsario(Empleado usuario){
-    ServiceLocator.getInstanceEmpleadoDAO().save(usuario);
+public void saveUsario(Empleado empleado){
+    ServiceLocator.getInstanceEmpleadoDAO().save(empleado);
 }
 
 }

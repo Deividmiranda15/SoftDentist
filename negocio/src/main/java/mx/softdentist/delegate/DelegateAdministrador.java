@@ -8,18 +8,18 @@ import java.util.List;
 public class DelegateAdministrador {
 
     public Administrador login(String password, String correo){
-        Administrador usuario = new Administrador();
+        Administrador admin = new Administrador();
         List<Administrador> usuarios = ServiceLocator.getInstanceAdministradorDAO().findAll();
 
         for(Administrador us:usuarios){
             if(us.getContrasena().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)){
-                usuario = us;
+                admin = us;
             }
         }
-        return usuario;
+        return admin;
         }
-    public void saveUsuario(Administrador usuario){
-        ServiceLocator.getInstanceAdministradorDAO().save(usuario);
+    public void saveUsuario(Administrador administrador){
+        ServiceLocator.getInstanceAdministradorDAO().save(administrador);
     }
 
 }
