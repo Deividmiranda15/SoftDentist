@@ -6,7 +6,7 @@ import mx.softdentist.entidad.Administrador;
 
 import java.util.List;
 
-
+// Rama Desarrollo
 public class AdministradorDAO extends AbstractDAO<Administrador> {
     private final EntityManager entityManager;
 
