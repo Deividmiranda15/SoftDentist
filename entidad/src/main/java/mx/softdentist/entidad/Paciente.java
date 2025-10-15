@@ -38,6 +38,11 @@ public class Paciente {
     @Column(name = "correo", length = 100)
     private String correo;
 
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "contrasena", nullable = false, length = 100)
+    private String contrasena;
+
     @Size(max = 150)
     @Column(name = "direccion", length = 150)
     private String direccion;
@@ -124,6 +129,14 @@ public class Paciente {
 
     public void setFechaRegistro(Instant fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     public Empleado getIdEmpleado() {
