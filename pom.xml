@@ -12,6 +12,7 @@
         <module>entidad</module>
         <module>persistencia</module>
         <module>negocio</module>
+
     </modules>
 
     <properties>
