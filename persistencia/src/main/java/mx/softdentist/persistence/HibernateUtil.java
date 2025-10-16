@@ -3,37 +3,53 @@ package mx.softdentist.persistence;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- * Clase utilitaria para inicializar y obtener el {@link EntityManagerFactory}.
- */
 public class HibernateUtil {
-    //Issac Inzunza
-    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY = buildEntityManagerFactory();
+    private static final Logger logger = Logger.getLogger(HibernateUtil.class.getName());
+    private static EntityManagerFactory entityManagerFactory;
 
-    /**
-     * Crea la instancia de EntityManagerFactory a partir del archivo persistence.xml.
-     */
-    private static EntityManagerFactory buildEntityManagerFactory() {
+    static {
+        initEntityManagerFactory();
+    }
+
+    private static void initEntityManagerFactory() {
         try {
-            return Persistence.createEntityManagerFactory("persistencePU");
-        } catch (Throwable ex) {
-            System.err.println("Error creando EntityManagerFactory: " + ex);
-            throw new ExceptionInInitializerError(ex);
+            logger.info("Inicializando EntityManagerFactory para persistencePU...");
+
+            // Verificar que el driver esté disponible
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                logger.info("Driver MySQL cargado correctamente");
+            } catch (ClassNotFoundException e) {
+                logger.log(Level.SEVERE, "ERROR: Driver MySQL no encontrado", e);
+                throw new ExceptionInInitializerError("Driver MySQL no encontrado: " + e.getMessage());
+            }
+
+            // Usar EXACTAMENTE el mismo nombre que en persistence.xml
+            entityManagerFactory = Persistence.createEntityManagerFactory("persistencePU");
+            logger.info("EntityManagerFactory creado exitosamente para: persistencePU");
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "ERROR CRÍTICO al crear EntityManagerFactory: " + e.getMessage(), e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 
     public static EntityManagerFactory getEntityManagerFactory() {
-        return ENTITY_MANAGER_FACTORY;
+        if (entityManagerFactory == null || !entityManagerFactory.isOpen()) {
+            initEntityManagerFactory();
+        }
+        return entityManagerFactory;
     }
 
     public static EntityManager getEntityManager() {
-        return ENTITY_MANAGER_FACTORY.createEntityManager();
-    }
-
-    public static void close() {
-        if (ENTITY_MANAGER_FACTORY != null && ENTITY_MANAGER_FACTORY.isOpen()) {
-            ENTITY_MANAGER_FACTORY.close();
+        try {
+            return getEntityManagerFactory().createEntityManager();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al crear EntityManager", e);
+            throw new RuntimeException("No se pudo crear EntityManager", e);
         }
     }
 }

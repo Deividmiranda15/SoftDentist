@@ -3,9 +3,8 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.1">
-    <persistence-unit name="persistencePU">
+    <persistence-unit name="persistencePU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-
 
         <!-- Declaración manual de entidades -->
         <class>mx.softdentist.entidad.Administrador</class>
@@ -13,22 +12,34 @@
         <class>mx.softdentist.entidad.Cita</class>
         <class>mx.softdentist.entidad.Empleado</class>
 
-
         <properties>
+            <!-- Configuración JDBC -->
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/desarrollo?useSSL=false&amp;serverTimezone=UTC"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3307/softdentist?useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value="root"/>
 
+            <!-- Configuración Hibernate CRÍTICA -->
+            <!-- Para MySQL 9.0, usa el dialecto de MySQL8 -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
 
+            <!-- Para desarrollo: usa 'update' o 'create', para producción: 'validate' -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <!-- Logging -->
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="validate"/>
 
+            <!-- Performance -->
+            <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
 
+            <!-- Pool de conexiones (opcional pero recomendado) -->
             <property name="hibernate.hikari.minimumIdle" value="5"/>
-            <property name="hibernate.hikari.maximumPoolSize" value="10"/>
+            <property name="hibernate.hikari.maximumPoolSize" value="20"/>
             <property name="hibernate.hikari.idleTimeout" value="30000"/>
+
+            <!-- Para debugging -->
+            <property name="hibernate.generate_statistics" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>
