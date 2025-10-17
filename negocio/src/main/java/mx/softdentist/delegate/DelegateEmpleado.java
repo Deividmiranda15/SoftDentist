@@ -23,4 +23,8 @@ public void saveUsario(Empleado empleado){
     ServiceLocator.getInstanceEmpleadoDAO().save(empleado);
 }
 
+
+    public List<Empleado> consultarTodosLosEmpleados() {
+        return ServiceLocator.getInstanceEmpleadoDAO().findAll();
+    }
 }
