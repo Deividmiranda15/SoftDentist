@@ -12,6 +12,8 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+// Merge
+
 @Entity
 @Table(name = "paciente", schema = "softdentist")
 public class Paciente {
