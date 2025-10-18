@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Gestión de Empleados</title>
+</h:head>
+<h:body>
+    <h2>Registro de Empleados</h2>
+
+    <h:form>
+        <h:messages globalOnly="true" style="color:green; font-weight: bold;" errorStyle="color: red; font-weight: bold;" />
+
+        <h:panelGrid columns="3" cellpadding="5">
+            <h:outputLabel for="nombre" value="Nombre:" />
+            <h:inputText id="nombre" value="#{empleadoBean.nuevoEmpleado.nombre}" required="true" requiredMessage="El nombre es obligatorio."/>
+            <h:message for="nombre" style="color: red;" />
+
+            <h:outputLabel for="apellido" value="Apellido:" />
+            <h:inputText id="apellido" value="#{empleadoBean.nuevoEmpleado.apellido}" required="true" requiredMessage="El apellido es obligatorio."/>
+            <h:message for="apellido" style="color: red;" />
+
+            <h:outputLabel for="telefono" value="Teléfono:" />
+            <h:inputText id="telefono" value="#{empleadoBean.nuevoEmpleado.telefono}" required="true" requiredMessage="El teléfono es obligatorio" />
+            <h:message for="telefono" style="color: red;" />
+
+            <h:outputLabel for="correo" value="Correo:" />
+            <h:inputText id="correo" value="#{empleadoBean.nuevoEmpleado.correo}" required="true" requiredMessage="El correo es obligatorio" validatorMessage="El formato del correo no es válido (ej. jorge.perez@gmail.com">
+                <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
+            </h:inputText>
+            <h:message for="correo" style="color: red;" />
+
+            <h:outputLabel for="puesto" value="Puesto:" />
+            <h:selectOneMenu id="puesto" value="#{empleadoBean.nuevoEmpleado.puesto}" required="true" requiredMessage="Debe seleccionar un puesto.">
+                <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
+            </h:selectOneMenu>
+            <h:message for="puesto" style="color: red;" />
+
+            <h:outputLabel for="password" value="Contraseña:" />
+            <h:inputSecret id="password" value="#{empleadoBean.nuevoEmpleado.password}" required="true" requiredMessage="La contraseña es obligatoria" />
+            <h:message for="password" style="color: red;" />
+
+            <h:commandButton value="Guardar Empleado" action="#{empleadoBean.guardarEmpleado}" />
+            <h:panelGrid columns="2"></h:panelGrid>
+
+        </h:panelGrid>
+    </h:form>
+
+    <h2>Consulta de Empleados</h2>
+
+
+</h:body>
+</html>
