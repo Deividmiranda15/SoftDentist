@@ -1,4 +1,3 @@
-<?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -16,10 +15,10 @@
             margin: 0;
             font-family: 'Poppins', 'Segoe UI', sans-serif;
             color: #4A5568;
-            /* IMPORTANTE: Coloca la URL de tu imagen de fondo aquí */
-            background: url('https://i.imgur.com/tu-imagen.png') no-repeat center center fixed;
+            /* IMPORTANTE: Coloca la URL de tu imagen de fondo aquí cuando la tengas */
+            /* background: url('URL_DE_TU_IMAGEN') no-repeat center center fixed; */
             background-size: cover;
-            background-color: #EBF4F4; /* Un color de fondo mientras carga la imagen */
+            background-color: #EBF4F4; /* Color de fondo suave */
         }
 
         /* === BARRA SUPERIOR Y NAVEGACIÓN === */
@@ -50,7 +49,7 @@
             color: #ffffff;
         }
 
-        /* === ESTRUCTURA PRINCIPAL (AHORA CORRECTA) === */
+        /* === ESTRUCTURA PRINCIPAL === */
         .main-content-wrapper {
             display: flex;
             padding: 40px;
@@ -58,21 +57,21 @@
             align-items: flex-start;
         }
 
-        /* === TARJETAS DE CONTENIDO (Mockup) === */
+        /* === TARJETAS DE CONTENIDO === */
         .card {
-            background-color: rgba(255, 255, 255, 0.95); /* Ligera transparencia */
+            background-color: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             padding: 30px;
         }
 
         .form-card {
-            width: 380px; /* Ancho fijo para el formulario */
-            flex-shrink: 0; /* Evita que se encoja */
+            width: 380px;
+            flex-shrink: 0;
         }
 
         .table-card {
-            width: 100%; /* Ocupa el resto del espacio */
+            width: 100%;
         }
 
         .card h2 {
@@ -87,15 +86,16 @@
         /* === ESTILOS PARA FORMULARIOS (SOBREESCRIBIR PRIMEFACES) === */
         .ui-panelgrid .ui-grid-col-12 { padding: 0 0 20px 0 !important; }
         .ui-outputlabel { font-weight: 500 !important; margin-bottom: 8px !important; display: block; }
-        .ui-inputfield { width: 100% !important; padding: 10px !important; border-radius: 8px !important; border: 1px solid #CBD5E0 !important; }
+        .ui-inputfield, .ui-datepicker-input { width: 100% !important; padding: 10px !important; border-radius: 8px !important; border: 1px solid #CBD5E0 !important; }
         .ui-button { background: #084D4A !important; color: #ffffff !important; border: none !important; font-weight: 600 !important; padding: 12px 20px !important; border-radius: 8px !important; transition: background-color 0.3s ease !important; }
         .ui-button:hover { background: #063a38 !important; }
 
         /* === ESTILOS PARA TABLA Y BÚSQUEDA (SOBREESCRIBIR PRIMEFACES) === */
         .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-        .search-bar .ui-inputfield { flex-grow: 1; } /* El input ocupa el espacio disponible */
-        .ui-datatable .ui-datatable-thead th { background: #084D4A !important; color: #ffffff !important; font-weight: 600; }
+        .search-bar .ui-inputfield { flex-grow: 1; }
+        .ui-datatable .ui-datatable-thead th { background: #084D4A !important; color: #ffffff !important; font-weight: 600; border:none !important; }
         .ui-datatable .ui-datatable-tbody > tr { border-bottom: 1px solid #EDF2F7; }
+        .ui-datatable .ui-datatable-tbody > tr td { padding: 12px 10px !important; }
         .ui-paginator { background: #F7FAFC !important; border-top: 1px solid #E2E8F0 !important; }
 
     </style>
@@ -106,8 +106,7 @@
 
     <header>
         <div class="header-container">
-            <!-- Asumo que el logo estará en resources/images/ -->
-            <h:graphicImage name="images/logo-dental.png" alt="Logo Dental Patron" style="height: 60px;"/>
+            <h:outputText value="Dental Patron" style="font-size: 1.8rem; font-weight: bold; color: #084D4A;" />
         </div>
         <nav class="main-nav">
             <a href="#">INICIO</a>
@@ -143,7 +142,17 @@
                         <p:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" placeholder="correo@ejemplo.com"/>
                     </h:panelGroup>
 
-                    <p:commandButton value="Guardar Cuenta"
+                    <h:panelGroup styleClass="ui-grid-col-12">
+                        <p:outputLabel for="direccion" value="Dirección:" />
+                        <p:inputText id="direccion" value="#{pacienteBean.nuevoPaciente.direccion}" placeholder="Dirección del paciente"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="ui-grid-col-12">
+                        <p:outputLabel for="fechaNacimiento" value="Fecha de Nacimiento:" />
+                        <p:datePicker id="fechaNacimiento" value="#{pacienteBean.nuevoPaciente.fechaNacimiento}" showIcon="true" />
+                    </h:panelGroup>
+
+                    <p:commandButton value="Guardar Paciente"
                                      actionListener="#{pacienteBean.guardarPaciente}"
                                      update="formAlta :formConsulta:tablaPacientes messages"
                                      style="width: 100%; margin-top: 10px;" />
@@ -151,9 +160,9 @@
             </h:form>
         </div>
 
-        <!--Consulta -->
+        <!-- Tarjeta para la Consulta -->
         <div class="card table-card">
-            <h2>Consulta de Cuentas</h2>
+            <h2>Consulta de Pacientes</h2>
             <h:form id="formConsulta">
 
                 <div class="search-bar">
@@ -178,8 +187,8 @@
                     </p:column>
 
                     <p:column headerText="ACCIONES" style="width:100px; text-align:center;">
-                        <p:commandButton icon="pi pi-pencil" title="Editar" styleClass="ui-button-warning" />
-                        <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger" style="margin-left: 5px;" />
+                        <p:commandButton icon="pi pi-pencil" title="Editar" styleClass="ui-button-warning ui-button-flat" />
+                        <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" style="margin-left: 5px;" />
                     </p:column>
                 </p:dataTable>
             </h:form>
