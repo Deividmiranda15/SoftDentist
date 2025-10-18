@@ -10,20 +10,34 @@
     <h2>Registro de Pacientes</h2>
 
     <h:form>
-        <h:panelGrid columns="2" cellpadding="5">
+        <h:messages globalOnly="true" style="color:green; font-weight: bold;" errorStyle="color: red; font-weight: bold;" />
+
+        <h:panelGrid columns="3" cellpadding="5">
             <h:outputLabel for="nombre" value="Nombre:" />
-            <h:inputText id="nombre" value="#{pacienteBean.nuevoPaciente.nombre}" required="true"/>
+            <h:inputText id="nombre" value="#{pacienteBean.nuevoPaciente.nombre}" required="true" requiredMessage="El nombre es obligatorio."/>
+            <h:message for="nombre" style="color: red;" />
 
             <h:outputLabel for="apellido" value="Apellido:" />
-            <h:inputText id="apellido" value="#{pacienteBean.nuevoPaciente.apellido}" required="true"/>
+            <h:inputText id="apellido" value="#{pacienteBean.nuevoPaciente.apellido}" required="true" requiredMessage="El apellido es obligatorio."/>
+            <h:message for="apellido" style="color: red;" />
 
             <h:outputLabel for="telefono" value="Teléfono:" />
-            <h:inputText id="telefono" value="#{pacienteBean.nuevoPaciente.telefono}" />
+            <h:inputText id="telefono" value="#{pacienteBean.nuevoPaciente.telefono}" required="true" requiredMessage="El teléfono es obligatorio" />
+            <h:message for="telefono" style="color: red;" />
 
             <h:outputLabel for="correo" value="Correo:" />
-            <h:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" />
+            <h:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" required="true" requiredMessage="El correo es obligatorio" validatorMessage="El formato del correo no es válido (ej. jorge.perez@gmail.com">
+                <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
+            </h:inputText>
+            <h:message for="correo" style="color: red;" />
+
+            <h:outputLabel for="password" value="Contraseña:" />
+            <h:inputSecret id="password" value="#{pacienteBean.nuevoPaciente.password}" required="true" requiredMessage="La contraseña es obligatoria" />
+            <h:message for="password" style="color: red;" />
 
             <h:commandButton value="Guardar Paciente" action="#{pacienteBean.guardarPaciente}" />
+            <h:panelGrid columns="2"></h:panelGrid>
+
         </h:panelGrid>
     </h:form>
 

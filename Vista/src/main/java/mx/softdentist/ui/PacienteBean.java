@@ -1,4 +1,4 @@
-package ui;
+package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -6,6 +6,9 @@ import jakarta.inject.Named;
 import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
 import mx.softdentist.dao.PacienteDAO;
+
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +34,25 @@ public class PacienteBean {
 
     public void guardarPaciente() {
         try {
-            pacienteDAO.save(nuevoPaciente); // << aquí usas save en lugar de create
+            pacienteDAO.save(nuevoPaciente);
             listaPacientes = pacienteDAO.obtenerTodos(); // refresca tabla
             nuevoPaciente = new Paciente(); // limpia formulario
+            // mensaje de exito
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente registrado correctamente.");
         } catch (Exception e) {
             e.printStackTrace();
+            // mensaje de fallo
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al paciente. Intente de nuevo.");
         }
     }
 
+    private void addGlobalMessage(FacesMessage.Severity severity, String summary, String detail) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(severity, summary, detail));
+    }
+
     public String irAEditar(Paciente p) {
-        // Aquí más adelante puedes redirigir a editarPaciente.xhtml
+        // Este es para luego hacer la modificacion con un editarPaciente.xhtml
         return "editarPaciente.xhtml?faces-redirect=true&id=" + p.getId();
     }
 
