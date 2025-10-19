@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Administrador - Dental Patron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <!-- Enlace al archivo CSS con el nuevo nombre -->
+    <h:outputStylesheet name="css/patrondental.css" />
+</h:head>
+
+<h:body>
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+        </div>
+        <nav class="main-nav">
+            <!-- Navegación actualizada con p:link -->
+            <p:link outcome="inicio_admin" value="INICIO" styleClass="active" />
+            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
+            <a href="#">CORTE DE CAJA</a>
+        </nav>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="welcome-box">
+                <h:graphicImage name="images/logo-grande.png" alt="Logo grande Dental Patron" style="width: 200px;"/>
+                <div class="welcome-text">
+                    <h2>Bienvenido a <a href="#">Dental Patron</a>, Administrador</h2>
+                    <h3>Qué gusto tenerte aquí un día más.</h3>
+                </div>
+            </div>
+        </div>
+    </main>
+</h:body>
+</html>
+
+

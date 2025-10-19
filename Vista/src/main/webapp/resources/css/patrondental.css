@@ -1,0 +1,118 @@
+/* === RESETEO Y BASE === */
+body {
+    margin: 0;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    color: #4A5568;
+    background: url('#{resource["images/fondo-consultorio.png"]}') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* === ENCABEZADO (Estilo de pt_inicio_admin) === */
+.top-bar {
+    background-color: #ffffff;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.main-nav {
+    background-color: #084D4A;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+}
+.main-nav a {
+    color: #B5F1EF;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 8px 18px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.main-nav a.active, .main-nav a:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* === CONTENEDOR PRINCIPAL TRANSLÚCIDO === */
+.main-content-backdrop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 140px); /* Resta la altura del header */
+    padding: 40px;
+    box-sizing: border-box;
+}
+.transparent-container {
+    background-color: rgba(8, 77, 74, 0.75); /* El turquesa translúcido */
+    border-radius: 25px;
+    padding: 40px;
+    width: 100%;
+    max-width: 1400px; /* Ancho máximo para el contenedor */
+}
+.cards-wrapper {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* === TARJETAS DE CONTENIDO (Mockup) === */
+.card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 30px;
+}
+.form-card { width: 380px; flex-shrink: 0; }
+.table-card { width: 100%; }
+.card h2 { font-size: 1.5rem; color: #2D3748; margin-top: 0; margin-bottom: 25px; border-bottom: 2px solid #084D4A; padding-bottom: 10px; }
+
+/* === ESTILOS PARA FORMULARIOS Y TABLA === */
+.ui-panelgrid .ui-grid-col-12 { padding: 0 0 20px 0 !important; }
+.ui-outputlabel { font-weight: 500 !important; margin-bottom: 8px !important; display: block; }
+.ui-inputfield, .ui-datepicker-input { width: 100% !important; padding: 10px !important; border-radius: 8px !important; border: 1px solid #CBD5E0 !important; }
+.ui-button { background: #084D4A !important; color: #ffffff !important; border: none !important; font-weight: 600 !important; padding: 12px 20px !important; border-radius: 8px !important; transition: background-color 0.3s ease !important; }
+.ui-button:hover { background: #063a38 !important; }
+.search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+.search-bar .ui-inputfield { flex-grow: 1; }
+.custom-table { display: flex; flex-direction: column; }
+.custom-table-header, .custom-table-row { display: grid; grid-template-columns: 2fr 1.5fr 2fr 1fr; gap: 15px; align-items: center; padding: 12px 15px; }
+.custom-table-header { background-color: #084D4A; color: #ffffff; font-weight: 600; border-radius: 8px; margin-bottom: 10px; }
+.custom-table-row { background-color: #F7FAFC; border-radius: 8px; margin-bottom: 8px; transition: background-color 0.2s ease; }
+.custom-table-row:hover { background-color: #EDF2F7; }
+.custom-table-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.custom-table-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.custom-table-actions .ui-button { padding: 8px !important; width: 36px; height: 36px; }
+.empty-message { text-align: center; padding: 40px; background-color: #F7FAFC; border-radius: 8px; color: #718096; }
+
+/* === ESTILOS ESPECÍFICOS PARA PÁGINA DE INICIO === */
+.welcome-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    padding: 50px;
+    color: white;
+    text-align: left;
+}
+.welcome-text h2 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 600;
+}
+.welcome-text h3 {
+    font-size: 1.2rem;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+.welcome-text a {
+    color: #B5F1EF;
+    text-decoration: none;
+    font-weight: bold;
+}
