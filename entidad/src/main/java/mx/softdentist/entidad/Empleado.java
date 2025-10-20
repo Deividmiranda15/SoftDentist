@@ -41,6 +41,11 @@ public class Empleado {
     @Column(name = "puesto", length = 50)
     private String puesto;
 
+    @NotNull
+    @Size(max = 255)
+    @Column(name = "contrasena", nullable = false, length = 255)
+    private String contrasena;
+
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "fecha_registro")
     private Instant fechaRegistro;
@@ -107,6 +112,8 @@ public class Empleado {
     public Instant getFechaRegistro() {
         return fechaRegistro;
     }
+
+    public String getContrasena() {return contrasena;}
 
     public void setFechaRegistro(Instant fechaRegistro) {
         this.fechaRegistro = fechaRegistro;

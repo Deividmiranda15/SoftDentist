@@ -16,10 +16,13 @@
             <to-view-id>/inicio_admin.xhtml</to-view-id>
             <redirect />
         </navigation-case>
-    </navigation-rule>
 
-    <navigation-rule>
-        <from-view-id>*</from-view-id>
+    <navigation-case>
+        <from-outcome>inicio_emp</from-outcome>
+        <to-view-id>/inicio_emp.xhtml</to-view-id>
+        <redirect />
+    </navigation-case>
+
         <navigation-case>
             <from-outcome>pacientes</from-outcome>
             <to-view-id>/pacientes.xhtml</to-view-id>
