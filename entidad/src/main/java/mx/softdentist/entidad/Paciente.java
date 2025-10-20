@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// Merge
+// Merge vista
 
 @Entity
 @Table(name = "paciente", schema = "softdentist")
