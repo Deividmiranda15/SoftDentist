@@ -12,8 +12,6 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-// Merge
-
 @Entity
 @Table(name = "paciente", schema = "softdentist")
 public class Paciente {
@@ -32,18 +30,18 @@ public class Paciente {
     @Column(name = "apellido", nullable = false, length = 50)
     private String apellido;
 
-    @Size(max = 10)
-    @Column(name = "telefono", length = 10)
+    @Size(max = 15)
+    @Column(name = "telefono", length = 15)
     private String telefono;
 
     @Size(max = 100)
     @Column(name = "correo", length = 100)
     private String correo;
 
-
-    @Size(max = 20)
-    @Column(name = "password", length = 20)
-    private String password;
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "contrasena", nullable = false, length = 100)
+    private String contrasena;
 
     @Size(max = 150)
     @Column(name = "direccion", length = 150)
@@ -109,14 +107,6 @@ public class Paciente {
         this.correo = correo;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getDireccion() {
         return direccion;
     }
@@ -139,6 +129,14 @@ public class Paciente {
 
     public void setFechaRegistro(Instant fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     public Empleado getIdEmpleado() {

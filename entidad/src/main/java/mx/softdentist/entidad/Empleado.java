@@ -42,6 +42,10 @@ public class Empleado {
     private String password;
 
     @Size(max = 50)
+    @Column(name = "contrasena", length = 50)
+    private String contrasena;
+
+    @Size(max = 50)
     @Column(name = "puesto", length = 50)
     private String puesto;
 
@@ -106,6 +110,14 @@ public class Empleado {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     public String getPuesto() {
