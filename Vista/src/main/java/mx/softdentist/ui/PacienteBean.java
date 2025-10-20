@@ -1,4 +1,4 @@
-package mx.softdentist.ui;
+package ui;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -9,50 +9,52 @@ import mx.softdentist.dao.PacienteDAO;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-
+import jakarta.faces.view.ViewScoped;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Named("pacienteBean")
-@RequestScoped
-public class PacienteBean {
+@ViewScoped
+public class PacienteBean implements Serializable{
 
     private Paciente nuevoPaciente;
     private List<Paciente> listaPacientes;
     private PacienteDAO pacienteDAO;
 
     public PacienteBean() {
-        pacienteDAO = ServiceLocator.getInstancePacienteDAO();
-        nuevoPaciente = new Paciente();
-        listaPacientes = new ArrayList<>();
+        //listaPacientes = new ArrayList<>();
     }
 
     @PostConstruct
     public void init() {
+        pacienteDAO = ServiceLocator.getInstancePacienteDAO();
+        nuevoPaciente = new Paciente();
         listaPacientes = pacienteDAO.obtenerTodos();
     }
 
     public void guardarPaciente() {
+
         try {
-            pacienteDAO.save(nuevoPaciente);
+            pacienteDAO.save(nuevoPaciente); // << aquí usas save en lugar de create
             listaPacientes = pacienteDAO.obtenerTodos(); // refresca tabla
             nuevoPaciente = new Paciente(); // limpia formulario
-            // mensaje de exito
-            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente registrado correctamente.");
+
+            //mensaje de exito
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Exito", "Paciente guardado"));
+
         } catch (Exception e) {
             e.printStackTrace();
-            // mensaje de fallo
-            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al paciente. Intente de nuevo.");
+
+            //menaje de error
+            FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el paciente"));
         }
     }
 
-    private void addGlobalMessage(FacesMessage.Severity severity, String summary, String detail) {
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(severity, summary, detail));
-    }
-
     public String irAEditar(Paciente p) {
-        // Este es para luego hacer la modificacion con un editarPaciente.xhtml
+        // Aquí más adelante puedes redirigir a editarPaciente.xhtml
         return "editarPaciente.xhtml?faces-redirect=true&id=" + p.getId();
     }
 

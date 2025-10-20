@@ -1,75 +1,110 @@
-<?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
 <h:head>
-    <title>Gestión de Pacientes</title>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Usuarios - Dental Patron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <!-- Enlace al archivo CSS con el nuevo nombre -->
+    <h:outputStylesheet name="css/patrondental.css" />
 </h:head>
+
 <h:body>
-    <h2>Registro de Pacientes</h2>
+    <p:growl id="messages" showDetail="true" life="4000" />
 
-    <h:form>
-        <h:messages globalOnly="true" style="color:green; font-weight: bold;" errorStyle="color: red; font-weight: bold;" />
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+        </div>
+        <nav class="main-nav">
+            <!-- Navegación actualizada con p:link -->
+            <p:link outcome="inicio_admin" value="INICIO" />
+            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" styleClass="active" />
+            <a href="#">CORTE DE CAJA</a>
+        </nav>
+    </header>
 
-        <h:panelGrid columns="3" cellpadding="5">
-            <h:outputLabel for="nombre" value="Nombre:" />
-            <h:inputText id="nombre" value="#{pacienteBean.nuevoPaciente.nombre}" required="true" requiredMessage="El nombre es obligatorio."/>
-            <h:message for="nombre" style="color: red;" />
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="cards-wrapper">
+                <div class="card form-card">
+                    <h2>Alta de Nuevo Paciente</h2>
+                    <h:form id="formAlta">
+                        <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="nombre" value="Nombre:" />
+                                <p:inputText id="nombre" value="#{pacienteBean.nuevoPaciente.nombre}" required="true" placeholder="Nombre completo" />
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="apellido" value="Apellido:" />
+                                <p:inputText id="apellido" value="#{pacienteBean.nuevoPaciente.apellido}" required="true" placeholder="Apellidos del paciente"/>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="telefono" value="Teléfono:" />
+                                <p:inputText id="telefono" value="#{pacienteBean.nuevoPaciente.telefono}" placeholder="Ej. 686-123-4567" />
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="correo" value="Correo:" />
+                                <p:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" placeholder="correo@ejemplo.com"/>
+                            </h:panelGroup>
 
-            <h:outputLabel for="apellido" value="Apellido:" />
-            <h:inputText id="apellido" value="#{pacienteBean.nuevoPaciente.apellido}" required="true" requiredMessage="El apellido es obligatorio."/>
-            <h:message for="apellido" style="color: red;" />
-
-            <h:outputLabel for="telefono" value="Teléfono:" />
-            <h:inputText id="telefono" value="#{pacienteBean.nuevoPaciente.telefono}" required="true" requiredMessage="El teléfono es obligatorio" />
-            <h:message for="telefono" style="color: red;" />
-
-            <h:outputLabel for="correo" value="Correo:" />
-            <h:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" required="true" requiredMessage="El correo es obligatorio" validatorMessage="El formato del correo no es válido (ej. jorge.perez@gmail.com">
-                <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
-            </h:inputText>
-            <h:message for="correo" style="color: red;" />
-
-            <h:outputLabel for="password" value="Contraseña:" />
-            <h:inputSecret id="password" value="#{pacienteBean.nuevoPaciente.password}" required="true" requiredMessage="La contraseña es obligatoria" />
-            <h:message for="password" style="color: red;" />
-
-            <h:commandButton value="Guardar Paciente" action="#{pacienteBean.guardarPaciente}" />
-            <h:panelGrid columns="2"></h:panelGrid>
-
-        </h:panelGrid>
-    </h:form>
-
-    <h2>Consulta de Pacientes</h2>
-
-    <h:form>
-        <h:dataTable value="#{pacienteBean.listaPacientes}" var="p" border="1">
-            <h:column>
-                <f:facet name="header">ID</f:facet>
-                #{p.id}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Nombre</f:facet>
-                #{p.nombre}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Apellido</f:facet>
-                #{p.apellido}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Teléfono</f:facet>
-                #{p.telefono}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Correo</f:facet>
-                #{p.correo}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Acciones</f:facet>
-                <h:commandButton value="Editar" action="#{pacienteBean.irAEditar(p)}"/>
-            </h:column>
-        </h:dataTable>
-    </h:form>
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="direccion" value="Dirección:" />
+                                <p:inputText id="direccion" value="#{pacienteBean.nuevoPaciente.direccion}" placeholder="Dirección del paciente"/>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="fechaNacimiento" value="Fecha de Nacimiento:" />
+                                <p:datePicker id="fechaNacimiento" value="#{pacienteBean.nuevoPaciente.fechaNacimiento}" showIcon="true" />
+                            </h:panelGroup>
+                            <p:commandButton value="Guardar Paciente"
+                                             actionListener="#{pacienteBean.guardarPaciente}"
+                                             update="formAlta :formConsulta:consultaContainer messages"
+                                             style="width: 100%; margin-top: 10px;" />
+                        </p:panelGrid>
+                    </h:form>
+                </div>
+                <div class="card table-card">
+                    <h2>Consulta de Pacientes</h2>
+                    <h:form id="formConsulta">
+                        <div class="search-bar">
+                            <p:inputText placeholder="Buscar por nombre o usuario..." />
+                            <p:commandButton value="Buscar" />
+                            <p:commandButton value="Actualizar" update="consultaContainer" />
+                        </div>
+                        <h:panelGroup id="consultaContainer" layout="block">
+                            <div class="custom-table">
+                                <div class="custom-table-header">
+                                    <div>NOMBRE COMPLETO</div>
+                                    <div>TELÉFONO</div>
+                                    <div>CORREO</div>
+                                    <div style="text-align: right;">ACCIONES</div>
+                                </div>
+                                <ui:repeat value="#{pacienteBean.listaPacientes}" var="p">
+                                    <div class="custom-table-row">
+                                        <div class="custom-table-cell">#{p.nombre} #{p.apellido}</div>
+                                        <div class="custom-table-cell">#{p.telefono}</div>
+                                        <div class="custom-table-cell">#{p.correo}</div>
+                                        <div class="custom-table-actions">
+                                            <p:commandButton icon="pi pi-pencil" title="Editar" styleClass="ui-button-warning ui-button-flat" />
+                                            <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                                <h:panelGroup rendered="#{empty pacienteBean.listaPacientes}">
+                                    <div class="empty-message">No hay pacientes registrados.</div>
+                                </h:panelGroup>
+                            </div>
+                        </h:panelGroup>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </main>
 </h:body>
 </html>
+
+
