@@ -39,33 +39,37 @@
                         <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="#{pacienteBean.nuevoPaciente.nombre}" required="true" placeholder="Nombre completo" />
+                                <p:inputText id="nombre" value="#{pacienteBean.nuevoPaciente.nombre}" required="true"  requiredMessage="El campo 'Nombre' está vacío." placeholder="Nombre completo" />
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="apellido" value="Apellido:" />
-                                <p:inputText id="apellido" value="#{pacienteBean.nuevoPaciente.apellido}" required="true" placeholder="Apellidos del paciente"/>
+                                <p:inputText id="apellido" value="#{pacienteBean.nuevoPaciente.apellido}" required="true" requiredMessage="El campo 'Apellido' está vacío." placeholder="Apellidos del paciente"/>
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="telefono" value="Teléfono:" />
-                                <p:inputText id="telefono" value="#{pacienteBean.nuevoPaciente.telefono}" required="true" placeholder="Ej. 686-123-4567" />
+                                <p:inputText id="telefono" value="#{pacienteBean.nuevoPaciente.telefono}" required="true" requiredMessage="El campo 'Teléfono' está vacío."
+                                              placeholder="Ej. 686-123-4567" />
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="correo" value="Correo:" />
-                                <p:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" required="true" placeholder="correo@ejemplo.com">
+                                <p:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" required="true" requiredMessage="El campo 'Correo' está vacío."
+                                             validatorMessage="El formato del correo es inválido." placeholder="correo@ejemplo.com" >
                                     <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
                                 </p:inputText>
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="password" value="Contraseña:" />
-                                <p:password id="password" value="#{pacienteBean.nuevoPaciente.password}" required="true" placeholder="Contraseña" />
+                                <p:password id="password" value="#{pacienteBean.nuevoPaciente.password}" required="true" requiredMessage="El campo 'Contraseña' está vacío." placeholder="Contraseña" />
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="direccion" value="Dirección:" />
-                                <p:inputText id="direccion" value="#{pacienteBean.nuevoPaciente.direccion}" required="true" placeholder="Dirección del paciente"/>
+                                <p:inputText id="direccion" value="#{pacienteBean.nuevoPaciente.direccion}" required="true" requiredMessage="El campo 'Dirección' está vacío."
+                                              placeholder="Dirección del paciente"/>
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="fechaNacimiento" value="Fecha de Nacimiento:" />
-                                <p:datePicker id="fechaNacimiento" value="#{pacienteBean.nuevoPaciente.fechaNacimiento}" showIcon="true" />
+                                <p:datePicker id="fechaNacimiento" value="#{pacienteBean.nuevoPaciente.fechaNacimiento}"   requiredMessage="Debe ingresar una fecha de nacimiento."
+                                              validatorMessage="El formato de la fecha no es válido." showIcon="true" />
                             </h:panelGroup>
                             <p:commandButton value="Guardar Paciente"
                                              actionListener="#{pacienteBean.guardarPaciente}"
