@@ -25,4 +25,11 @@ public class CitaDAO extends AbstractDAO<Cita> {
     public EntityManager getEntityManager() {
         return entityManager;
     }
+
+    public List<Cita> findCitasByPacienteId(int idPaciente) {
+        return entityManager
+                .createQuery("SELECT c FROM Cita c WHERE c.idPaciente.id = :pacienteId ORDER BY c.fecha DESC", Cita.class)
+                .setParameter("pacienteId", idPaciente)
+                .getResultList();
+    }
 }
