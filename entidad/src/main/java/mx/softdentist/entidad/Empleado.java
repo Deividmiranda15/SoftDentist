@@ -49,10 +49,6 @@ public class Empleado {
     @Column(name = "puesto", length = 50)
     private String puesto;
 
-    @NotNull
-    @Size(max = 255)
-    @Column(name = "contrasena", nullable = false, length = 255)
-    private String contrasena;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "fecha_registro")
@@ -117,13 +113,7 @@ public class Empleado {
         this.correo = correo;
     }
 
-    public String getContrasena() {
-        return contrasena;
-    }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
-    }
 
     public String getPuesto() {
         return puesto;

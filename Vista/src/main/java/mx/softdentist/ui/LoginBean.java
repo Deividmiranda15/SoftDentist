@@ -15,7 +15,7 @@ import mx.softdentist.integration.ServiceLocator;
 public class LoginBean {
 
     private String correo;
-    private String contrasena;
+    private String password;
 
     private transient AdministradorDAO administradorDAO;
     private transient EmpleadoDAO empleadoDAO;
@@ -33,7 +33,7 @@ public class LoginBean {
         try {
             System.out.println("1. Verificando como Administrador...");
             Administrador admin = administradorDAO.findByCorreo(this.correo);
-            if (admin != null && admin.getContrasena().equals(this.contrasena)) {
+            if (admin != null && admin.getPassword().equals(this.password)) {
                 System.out.println("Resultado: ÉXITO como Administrador. Redirigiendo...");
                 return "inicio_admin?faces-redirect=true";
             }
@@ -50,7 +50,7 @@ public class LoginBean {
                 System.out.println("Resultado: Empleado NO encontrado en la base de datos.");
             } else {
                 System.out.println("Resultado: Empleado ENCONTRADO: " + empleado.getNombre());
-                if (empleado.getContrasena().equals(this.contrasena)) {
+                if (empleado.getPassword().equals(this.password)) {
                     System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_emp...");
                     return "inicio_emp?faces-redirect=true";
                 } else {
@@ -72,7 +72,7 @@ public class LoginBean {
     // --- Getters y Setters ---
     public String getCorreo() { return correo; }
     public void setCorreo(String correo) { this.correo = correo; }
-    public String getContrasena() { return contrasena; }
-    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }
 
