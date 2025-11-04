@@ -7,7 +7,7 @@ import jakarta.persistence.NoResultException;
 
 import java.util.List;
 
-
+// Rama Desarrollo
 public class AdministradorDAO extends AbstractDAO<Administrador> {
     private final EntityManager entityManager;
 

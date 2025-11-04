@@ -25,9 +25,6 @@ public class ServiceLocator {
         return HibernateUtil.getEntityManager();
     }
 
-    /**
-     * se crea la instancia para alumno DAO si esta no existe
-     */
     public static EmpleadoDAO getInstanceEmpleadoDAO(){
         if(empleadoDAO == null){
             empleadoDAO = new EmpleadoDAO(getEntityManager());
@@ -36,9 +33,8 @@ public class ServiceLocator {
             return empleadoDAO;
         }
     }
-    /**
-     * se crea la instancia de usuarioDAO si esta no existe
-     */
+
+
     public static PacienteDAO getInstancePacienteDAO(){
         if(pacienteDAO == null){
             pacienteDAO = new PacienteDAO(getEntityManager());

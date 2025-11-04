@@ -20,11 +20,6 @@ public abstract class AbstractDAO<T> {
 
     protected abstract EntityManager getEntityManager();
 
-      /* ========================
-       Operaciones CRUD básicas
-       ======================== */
-
-    // Save or persist a new entity
     public void save(T entity) {
         executeInsideTransaction(em -> em.persist(entity));
     }
