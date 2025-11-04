@@ -30,7 +30,7 @@ public class Cita {
     @Column(name = "motivo", length = 200)
     private String motivo;
 
-    @ColumnDefault("'Programada'")
+    @ColumnDefault("'Pendiente'")
     @Lob
     @Column(name = "estado")
     private String estado;

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8" />
+    <title>Iniciar Sesión - Dental Patron</title>
+    <style type="text/css">
+        /*css excluivo por complicaciones con el general*/
+        body {
+            margin: 0;
+            font-family: 'Poppins', 'Segoe UI', sans-serif; /* Usando una fuente más moderna */
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Panel izquierdo */
+        .left {
+            width: 50%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .left-logo { /* Renombrada para evitar conflictos */
+            width: 60%;
+            max-width: 400px;
+        }
+
+        /* Panel derecho */
+        .right {
+            width: 50%;
+            background-color: #bdf3f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container {
+            width: 80%;
+            max-width: 350px;
+            text-align: left;
+        }
+
+        .form-container h2 {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* --- Sobrescribir estilos de PrimeFaces para que se vean como tu prototipo --- */
+        .form-container .ui-inputfield, .form-container .ui-password {
+            width: 100%;
+            padding: 12px !important;
+            border: none !important;
+            border-radius: 25px !important;
+            margin-bottom: 20px !important;
+            background-color: white !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            font-size: 1rem !important;
+            box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+        }
+
+        .forgot {
+            font-size: 0.8rem;
+            color: black;
+            text-decoration: none;
+            display: block;
+            margin-top: -15px;
+            margin-bottom: 15px;
+        }
+
+        .login-button {
+            width: 100% !important;
+            background-color: black !important;
+            color: white !important;
+            padding: 12px !important;
+            border: none !important;
+            border-radius: 25px !important;
+            margin-top: 10px !important;
+            font-size: 1rem !important;
+            font-weight: normal !important; /* Letra más delgada como en el mockup */
+            transition: background-color 0.3s !important;
+        }
+        .login-button:hover {
+            background-color: #333 !important;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="left">
+        <!-- Corregido a 'logo.png' y usando la nueva clase 'left-logo' -->
+        <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="left-logo"/>
+    </div>
+
+    <div class="right">
+        <div class="form-container">
+            <h:form>
+                <p:growl id="messages" showDetail="true" />
+
+                <h2>CORREO ELECTRÓNICO</h2>
+                <p:inputText value="#{loginBean.correo}" required="true" />
+
+                <h2>CONTRASEÑA</h2>
+                <p:password value="#{loginBean.contrasena}" required="true" />
+
+                <a href="#" class="forgot">¿Olvidaste tu contraseña?</a>
+
+                <p:commandButton action="#{loginBean.iniciarSesion}" value="Iniciar sesión" styleClass="login-button" update="@form"/>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>
+
