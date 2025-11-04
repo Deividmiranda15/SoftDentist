@@ -12,6 +12,7 @@ public class DelegatePaciente {
 
         for (Paciente us : usuarios) {
             if (us.getContrasena().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)) {
+            if (us.getPassword().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)) {
                 paciente = us;
             }
         }
