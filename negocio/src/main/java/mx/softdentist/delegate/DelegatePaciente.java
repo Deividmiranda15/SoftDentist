@@ -11,7 +11,6 @@ public class DelegatePaciente {
         List<Paciente> usuarios = ServiceLocator.getInstancePacienteDAO().findAll();
 
         for (Paciente us : usuarios) {
-            if (us.getContrasena().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)) {
             if (us.getPassword().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)) {
                 paciente = us;
             }
@@ -19,8 +18,10 @@ public class DelegatePaciente {
         return  paciente;
     }
 
-    public void saveUsario(Paciente usuario) {
-        ServiceLocator.getInstancePacienteDAO().save(usuario);
-    }
+        public void saveUsuario(Paciente usuario) { // <-- También corregí el nombre del método
+            ServiceLocator.getInstancePacienteDAO().save(usuario);
+        }
+
+
 }
 

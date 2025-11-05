@@ -46,10 +46,6 @@ public class Empleado {
     private String contrasena;
 
     @Size(max = 50)
-    @Column(name = "contrasena", length = 50)
-    private String contrasena;
-
-    @Size(max = 50)
     @Column(name = "puesto", length = 50)
     private String puesto;
 
