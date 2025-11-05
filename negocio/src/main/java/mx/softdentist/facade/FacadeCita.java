@@ -22,5 +22,7 @@ public class FacadeCita {
     }
     public List<Cita> obtenerTodasLasCitas() {
         return ServiceLocator.getInstanceCitaDAO().obtenerTodos();
+    public void saveCita(Cita cita) {
+        ServiceLocator.getInstanceCitaDAO().save(cita);
     }
 }
