@@ -15,7 +15,7 @@ public class FacadePaciente{
     }
 
     public void saveUsario(Paciente empleado){
-        delegatePaciente.saveUsario(empleado);
+        delegatePaciente.saveUsuario(empleado);
     }
 
 }
