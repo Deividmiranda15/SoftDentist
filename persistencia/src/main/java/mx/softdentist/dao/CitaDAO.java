@@ -21,6 +21,16 @@ public class CitaDAO extends AbstractDAO<Cita> {
                 .getResultList();
     }
 
+    public void cancelarCita(Integer idCita) {
+        Cita cita = getEntityManager().find(Cita.class, idCita);
+        if (cita != null) {
+            getEntityManager().getTransaction().begin();
+            cita.setEstado("Cancelada");
+            getEntityManager().merge(cita);
+            getEntityManager().getTransaction().commit();
+        }
+    }
+
     @Override
     public EntityManager getEntityManager() {
         return entityManager;
