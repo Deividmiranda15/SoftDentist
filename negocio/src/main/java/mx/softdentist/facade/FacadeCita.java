@@ -16,11 +16,12 @@ public class FacadeCita {
         }
     }
 
+    // Puedes agregar más métodos según necesites
     public Cita findCitaById(Integer id) {
         return ServiceLocator.getInstanceCitaDAO().find(id).orElse(null);
     }
 
     public List<Cita> obtenerTodasLasCitas() {
-        return ServiceLocator.getInstanceCitaDAO().obtenerTodos(); }
-
+        return ServiceLocator.getInstanceCitaDAO().obtenerTodos();
+    }
 }

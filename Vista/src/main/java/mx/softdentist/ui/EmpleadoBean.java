@@ -23,7 +23,6 @@ public class EmpleadoBean implements Serializable {
     private FacadeEmpleado facadeEmpleado;
 @Named("empleadoBean")
 @RequestScoped
-
     private Empleado nuevoEmpleado;
     private List<Empleado> listaEmpleados;
     private EmpleadoDAO empleadoDAO;

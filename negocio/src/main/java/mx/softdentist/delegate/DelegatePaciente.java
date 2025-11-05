@@ -21,5 +21,7 @@ public class DelegatePaciente {
         public void saveUsuario(Paciente usuario) { // <-- También corregí el nombre del método
             ServiceLocator.getInstancePacienteDAO().save(usuario);
         }
+
+
 }
 
