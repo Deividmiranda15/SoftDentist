@@ -14,6 +14,7 @@ public class DelegateCita {
 
         List<Cita> citas = ServiceLocator.getInstanceCitaDAO().findCitasByPacienteId(idPaciente);
         return citas;
+        //xd
     }
 }
 
