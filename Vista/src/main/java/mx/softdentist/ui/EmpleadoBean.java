@@ -1,5 +1,3 @@
-package ui;
-
 package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
@@ -25,8 +23,6 @@ public class EmpleadoBean implements Serializable {
     private FacadeEmpleado facadeEmpleado;
 @Named("empleadoBean")
 @RequestScoped
-public class EmpleadoBean {
-
     private Empleado nuevoEmpleado;
     private List<Empleado> listaEmpleados;
     private EmpleadoDAO empleadoDAO;

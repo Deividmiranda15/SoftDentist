@@ -20,9 +20,8 @@ public class FacadeCita {
     public Cita findCitaById(Integer id) {
         return ServiceLocator.getInstanceCitaDAO().find(id).orElse(null);
     }
+
     public List<Cita> obtenerTodasLasCitas() {
         return ServiceLocator.getInstanceCitaDAO().obtenerTodos();
-    public void saveCita(Cita cita) {
-        ServiceLocator.getInstanceCitaDAO().save(cita);
     }
 }
