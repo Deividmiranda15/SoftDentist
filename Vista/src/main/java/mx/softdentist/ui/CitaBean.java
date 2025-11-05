@@ -37,55 +37,41 @@ public class CitaBean implements Serializable {
         cargarCitasRegistradas();
     }
 
-    /** MÉTODO PRINCIPAL: SOLICITAR CITA **/
     public void solicitarCita() {
         try {
-            // 🧩 Validaciones de campos obligatorios
             if (pacienteSeleccionadoId == null) {
                 showToastMessage("error", "Error de Validación", "Debe seleccionar un paciente.");
                 return;
             }
-
             if (fecha == null) {
                 showToastMessage("error", "Error de Validación", "Debe seleccionar una fecha.");
                 return;
             }
-
-            // 🚫 No se puede agendar el mismo día ni días anteriores
             if (!fecha.isAfter(LocalDate.now())) {
                 showToastMessage("error", "Fecha inválida", "No puede agendar citas el mismo día o en días pasados.");
                 return;
             }
-
-            // 🚫 No se puede agendar los domingos
             if (fecha.getDayOfWeek() == DayOfWeek.SUNDAY) {
                 showToastMessage("error", "Horario no disponible", "No se pueden agendar citas los domingos.");
                 return;
             }
-
-            // ⏰ Validar hora
             if (hora == null || hora.isEmpty()) {
                 showToastMessage("error", "Error de Validación", "Debe seleccionar una hora.");
                 return;
             }
-
-            // 💬 Validar motivo
             if (motivo == null || motivo.trim().isEmpty()) {
                 showToastMessage("error", "Error de Validación", "Debe indicar el motivo de la cita.");
                 return;
             }
 
-            // 🔍 Buscar paciente
             Paciente pacienteSeleccionado = ServiceLocator.getInstancePacienteDAO()
                     .find(pacienteSeleccionadoId)
                     .orElse(null);
-
             if (pacienteSeleccionado == null) {
                 showToastMessage("error", "Error", "El paciente seleccionado no es válido.");
                 return;
             }
 
-            // 🗓️ Crear cita
             Cita cita = new Cita();
             cita.setFecha(fecha);
             cita.setHora(LocalTime.parse(hora));
@@ -93,17 +79,10 @@ public class CitaBean implements Serializable {
             cita.setEstado("Pendiente");
             cita.setIdPaciente(pacienteSeleccionado);
 
-            // 💾 Guardar cita
             ServiceLocator.getInstanceCitaDAO().save(cita);
-
-            // 🎉 Mensaje de éxito
             showToastMessage("success", "¡Cita solicitada con éxito!",
                     "Su cita para el " + fecha + " a las " + hora + " ha sido registrada correctamente.");
-
-            // 🔄 Limpiar formulario
             limpiarFormulario();
-
-            // 🔁 Actualizar lista de citas
             cargarCitasRegistradas();
 
         } catch (Exception e) {
@@ -113,7 +92,6 @@ public class CitaBean implements Serializable {
         }
     }
 
-    /** APOYO Y VALIDACIONES **/
     public void onDateSelect() {
         cargarHorasDisponibles();
         if (fecha != null) {
@@ -138,7 +116,6 @@ public class CitaBean implements Serializable {
     private void cargarHorasDisponibles() {
         horasDisponibles = new ArrayList<>();
         if (fecha == null) return;
-
         if (fecha.getDayOfWeek() == DayOfWeek.SATURDAY) {
             String[] sabado = {"10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"};
             for (String h : sabado) horasDisponibles.add(h);
@@ -150,7 +127,6 @@ public class CitaBean implements Serializable {
         }
     }
 
-    /** 🔔 Mostrar mensajes tipo Toast **/
     private void showToastMessage(String severity, String summary, String detail) {
         PrimeFaces.current().executeScript(
                 "PrimeFaces.toast.show({severity: '" + severity + "', summary: '" + summary +
@@ -158,7 +134,6 @@ public class CitaBean implements Serializable {
         );
     }
 
-    /** 🔁 Limpiar formulario **/
     private void limpiarFormulario() {
         fecha = null;
         hora = null;
@@ -167,7 +142,6 @@ public class CitaBean implements Serializable {
         horasDisponibles = null;
     }
 
-    /** 📋 Cargar citas **/
     private void cargarCitasRegistradas() {
         citasRegistradas = ServiceLocator.getInstanceCitaDAO().obtenerTodos();
         if (citasRegistradas != null) {
@@ -177,14 +151,12 @@ public class CitaBean implements Serializable {
         }
     }
 
-    /** ❌ Cancelar cita **/
     public void cancelarCita() {
         try {
             if (citaSeleccionada == null || citaSeleccionada.getId() == null) {
                 showToastMessage("warn", "Aviso", "Debe seleccionar una cita para cancelar.");
                 return;
             }
-
             if ("Cancelada".equalsIgnoreCase(citaSeleccionada.getEstado())) {
                 showToastMessage("info", "Cita ya cancelada", "Esta cita ya fue cancelada anteriormente.");
                 return;
@@ -200,28 +172,21 @@ public class CitaBean implements Serializable {
         }
     }
 
-    /** GETTERS Y SETTERS **/
     public Integer getPacienteSeleccionadoId() { return pacienteSeleccionadoId; }
     public void setPacienteSeleccionadoId(Integer pacienteSeleccionadoId) { this.pacienteSeleccionadoId = pacienteSeleccionadoId; }
-
     public Cita getCitaSeleccionada() { return citaSeleccionada; }
     public void setCitaSeleccionada(Cita citaSeleccionada) { this.citaSeleccionada = citaSeleccionada; }
-
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
         if (fecha != null) cargarHorasDisponibles();
     }
-
     public String getHora() { return hora; }
     public void setHora(String hora) { this.hora = hora; }
-
     public String getMotivo() { return motivo; }
     public void setMotivo(String motivo) { this.motivo = motivo; }
-
     public Paciente getPaciente() { return paciente; }
     public void setPaciente(Paciente paciente) { this.paciente = paciente; }
-
     public List<String> getHorasDisponibles() { return horasDisponibles; }
     public List<LocalDate> getFechasDisponibles() { return fechasDisponibles; }
     public List<Cita> getCitasRegistradas() { return citasRegistradas; }
