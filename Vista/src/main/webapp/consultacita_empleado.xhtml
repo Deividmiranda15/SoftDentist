@@ -5,6 +5,18 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
+<header>
+    <div class="top-bar">
+        <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+    </div>
+    <nav class="main-nav">
+        <p:link outcome="inicio_admin" value="INICIO" />
+        <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
+        <p:link outcome="consultacita_empleado" value="Consulta Citas" styleClass="active" />
+        <a href="#">CORTE DE CAJA</a>
+    </nav>
+</header>
+
 <h:head>
     <title>Consulta de Citas</title>
     <h:outputStylesheet name="css/patrondental.css" />
@@ -25,6 +37,11 @@
         }
         .cita-info { font-weight: 500; font-size: 1.05rem; }
         .cita-date { position: absolute; top: 10px; right: 15px; font-size: 0.8rem; opacity: 0.8; }
+        .cita-info .estado {
+            font-weight: 700; /* Lo pone en negrita */
+            color: #004d40;
+            opacity: 0.9;
+        }
     </style>
 </h:head>
 
@@ -48,6 +65,10 @@
                         </h:outputText>
                         -
                         <h:outputText value="#{c.motivo}" />
+
+                        -
+                        <h:outputText value="#{c.estado}" styleClass="estado"/>
+
                     </div>
                     <div class="cita-date">
                         <h:outputText value="#{c.fecha}">

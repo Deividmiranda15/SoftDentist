@@ -17,7 +17,7 @@ public class CitaDAO extends AbstractDAO<Cita> {
 
     public List<Cita> obtenerTodos(){
         return entityManager
-                .createQuery("SELECT a FROM Cita a", Cita.class)
+                .createQuery("SELECT a FROM Cita a ORDER BY a.fecha ASC, a.hora ASC", Cita.class)
                 .getResultList();
     }
 
