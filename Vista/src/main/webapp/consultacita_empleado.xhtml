@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Consulta de Citas</title>
+    <h:outputStylesheet name="css/patrondental.css" />
+    <style>
+        body { background-color: #e0f2f1; font-family: 'Poppins', sans-serif; }
+        .main-container { max-width: 900px; margin: 30px auto; padding: 20px; }
+        .page-title { color: #00695c; text-align: center; margin-bottom: 30px; }
+        .cards-container { display: flex; flex-direction: column; gap: 15px; }
+        .cita-card {
+            background-color: #80cbc4; border-radius: 12px; padding: 15px 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1); display: flex; align-items: center;
+            color: #004d40; position: relative;
+        }
+        .cita-avatar {
+            background-color: #f8bbd0; width: 45px; height: 45px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin-right: 15px; font-size: 1.5rem;
+        }
+        .cita-info { font-weight: 500; font-size: 1.05rem; }
+        .cita-date { position: absolute; top: 10px; right: 15px; font-size: 0.8rem; opacity: 0.8; }
+    </style>
+</h:head>
+
+<h:body>
+    <main class="main-container">
+        <h2 class="page-title">Citas Programadas</h2>
+
+        <div class="cards-container">
+            <ui:repeat value="#{citaConsultaBean.listaCitas}" var="c">
+                <div class="cita-card">
+                    <div class="cita-avatar">👤</div>
+                    <div class="cita-info">
+                        <h:outputText value="#{c.idPaciente.nombre} #{c.idPaciente.apellido}" />
+                        -
+                        <h:outputText value="#{c.fecha}">
+                            <f:convertDateTime type="localDate" pattern="dd 'de' MMMM" locale="es_MX"/>
+                        </h:outputText>
+                        -
+                        <h:outputText value="#{c.hora}">
+                            <f:convertDateTime type="localTime" pattern="h:mm a" locale="es_MX"/>
+                        </h:outputText>
+                        -
+                        <h:outputText value="#{c.motivo}" />
+                    </div>
+                    <div class="cita-date">
+                        <h:outputText value="#{c.fecha}">
+                            <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+                </div>
+            </ui:repeat>
+
+            <h:panelGroup rendered="#{empty citaConsultaBean.listaCitas}">
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <h3>No hay citas registradas.</h3>
+                </div>
+            </h:panelGroup>
+        </div>
+    </main>
+</h:body>
+</html>

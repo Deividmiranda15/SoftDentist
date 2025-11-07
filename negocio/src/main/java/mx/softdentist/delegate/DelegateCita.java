@@ -1,20 +1,24 @@
 package mx.softdentist.delegate;
 
 import mx.softdentist.entidad.Cita;
-import mx.softdentist.integration.ServiceLocator;
+import mx.softdentist.integration.ServiceFacadeLocator;
+
 
 import java.util.List;
 
 public class DelegateCita {
     public void saveCita(Cita cita) {
-        ServiceLocator.getInstanceCitaDAO().save(cita);
+        ServiceFacadeLocator.getInstanceFacadeCita().saveCita(cita);
     }
 
     public List<Cita> consultarCitasPorPaciente(int idPaciente) {
-
-        List<Cita> citas = ServiceLocator.getInstanceCitaDAO().findCitasByPacienteId(idPaciente);
+        List<Cita> citas = ServiceFacadeLocator.getInstanceFacadeCita().consultarCitasPorPaciente(idPaciente);
         return citas;
-        //xd
+    }
+
+    public List<Cita> obtenerTodasCitas() {
+        List<Cita> todasLasCitas = ServiceFacadeLocator.getInstanceFacadeCita().obtenerTodasLasCitas();
+        return todasLasCitas;
     }
 }
 
