@@ -15,6 +15,10 @@ public class Administrador {
     @Column(name = "id_admin", nullable = false)
     private Integer id;
 
+    @Size(max = 20)
+    @Column(name = "password", length = 20)
+    private String password;
+
     @Size(max = 100)
     @NotNull
     @Column(name = "correo", nullable = false, length = 100)
@@ -56,6 +60,15 @@ public class Administrador {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<Cita> getCitas() {
