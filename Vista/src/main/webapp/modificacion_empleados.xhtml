@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Modificar Empleado</title>
+    <h:outputStylesheet name="css/patrondental.css" />
+</h:head>
+
+<h:body>
+    <f:metadata>
+        <f:viewAction action="#{empleadoBean.cargarDatosParaEditar}" />
+    </f:metadata>
+
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+        </div>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="card form-card" style="margin: 20px auto; max-width: 600px;">
+                <h2>Modificar Empleado</h2>
+                <h:form id="formEditar">
+                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="nombre" value="Nombre:" />
+                            <p:inputText id="nombre" value="#{empleadoBean.empleadoAEditar.nombre}" required="true" />
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="apellido" value="Apellido:" />
+                            <p:inputText id="apellido" value="#{empleadoBean.empleadoAEditar.apellido}" required="true" />
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="telefono" value="Teléfono:" />
+                            <p:inputText id="telefono" value="#{empleadoBean.empleadoAEditar.telefono}" required="true" />
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="correo" value="Correo:" />
+                            <p:inputText id="correo" value="#{empleadoBean.empleadoAEditar.correo}" required="true" />
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="password" value="Nueva Contraseña (opcional):" />
+                            <p:password id="password" value="#{empleadoBean.empleadoAEditar.password}" placeholder="Dejar en blanco para no cambiar" />
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="puesto" value="Puesto:" />
+                            <p:selectOneMenu id="puesto" value="#{empleadoBean.empleadoAEditar.puesto}" required="true">
+                                <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <p:commandButton value="Guardar Cambios"
+                                         action="#{empleadoBean.actualizarEmpleado}"
+                                         ajax="false"
+                                         style="width: 100%; margin-top: 10px;" />
+                    </p:panelGrid>
+                </h:form>
+            </div>
+        </div>
+    </main>
+</h:body>
+</html>
