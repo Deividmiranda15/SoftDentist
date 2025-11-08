@@ -6,8 +6,9 @@
 <h:head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portal Paciente - Dental Patron</title>
+    <title>Panel Administrador - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <!-- Enlace al archivo CSS con el nuevo nombre -->
     <h:outputStylesheet name="css/patrondental.css" />
 </h:head>
 
@@ -17,24 +18,26 @@
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
         </div>
         <nav class="main-nav">
-            <p:link outcome="inicio_paciente" value="INICIO" styleClass="active" />
-            <!--<p:link outcome="solicitar_cita" value="SOLICITAR CITA" />
-            <p:link outcome="consultar_cita" value="CONSULTAR CITA" />
-            <p:link outcome="contactanos" value="CONTÁCTANOS"  />-->
+            <!-- Navegación actualizada con p:link -->
+            <p:link outcome="inicio_admin" value="INICIO" styleClass="active" />
+            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
+            <a href="#">CORTE DE CAJA</a>
         </nav>
     </header>
 
     <main class="main-content-backdrop">
         <div class="transparent-container">
             <div class="welcome-box">
-                <h:graphicImage name="images/logo-grande.png" alt="Logo grande Dental Patron" style="width: 250px;"/>
-
-                <h2>BIENVENIDO, #{usuarioLogueado.nombre}</h2>
-
-                <h3>Aquí puedes gestionar tus citas y ver tu información.</h3>
+                <h:graphicImage name="images/logo-grande.png" alt="Logo grande Dental Patron" style="width: 200px;"/>
+                <div class="welcome-text">
+                    <h2>Bienvenido a <a href="#">Dental Patron</a>, Empleado</h2>
+                    <h3>Qué gusto tenerte aquí un día más.</h3>
+                    <h1>FUNCIONA</h1>
+                </div>
             </div>
         </div>
     </main>
-
 </h:body>
 </html>
+
+

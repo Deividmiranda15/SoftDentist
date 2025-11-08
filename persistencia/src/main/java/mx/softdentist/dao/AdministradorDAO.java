@@ -25,14 +25,13 @@ public class AdministradorDAO extends AbstractDAO<Administrador> {
     public Administrador findByCorreo(String correo) {
         try {
             // Enfoque alternativo para evitar el error de tipos del IDE
-            // 1. Creamos una consulta "no tipada" (untyped)
             jakarta.persistence.Query query = entityManager.createQuery(
                     "SELECT a FROM Administrador a WHERE a.correo = :correoParam");
 
-            // 2. Asignamos el parámetro
+            // Asignamos el parámetro
             query.setParameter("correoParam", correo);
 
-            // 3. Ejecutamos y hacemos un "cast" manual del resultado al tipo Administrador
+            // Ejecutamos y hacemos un "cast" manual del resultado al tipo Administrador
             return (Administrador) query.getSingleResult();
 
         } catch (NoResultException e) {
