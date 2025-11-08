@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <h:head>
     <title>Solicitar Cita</title>
-    <h:outputStylesheet name="css/patrondental.css" />
+    <h:outputStylesheet name="css/patrondental.css"/>
 </h:head>
 
 <h:body>
@@ -14,17 +15,63 @@
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
         </div>
         <nav class="main-nav">
-            <p:link outcome="inicio_paciente" value="INICIO" />
+            <p:link outcome="inicio_paciente" value="INICIO"/>
             <p:link outcome="solicitar_cita" value="SOLICITAR CITA" styleClass="active"/>
-            <p:link outcome="consultar_cita" value="CONSULTAR CITA" />
-            <p:link outcome="contactanos" value="CONTÁCTANOS" />
         </nav>
     </header>
 
     <main class="main-content-backdrop">
         <div class="transparent-container">
-            <h1>Página para Solicitar Cita</h1>
-            <p>Aquí irá el formulario para que el paciente solicite una cita.</p>
+            <h1>Solicitar una Cita</h1>
+            <p>Selecciona la fecha, hora y motivo de tu visita.</p>
+
+            <h:form id="formCita">
+                <p:growl id="messages" showDetail="true"/>
+
+                <p:panelGrid columns="2" layout="grid" styleClass="cita-grid"
+                             columnClasses="cita-col-fecha, cita-col-opciones">
+
+                    <h:panelGroup>
+                        <h3>1. Selecciona una Fecha</h3>
+                        <p:calendar value="#{citaBean.fechaSeleccionada}" mode="inline"
+                                    minDate="#{citaBean.today}" locale="es">
+                            <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="panelHoras"/>
+                        </p:calendar>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputPanel id="panelHoras">
+                            <h3>2. Selecciona una Hora</h3>
+                            <p:selectOneButton id="horas" value="#{citaBean.horaSeleccionada}"
+                                               styleClass="time-grid"
+                                               disabled="#{citaBean.fechaSeleccionada == null}">
+                                <f:selectItems value="#{citaBean.horasDelDia}" var="hora"
+                                               itemLabel="#{hora.label}" itemValue="#{hora.value}"
+                                               itemDisabled="#{hora.disabled}"/>
+                                <p:ajax update="panelMotivo"/>
+                            </p:selectOneButton>
+                        </p:outputPanel>
+
+                        <p:outputPanel id="panelMotivo" style="margin-top: 20px;">
+                            <h3>3. Selecciona un Motivo</h3>
+                            <p:selectOneButton id="motivos" value="#{citaBean.motivoSeleccionado}"
+                                               disabled="#{citaBean.horaSeleccionada == null}">
+                                <f:selectItem itemLabel="Consulta" itemValue="Consulta"/>
+                                <f:selectItem itemLabel="Limpieza" itemValue="Limpieza"/>
+                                <f:selectItem itemLabel="Ortodoncia" itemValue="Ortodoncia"/>
+                                <f:selectItem itemLabel="Otro" itemValue="Otro"/>
+                            </p:selectOneButton>
+                        </p:outputPanel>
+
+                    </h:panelGroup>
+                </p:panelGrid>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <p:commandButton value="Solicitar Cita" action="#{citaBean.guardarCita}"
+                                     styleClass="btn-solicitar" update="formCita:messages"/>
+                </div>
+
+            </h:form>
         </div>
     </main>
 </h:body>
