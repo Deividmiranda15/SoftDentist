@@ -3,6 +3,7 @@ package mx.softdentist.ui;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import mx.softdentist.dao.AdministradorDAO;
 import mx.softdentist.dao.EmpleadoDAO;
@@ -23,6 +24,9 @@ public class LoginBean {
     private transient EmpleadoDAO empleadoDAO;
     private transient PacienteDAO pacienteDAO;
 
+    @Inject
+    private SessionBean sessionBean;
+
     public LoginBean() {
         this.administradorDAO = ServiceLocator.getInstanceAdministradorDAO();
         this.empleadoDAO = ServiceLocator.getInstanceEmpleadoDAO();
@@ -42,6 +46,9 @@ public class LoginBean {
                 System.out.println("Resultado: Administrador ENCONTRADO.");
                 if (admin.getPassword().equals(this.password)) {
                     System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_admin...");
+
+                    sessionBean.setUsuarioLogueado(admin);
+
                     return "inicio_admin?faces-redirect=true";
                 } else {
                     System.out.println("Resultado: Contraseña INCORRECTA para Admin.");
@@ -67,6 +74,9 @@ public class LoginBean {
                 System.out.println("Resultado: Empleado ENCONTRADO: " + empleado.getNombre());
                 if (empleado.getPassword().equals(this.password)) {
                     System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_emp...");
+
+                    sessionBean.setUsuarioLogueado(empleado);
+
                     return "inicio_emp?faces-redirect=true";
                 } else {
                     System.out.println("Resultado: Contraseña INCORRECTA para Empleado.");
@@ -93,6 +103,8 @@ public class LoginBean {
 
                 if (paciente.getPassword().equals(this.password)) {
                     System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_paciente...");
+
+                    sessionBean.setUsuarioLogueado(paciente);
 
                     // --- ¡ESTA ES LA LÍNEA QUE DEBES DESCOMENTAR! ---
                     // Asegúrate de que no tenga los '//' al principio

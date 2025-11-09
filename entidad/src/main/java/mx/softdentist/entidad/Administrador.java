@@ -24,11 +24,6 @@ public class Administrador {
     @Column(name = "correo", nullable = false, length = 100)
     private String correo;
 
-    @Size(max = 20)
-    @NotNull
-    @Column(name = "password", nullable = false, length = 100)
-    private String password;
-
     @OneToMany(mappedBy = "idAdmin")
     private Set<Cita> citas = new LinkedHashSet<>();
 
@@ -53,15 +48,6 @@ public class Administrador {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 
     public String getPassword() {
         return password;

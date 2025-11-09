@@ -106,17 +106,35 @@
             <h:graphicImage name="images/logo.png" style="height: 40px;"/>
         </div>
         <div class="user-info">
-            <p:commandButton value="Cerrar Sesión" styleClass="boton-barra" action="login?faces-redirect=true" />
+            <h:form>
+                <p:commandButton value="Cerrar Sesión" styleClass="boton-barra"
+                                 action="#{sessionBean.cerrarSesion}" />
+            </h:form>
         </div>
     </header>
 
     <nav class="main-nav">
         <h:form>
+            <!-- Botón de Inicio (Todos lo ven) -->
             <p:button value="Inicio" outcome="inicio_admin" icon="pi pi-home" styleClass="boton-barra"/>
-            <p:button value="Pacientes" outcome="pacientes" icon="pi pi-users" styleClass="boton-barra"/>
-            <p:button value="Empleados" outcome="empleados" icon="pi pi-id-card" styleClass="boton-barra"/>
+
+            <!-- Botón de Citas (Todos lo ven) -->
             <p:button value="Citas" outcome="cita" icon="pi pi-calendar" styleClass="boton-barra"/>
+
+            <!-- Botón de Chat (Todos lo ven) -->
             <p:button value="Chat" outcome="chat" icon="pi pi-comments" styleClass="boton-barra"/>
+
+            <!--
+              Botón de Pacientes (Solo el empleado y el admin lo ven)
+            -->
+            <p:button value="Pacientes" outcome="pacientes" icon="pi pi-users" styleClass="boton-barra"
+                      rendered="#{sessionBean.esEmpleado or sessionBean.esAdmin}"/>
+
+            <!--
+              Botón de Empleados (Solo el admin lo ve)
+            -->
+            <p:button value="Empleados" outcome="empleados" icon="pi pi-id-card" styleClass="boton-barra"
+                      rendered="#{sessionBean.esAdmin}"/>
         </h:form>
     </nav>
 
@@ -130,38 +148,38 @@
 
                     <!-- COLUMNA IZQUIERDA (Contactos) -->
                     <div class="chat-contacts contact-list">
-
-                        <!-- Panel de PrimeFaces para los contactos -->
                         <p:panel header="Contactos" style="border: none;">
-                            <!-- Si el usuario es Empleado o Admin, muestra lista de los pacientes -->
+
+                            <!--
+                              Usamos sessionBean para decidir qué lista mostrar
+                            -->
                             <p:dataList value="#{chatBean.listaPacientes}" var="pac" type="unordered"
-                                        rendered="#{chatBean.esEmpleado}">
+                                        rendered="#{sessionBean.esEmpleado}"> <!-- (o Admin) -->
                                 <li>
-                                    <p:commandLink actionListener="#{chatBean.seleccionarContacto(pac.idPaciente, 'PACIENTE', pac.nombre.concat(' ').concat(pac.apellidos))}"
-                                                   update=":formChat:chatPanel" style="display: block; text-decoration: none; color: #333;">
-                                        <h:outputText value="#{pac.nombre} #{pac.apellidos}" style="font-weight: bold;"/>
+                                    <p:commandLink actionListener="#{chatBean.seleccionarContacto(pac.id, 'PACIENTE', pac.nombre.concat(' ').concat(pac.apellido))}"
+                                                   update=":formChat:chatPanel"
+                                                   style="display: block; text-decoration: none; color: #333;">
+                                        <h:outputText value="#{pac.nombre} #{pac.apellido}" style="font-weight: bold;"/>
                                     </p:commandLink>
                                 </li>
                             </p:dataList>
 
-                            <!-- Si el usuario es paciente, muestra la lista de los empleados/dentistas -->
                             <p:dataList value="#{chatBean.listaEmpleados}" var="emp" type="unordered"
-                                        rendered="#{chatBean.esPaciente}">
+                                        rendered="#{sessionBean.esPaciente}">
                                 <li>
-                                    <p:commandLink actionListener="#{chatBean.seleccionarContacto(emp.idEmpleado, 'EMPLEADO', emp.nombre.concat(' ').concat(emp.apellidos))}"
-                                                   update=":formChat:chatPanel" style="display: block; text-decoration: none; color: #333;">
-                                        <h:outputText value="Dr. #{emp.nombre} #{emp.apellidos}" style="font-weight: bold;"/>
+                                    <p:commandLink actionListener="#{chatBean.seleccionarContacto(emp.id, 'EMPLEADO', emp.nombre.concat(' ').concat(emp.apellido))}"
+                                                   update=":formChat:chatPanel"
+                                                   style="display: block; text-decoration: none; color: #333;">
+                                        <h:outputText value="Dr. #{emp.nombre} #{emp.apellido}" style="font-weight: bold;"/>
                                     </p:commandLink>
                                 </li>
                             </p:dataList>
                         </p:panel>
-
                     </div>
 
                     <!-- Columna de Chat -->
                     <div class="chat-main">
-
-                        <p:outputPanel id="chatPanel">
+                        <p:outputPanel id="chatPanel" style="width: 100%; height: 100%;">
 
                             <!-- Cabecera del chat -->
                             <p:panel header="Chat con: #{chatBean.contactoSeleccionadoNombre}"
@@ -170,7 +188,10 @@
 
                                 <div class="chat-history-container">
                                     <ui:repeat value="#{chatBean.chatHistory}" var="msg">
-                                        <div class="chat-message #{msg.idEmisor eq chatBean.currentUserId ? 'mensaje-mio' : 'mensaje-suyo'}">
+                                        <!--
+                                          Usamos sessionBean para saber si el mensaje es 'mio'
+                                        -->
+                                        <div class="chat-message #{msg.idEmisor eq sessionBean.usuarioId ? 'mensaje-mio' : 'mensaje-suyo'}">
                                             <h:outputText value="#{msg.contenido}" />
                                             <span class="timestamp">
                                                 <h:outputText value="#{msg.fechaEnvio}">
@@ -207,7 +228,6 @@
 
                 </div>
             </p:panel>
-
         </h:form>
     </div>
 </h:body>

@@ -1,8 +1,9 @@
 package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.context.FacesContext; // Import para leer la sesión
+// import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
@@ -16,10 +17,17 @@ import mx.softdentist.entidad.Paciente;
 @ViewScoped
 public class ChatBean implements Serializable {
 
+    @Inject
+    private SessionBean sessionBean;
+
     // Variables de estado
     private DelegateMensaje delegateMensaje;
+
+    // Lista de contactos
     private List<Paciente> listaPacientes;
     private List<Empleado> listaEmpleados;
+
+    // Estado del chat
     private List<Mensaje> chatHistory;
     private String nuevoMensaje;
     private Long currentUserId;
@@ -40,44 +48,31 @@ public class ChatBean implements Serializable {
     @PostConstruct
     public void init() {
         // Obtener el usuario que está logeado (sea paciente o empleado)
-        Object usuarioLogueado = FacesContext.getCurrentInstance()
-                .getExternalContext().getSessionMap().get("usuarioLogueado");
 
-        if (usuarioLogueado instanceof Paciente) {
-            // Es un Paciente
-            Paciente p = (Paciente) usuarioLogueado;
-            this.currentUserId = (long) p.getId();
-            this.currentUserType = "PACIENTE";
-            this.esPaciente = true;
+        if (!sessionBean.isLogueado()) {
+            System.err.println("ChatBean: ¡Nadie logueado! (Redirigir a login sería buena idea)");
+            return;
+        }
+
+        // Object usuarioLogueado = FacesContext.getCurrentInstance()
+        //        .getExternalContext().getSessionMap().get("usuarioLogueado");
+
+        // Copiamos los datos del SessionBean a este bean
+        this.currentUserId = sessionBean.getUsuarioId();
+        this.currentUserType = sessionBean.getUsuarioTipo();
+        this.esPaciente = sessionBean.isEsPaciente();
+        this.esEmpleado = sessionBean.isEsEmpleado(); // Admin también es empleado, pero al final no voy a usar a admin para los chats
+
+        // Cargar las listas de contactos correctas
+        if (this.esPaciente) {
             // Un paciente solo puede chatear con empleados
             this.listaEmpleados = delegateMensaje.getTodosEmpleados();
-            System.out.println("ChatBean init: Usuario es PACIENTE (ID: " + this.currentUserId + ")");
+            System.out.println("ChatBean init: PACIENTE (ID: " + this.currentUserId + ") cargando empleados.");
 
-        } else if (usuarioLogueado instanceof Empleado) {
-            // Es un Empleado/Dentista
-            Empleado e = (Empleado) usuarioLogueado;
-            this.currentUserId = (long) e.getId();
-            this.currentUserType = "EMPLEADO";
-            this.esEmpleado = true;
+        } else if (this.esEmpleado) {
             // Un empleado solo puede chatear con pacientes
             this.listaPacientes = delegateMensaje.getTodosPacientes();
-            System.out.println("ChatBean init: Usuario es EMPLEADO (ID: " + this.currentUserId + ")");
-
-        } else if (usuarioLogueado instanceof Administrador) {
-            // Es un Administrador
-            Administrador a = (Administrador) usuarioLogueado;
-            // El Admin funciona como un Empleado para chatear
-            this.currentUserId = (long) a.getId();
-            this.currentUserType = "EMPLEADO";
-            this.esEmpleado = true; // Para mostrar la lista de pacientes
-            this.listaPacientes = delegateMensaje.getTodosPacientes();
-            System.out.println("ChatBean init: Usuario es ADMINISTRADOR (ID: " + this.currentUserId + ")");
-
-        } else {
-            // Si en daaaaado caso alguien llega al chat sin logearse
-            System.err.println("ChatBean: No se pudo identificar al usuario logueado en la sesión.");
-            // Redirigimos si en dado caso no se pudo encontrar el login
-            // FacesContext.getCurrentInstance().getExternalContext().redirect("login.xhtml");
+            System.out.println("ChatBean init: EMPLEADO/ADMIN (ID: " + this.currentUserId + ") cargando pacientes.");
         }
     }
 
@@ -104,7 +99,7 @@ public class ChatBean implements Serializable {
         );
     }
 
-    // Acción llamada por el botón "Enviar".
+    // Acción llamada por el botón Enviar
     public void enviarMensaje() {
         if (nuevoMensaje == null || nuevoMensaje.trim().isEmpty() || contactoSeleccionadoId == null) {
             return;
