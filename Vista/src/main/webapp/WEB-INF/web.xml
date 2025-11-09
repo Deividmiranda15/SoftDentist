@@ -28,6 +28,6 @@
     </session-timeout>
   </session-config>
   <welcome-file-list>
-    <welcome-file>empleados.xhtml</welcome-file>
+    <welcome-file>chat.xhtml</welcome-file>
   </welcome-file-list>
 </web-app>

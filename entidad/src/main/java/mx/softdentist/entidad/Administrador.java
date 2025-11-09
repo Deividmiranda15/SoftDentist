@@ -20,10 +20,10 @@ public class Administrador {
     @Column(name = "correo", nullable = false, length = 100)
     private String correo;
 
-    @Size(max = 100)
+    @Size(max = 20)
     @NotNull
-    @Column(name = "contrasena", nullable = false, length = 100)
-    private String contrasena;
+    @Column(name = "password", nullable = false, length = 100)
+    private String password;
 
     @OneToMany(mappedBy = "idAdmin")
     private Set<Cita> citas = new LinkedHashSet<>();
@@ -50,12 +50,12 @@ public class Administrador {
         this.correo = correo;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<Cita> getCitas() {
