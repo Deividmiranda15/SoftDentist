@@ -96,7 +96,11 @@
                                         <div class="custom-table-cell">#{e.telefono}</div>
                                         <div class="custom-table-cell">#{e.correo}</div>
                                         <div class="custom-table-actions">
-                                            <p:commandButton icon="pi pi-pencil" title="Editar" styleClass="ui-button-warning ui-button-flat" />
+                                            <p:commandButton icon="pi pi-pencil" title="Editar"
+                                                             styleClass="ui-button-warning ui-button-flat"
+                                                             action="#{empleadoBean.irAEditar(e)}"
+                                                             ajax="false" />
+
                                             <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
                                         </div>
                                     </div>

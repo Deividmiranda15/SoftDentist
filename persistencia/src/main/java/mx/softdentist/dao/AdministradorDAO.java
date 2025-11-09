@@ -45,3 +45,4 @@ public class AdministradorDAO extends AbstractDAO<Administrador> {
         return entityManager;
     }
 }
+// x
