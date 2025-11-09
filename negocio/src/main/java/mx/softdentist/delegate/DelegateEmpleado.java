@@ -12,7 +12,7 @@ public Empleado login(String password, String correo){
     List<Empleado> usuarios = ServiceLocator.getInstanceEmpleadoDAO().findAll();
 
     for(Empleado us:usuarios){
-        if(us.getContrasena().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)){
+        if(us.getPassword().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)){
             empleado = us;
         }
     }
@@ -23,4 +23,8 @@ public void saveUsario(Empleado empleado){
     ServiceLocator.getInstanceEmpleadoDAO().save(empleado);
 }
 
+
+    public List<Empleado> consultarTodosLosEmpleados() {
+        return ServiceLocator.getInstanceEmpleadoDAO().findAll();
+    }
 }

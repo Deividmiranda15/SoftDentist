@@ -1,22 +1,28 @@
 package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.faces.view.ViewScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import mx.softdentist.entidad.Empleado;
+import mx.softdentist.facade.FacadeEmpleado;
 import mx.softdentist.integration.ServiceLocator;
 import mx.softdentist.dao.EmpleadoDAO;
 
+import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Named
+@ViewScoped
+public class EmpleadoBean implements Serializable {
+
+    private FacadeEmpleado facadeEmpleado;
 @Named("empleadoBean")
 @RequestScoped
-public class EmpleadoBean {
-
     private Empleado nuevoEmpleado;
     private List<Empleado> listaEmpleados;
     private EmpleadoDAO empleadoDAO;
@@ -37,6 +43,8 @@ public class EmpleadoBean {
 
     @PostConstruct
     public void init() {
+        facadeEmpleado = new FacadeEmpleado();
+        listaEmpleados = facadeEmpleado.consultarTodosLosEmpleados();
         listaEmpleados = empleadoDAO.obtenerTodos();
     }
 

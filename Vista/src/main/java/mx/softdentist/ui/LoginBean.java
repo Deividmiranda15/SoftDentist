@@ -42,9 +42,6 @@ public class LoginBean {
                 System.out.println("Resultado: Administrador ENCONTRADO.");
                 if (admin.getPassword().equals(this.password)) {
                     System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_admin...");
-
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuarioLogueado", admin);
-
                     return "inicio_admin?faces-redirect=true";
                 } else {
                     System.out.println("Resultado: Contraseña INCORRECTA para Admin.");
@@ -70,9 +67,6 @@ public class LoginBean {
                 System.out.println("Resultado: Empleado ENCONTRADO: " + empleado.getNombre());
                 if (empleado.getPassword().equals(this.password)) {
                     System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_emp...");
-
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuarioLogueado", empleado);
-
                     return "inicio_emp?faces-redirect=true";
                 } else {
                     System.out.println("Resultado: Contraseña INCORRECTA para Empleado.");

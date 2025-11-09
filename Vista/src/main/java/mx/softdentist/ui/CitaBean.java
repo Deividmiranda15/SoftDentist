@@ -1,193 +1,174 @@
-package mx.softdentist.ui;
+package mx.softdentist.ui; // Asegúrate que el paquete sea el correcto
 
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem; // Importante: usa el de jakarta.faces.model
 import jakarta.faces.view.ViewScoped;
-import mx.softdentist.entidad.Cita;
-import mx.softdentist.entidad.Paciente;
-import mx.softdentist.integration.ServiceLocator;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
-import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date; // Importante: usa java.util.Date para el p:calendar
 import java.util.List;
+// NOTA: No necesitas 'java.time.LocalDate' en este bean si p:calendar usa 'java.util.Date'
 
 @Named
-@ViewScoped
+@ViewScoped // Usamos ViewScoped para mantener el estado en la página
 public class CitaBean implements Serializable {
-    private static final long serialVersionUID = 1L;
 
-    private LocalDate fecha;
-    private String hora;
-    private String motivo;
-    private Paciente paciente; // Asegúrate de asignar el paciente actual
-    private List<String> horasDisponibles;
-    private List<LocalDate> fechasDisponibles;
-    private List<Cita> citasRegistradas;
-    private List<Paciente> pacientesDisponibles; // Lista de pacientes
-    private Integer pacienteSeleccionadoId;      // ID del paciente seleccionado
+    // --- Atributos para el formulario ---
+    // Deben llamarse así para coincidir con el xhtml
+    private Date fechaSeleccionada;
+    private String horaSeleccionada;
+    private String motivoSeleccionado;
 
-    public CitaBean() {
-        cargarFechasDisponibles();
-        cargarCitasRegistradas();
+    private List<SelectItem> horasDelDia; // Lista para los botones de hora
+
+    // --- Lógica de negocio (aquí irían tus Facades/Delegates) ---
+    // @Inject
+    // private FacadeCita facadeCita; // Descomenta cuando conectes tu lógica de negocio
+
+    @PostConstruct
+    public void init() {
+        // Inicializa la lista de horas
+        horasDelDia = new ArrayList<>();
     }
 
-    public void solicitarCita() {
+    /**
+     * Este método se dispara con el p:ajax del calendario.
+     * Aquí es donde debes consultar la base de datos.
+     */
+    public void onDateSelect(SelectEvent<Date> event) {
+        this.fechaSeleccionada = event.getObject();
+        this.horaSeleccionada = null; // Resetea la hora seleccionada
+        this.motivoSeleccionado = null; // Resetea el motivo
+
+        cargarHorasDisponibles();
+    }
+
+    /**
+     * SIMULACIÓN DE CONSULTA A BD
+     * Este método debería usar tu FacadeCita para traer las citas
+     * ya agendadas en 'fechaSeleccionada' y deshabilitar esos horarios.
+     */
+    private void cargarHorasDisponibles() {
+        horasDelDia = new ArrayList<>();
+
+        // 1. Simula las horas que ya están "ocupadas" en la BD para ese día
+        // En un caso real: List<Cita> citasDelDia = facadeCita.consultarPorFecha(fechaSeleccionada);
+        // List<String> horasOcupadas = citasDelDia.stream().map(Cita::getHora).collect(Collectors.toList());
+
+        // Simulación: El 10:00 y 13:00 están ocupados
+        List<String> horasOcupadas = Arrays.asList("10:00", "13:00");
+
+        // 2. Define todos los horarios posibles del consultorio
+        List<String> horariosClinica = Arrays.asList(
+                "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "16:00", "17:00"
+        );
+
+        // 3. Crea los SelectItem, marcando como 'disabled' los que estén ocupados
+        for (String hora : horariosClinica) {
+            boolean deshabilitado = horasOcupadas.contains(hora);
+            String label = formatHoraLabel(hora); // "09:00 AM"
+            // El formato es: (value, label, description, disabled)
+            horasDelDia.add(new SelectItem(hora, label, "", deshabilitado));
+        }
+    }
+
+    // Método de ayuda para formatear la etiqueta
+    private String formatHoraLabel(String hora) {
         try {
-            // Validaciones básicas de fecha, hora y motivo
-            if (!validarCita()) {
-                String mensajeError = obtenerMensajeError();
-                showToastMessage("error", "Error de Validación", mensajeError);
-                return;
-            }
+            int h = Integer.parseInt(hora.split(":")[0]);
+            String ampm = (h < 12) ? "AM" : "PM";
+            if (h > 12) h -= 12;
+            return String.format("%02d:00 %s", h, ampm);
+        } catch (Exception e) {
+            return hora; // Fallback
+        }
+    }
 
-            // Validar que se haya seleccionado un paciente
-            if (pacienteSeleccionadoId == null) {
-                showToastMessage("error", "Error de Validación", "Debe seleccionar un paciente.");
-                return;
-            }
+    /**
+     * Acción del botón "Solicitar Cita".
+     */
+    public void guardarCita() { // Se llama 'guardarCita' en el xhtml
+        if (fechaSeleccionada == null || horaSeleccionada == null || motivoSeleccionado == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Campos incompletos", "Por favor, selecciona fecha, hora y motivo."));
+            return;
+        }
 
-            // Obtener el objeto Paciente desde el ID seleccionado
-            Paciente pacienteSeleccionado = ServiceLocator.getInstancePacienteDAO()
-                    .find(pacienteSeleccionadoId)
-                    .orElse(null);
+        try {
+            // --- AQUÍ VA LA LÓGICA DE GUARDADO EN BD ---
+            // Aquí usarías tu ServiceLocator que vi en tu bean original
+            // Paciente p = ServiceLocator.getInstancePacienteDAO().find(pacienteId);
+            // Cita nuevaCita = new Cita();
+            // nuevaCita.setFecha( ... convertir java.util.Date a java.time.LocalDate ... );
+            // nuevaCita.setHora(LocalTime.parse(horaSeleccionada));
+            // nuevaCita.setMotivo(motivoSeleccionado);
+            // nuevaCita.setIdPaciente(p);
+            // ServiceLocator.getInstanceCitaDAO().save(nuevaCita);
 
-            if (pacienteSeleccionado == null) {
-                showToastMessage("error", "Error de Validación", "Paciente no válido.");
-                return;
-            }
+            System.out.println("Guardando Cita:");
+            System.out.println("Fecha: " + fechaSeleccionada);
+            System.out.println("Hora: " + horaSeleccionada);
+            System.out.println("Motivo: " + motivoSeleccionado);
 
-            // Crear la nueva cita
-            Cita cita = new Cita();
-            cita.setFecha(fecha);
-            cita.setHora(LocalTime.parse(hora)); // Convierte String a LocalTime
-            cita.setMotivo(motivo);
-            cita.setEstado("Pendiente");
-            cita.setIdPaciente(pacienteSeleccionado); // Asignar el paciente seleccionado
-
-            // Guardar la cita usando el DAO
-            ServiceLocator.getInstanceCitaDAO().save(cita);
-
-            showToastMessage("success", "¡Cita Solicitada!",
-                    "Su cita para el " + fecha + " a las " + hora + " ha sido solicitada. Estado: Pendiente");
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Cita Agendada", "Tu cita ha sido registrada exitosamente."));
 
             // Limpiar formulario
-            limpiarFormulario();
+            this.fechaSeleccionada = null;
+            this.horaSeleccionada = null;
+            this.motivoSeleccionado = null;
+            this.horasDelDia.clear(); // Limpia la lista de horas
 
         } catch (Exception e) {
-            showToastMessage("error", "Error del Sistema",
-                    "Ocurrió un error inesperado: " + e.getMessage());
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error al guardar", "No se pudo registrar la cita: " + e.getMessage()));
         }
     }
 
-    private boolean validarCita() {
-        if (fecha == null) return false;
-        if (hora == null) return false;
-        if (motivo == null || motivo.trim().isEmpty()) return false;
-        if (fecha.getDayOfWeek() == DayOfWeek.SUNDAY) return false;
-        if (fecha.isBefore(LocalDate.now())) return false;
-        return true;
+    // --- Getters y Setters --- (Estos SÍ deben coincidir con el xhtml)
+
+    /**
+     * Devuelve la fecha de hoy para deshabilitar días anteriores en el calendario.
+     */
+    public Date getToday() {
+        return new Date();
     }
 
-    private String obtenerMensajeError() {
-        if (fecha == null) return "Debe seleccionar una fecha.";
-        if (fecha.getDayOfWeek() == DayOfWeek.SUNDAY) return "No se pueden agendar citas los domingos.";
-        if (fecha.isBefore(LocalDate.now())) return "No se pueden agendar citas en fechas pasadas.";
-        if (hora == null) return "Debe seleccionar una hora.";
-        if (motivo == null || motivo.trim().isEmpty()) return "Debe indicar un motivo.";
-        return "Complete todos los campos correctamente.";
+    public Date getFechaSeleccionada() {
+        return fechaSeleccionada;
     }
 
-    private void cargarFechasDisponibles() {
-        fechasDisponibles = new ArrayList<>();
-        LocalDate hoy = LocalDate.now();
-        for (int i = 1; i <= 30; i++) {
-            LocalDate f = hoy.plusDays(i);
-            if (f.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                fechasDisponibles.add(f);
-            }
-        }
+    public void setFechaSeleccionada(Date fechaSeleccionada) {
+        this.fechaSeleccionada = fechaSeleccionada;
     }
 
-    public void onDateSelect() {
-        cargarHorasDisponibles();
-        if (fecha != null) {
-            String mensaje = fecha.getDayOfWeek() == DayOfWeek.SATURDAY ?
-                    "Horario de sábado: 10:00 - 14:00" :
-                    "Horario: 10:00 - 20:00";
-            showToastMessage("info", "Horario", mensaje);
-        }
+    public String getHoraSeleccionada() {
+        return horaSeleccionada;
     }
 
-    private void cargarHorasDisponibles() {
-        horasDisponibles = new ArrayList<>();
-        if (fecha == null) return;
-        if (fecha.getDayOfWeek() == DayOfWeek.SATURDAY) {
-            String[] sabado = {"10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"};
-            for (String h : sabado) horasDisponibles.add(h);
-        } else {
-            for (int h = 10; h < 20; h++) {
-                horasDisponibles.add(h + ":00");
-                horasDisponibles.add(h + ":30");
-            }
-        }
+    public void setHoraSeleccionada(String horaSeleccionada) {
+        this.horaSeleccionada = horaSeleccionada;
     }
 
-    private void showToastMessage(String severity, String summary, String detail) {
-        PrimeFaces.current().executeScript(
-                "PrimeFaces.toast.show({severity: '" + severity + "', summary: '" + summary +
-                        "', detail: '" + detail + "', life: 5000});"
-        );
+    public String getMotivoSeleccionado() {
+        return motivoSeleccionado;
     }
 
-    private void limpiarFormulario() {
-        fecha = null;
-        hora = null;
-        motivo = null;
-        horasDisponibles = null;
+    public void setMotivoSeleccionado(String motivoSeleccionado) {
+        this.motivoSeleccionado = motivoSeleccionado;
     }
 
-    private void cargarCitasRegistradas() {
-        citasRegistradas = ServiceLocator.getInstanceCitaDAO().obtenerTodos();
+    public List<SelectItem> getHorasDelDia() {
+        return horasDelDia;
     }
 
-    public List<Paciente> getPacientesDisponibles() {
-        if (pacientesDisponibles == null) {
-            pacientesDisponibles = ServiceLocator.getInstancePacienteDAO().findAll();
-        }
-        return pacientesDisponibles;
+    public void setHorasDelDia(List<SelectItem> horasDelDia) {
+        this.horasDelDia = horasDelDia;
     }
-
-    public Integer getPacienteSeleccionadoId() {
-        return pacienteSeleccionadoId;
-    }
-
-    public void setPacienteSeleccionadoId(Integer pacienteSeleccionadoId) {
-        this.pacienteSeleccionadoId = pacienteSeleccionadoId;
-    }
-
-
-    // Getters y setters
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-        if (fecha != null) cargarHorasDisponibles();
-    }
-
-    public String getHora() { return hora; }
-    public void setHora(String hora) { this.hora = hora; }
-
-    public String getMotivo() { return motivo; }
-    public void setMotivo(String motivo) { this.motivo = motivo; }
-
-    public Paciente getPaciente() { return paciente; }
-    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
-
-    public List<String> getHorasDisponibles() { return horasDisponibles; }
-    public List<LocalDate> getFechasDisponibles() { return fechasDisponibles; }
-    public List<Cita> getCitasRegistradas() { return citasRegistradas; }
 }

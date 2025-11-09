@@ -18,8 +18,10 @@ public class DelegatePaciente {
         return  paciente;
     }
 
-    public void saveUsario(Paciente usuario) {
-        ServiceLocator.getInstancePacienteDAO().save(usuario);
-    }
+        public void saveUsuario(Paciente usuario) { // <-- También corregí el nombre del método
+            ServiceLocator.getInstancePacienteDAO().save(usuario);
+        }
+
+
 }
 
