@@ -13,6 +13,8 @@ import mx.softdentist.entidad.Empleado;
 import mx.softdentist.entidad.Mensaje;
 import mx.softdentist.entidad.Paciente;
 
+// Agregando PBI-MSJ-US1 y PBI-MSJ-US2 a Desarrollo
+
 @Named(value = "chatBean")
 @ViewScoped
 public class ChatBean implements Serializable {
