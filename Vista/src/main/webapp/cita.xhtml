@@ -43,6 +43,13 @@
             margin-top: 5px;
             font-style: italic;
         }
+
+        .paciente-info {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
     </style>
 </h:head>
 
@@ -70,19 +77,10 @@
                 <h:form id="citaForm">
                     <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
 
-                        <!-- Paciente -->
+                        <!-- Paciente actual (solo se muestra, no se selecciona) -->
                         <h:panelGroup>
-                            <p:outputLabel for="paciente" value="Paciente: *" />
-                            <p:selectOneMenu id="paciente"
-                                             value="#{citaBean.pacienteSeleccionadoId}"
-                                             required="true"
-                                             requiredMessage="Debe seleccionar un paciente.">
-                                <f:selectItem itemLabel="Seleccione un paciente" itemValue="#{null}" />
-                                <f:selectItems value="#{citaBean.pacientesDisponibles}" var="p"
-                                               itemLabel="#{p.nombre} #{p.apellido}"
-                                               itemValue="#{p.id}" />
-                            </p:selectOneMenu>
-                            <p:message for="paciente" />
+                            <h:outputText value="Paciente:" styleClass="paciente-info" />
+                            <h:outputText value="#{sessionScope['usuarioLogueado'].nombre} #{sessionScope['usuarioLogueado'].apellido}" />
                         </h:panelGroup>
 
                         <!-- Fecha -->

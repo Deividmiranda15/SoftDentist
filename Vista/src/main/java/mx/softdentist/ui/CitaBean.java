@@ -1,22 +1,24 @@
 package mx.softdentist.ui;
 
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import mx.softdentist.entidad.Cita;
 import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
-import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-@Named
+@Named("citaBean")
 @ViewScoped
 public class CitaBean implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -24,12 +26,10 @@ public class CitaBean implements Serializable {
     private LocalDate fecha;
     private String hora;
     private String motivo;
-    private Paciente paciente;
+
     private List<String> horasDisponibles;
     private List<LocalDate> fechasDisponibles;
     private List<Cita> citasRegistradas;
-    private List<Paciente> pacientesDisponibles;
-    private Integer pacienteSeleccionadoId;
     private Cita citaSeleccionada;
 
     public CitaBean() {
@@ -37,12 +37,20 @@ public class CitaBean implements Serializable {
         cargarCitasRegistradas();
     }
 
+    // --- Solicitar cita asociada al paciente en sesión ---
     public void solicitarCita() {
+        FacesContext context = FacesContext.getCurrentInstance();
+
         try {
-            if (pacienteSeleccionadoId == null) {
-                showToastMessage("error", "Error de Validación", "Debe seleccionar un paciente.");
+            Paciente pacienteLogueado = (Paciente) context.getExternalContext().getSessionMap().get("usuarioLogueado");
+
+            if (pacienteLogueado == null) {
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "Error de sesión", "No se encontró el paciente autenticado. Inicie sesión nuevamente."));
                 return;
             }
+
+            // Validaciones
             if (fecha == null) {
                 showToastMessage("error", "Error de Validación", "Debe seleccionar una fecha.");
                 return;
@@ -64,24 +72,19 @@ public class CitaBean implements Serializable {
                 return;
             }
 
-            Paciente pacienteSeleccionado = ServiceLocator.getInstancePacienteDAO()
-                    .find(pacienteSeleccionadoId)
-                    .orElse(null);
-            if (pacienteSeleccionado == null) {
-                showToastMessage("error", "Error", "El paciente seleccionado no es válido.");
-                return;
-            }
-
             Cita cita = new Cita();
             cita.setFecha(fecha);
             cita.setHora(LocalTime.parse(hora));
             cita.setMotivo(motivo);
             cita.setEstado("Pendiente");
-            cita.setIdPaciente(pacienteSeleccionado);
+
+            cita.setIdPaciente(pacienteLogueado);
 
             ServiceLocator.getInstanceCitaDAO().save(cita);
+
             showToastMessage("success", "¡Cita solicitada con éxito!",
                     "Su cita para el " + fecha + " a las " + hora + " ha sido registrada correctamente.");
+
             limpiarFormulario();
             cargarCitasRegistradas();
 
@@ -138,12 +141,20 @@ public class CitaBean implements Serializable {
         fecha = null;
         hora = null;
         motivo = null;
-        pacienteSeleccionadoId = null;
         horasDisponibles = null;
     }
 
     private void cargarCitasRegistradas() {
-        citasRegistradas = ServiceLocator.getInstanceCitaDAO().obtenerTodos();
+        FacesContext context = FacesContext.getCurrentInstance();
+        Paciente pacienteLogueado = (Paciente) context.getExternalContext().getSessionMap().get("usuarioLogueado");
+
+        if (pacienteLogueado == null) {
+            citasRegistradas = new ArrayList<>();
+            return;
+        }
+
+        citasRegistradas = ServiceLocator.getInstanceCitaDAO().obtenerPorPaciente(pacienteLogueado.getId());
+
         if (citasRegistradas != null) {
             citasRegistradas = citasRegistradas.stream()
                     .filter(c -> !"Cancelada".equalsIgnoreCase(c.getEstado()))
@@ -172,10 +183,10 @@ public class CitaBean implements Serializable {
         }
     }
 
-    public Integer getPacienteSeleccionadoId() { return pacienteSeleccionadoId; }
-    public void setPacienteSeleccionadoId(Integer pacienteSeleccionadoId) { this.pacienteSeleccionadoId = pacienteSeleccionadoId; }
+    // --- Getters y Setters ---
     public Cita getCitaSeleccionada() { return citaSeleccionada; }
     public void setCitaSeleccionada(Cita citaSeleccionada) { this.citaSeleccionada = citaSeleccionada; }
+
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
@@ -185,22 +196,10 @@ public class CitaBean implements Serializable {
     public void setHora(String hora) { this.hora = hora; }
     public String getMotivo() { return motivo; }
     public void setMotivo(String motivo) { this.motivo = motivo; }
-    public Paciente getPaciente() { return paciente; }
-    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+
     public List<String> getHorasDisponibles() { return horasDisponibles; }
     public List<LocalDate> getFechasDisponibles() { return fechasDisponibles; }
     public List<Cita> getCitasRegistradas() { return citasRegistradas; }
-
-    public List<Paciente> getPacientesDisponibles() {
-        if (pacientesDisponibles == null) {
-            pacientesDisponibles = ServiceLocator.getInstancePacienteDAO().obtenerTodos();
-        }
-        return pacientesDisponibles;
-    }
-
-    public void setPacientesDisponibles(List<Paciente> pacientesDisponibles) {
-        this.pacientesDisponibles = pacientesDisponibles;
-    }
 
     public Date getManana() {
         LocalDate manana = LocalDate.now().plusDays(1);

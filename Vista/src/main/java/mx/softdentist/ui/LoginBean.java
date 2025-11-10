@@ -19,6 +19,8 @@ public class LoginBean {
     private String correo;
     private String password;
 
+    private Paciente pacienteLogueado; // 🔹 Nuevo atributo para usar en cita.xhtml
+
     private transient AdministradorDAO administradorDAO;
     private transient EmpleadoDAO empleadoDAO;
     private transient PacienteDAO pacienteDAO;
@@ -30,99 +32,82 @@ public class LoginBean {
     }
 
     public String iniciarSesion() {
-        System.out.println("--- INICIO DE SESIÓN INTENTADO ---");
-        System.out.println("Correo ingresado: " + this.correo);
+        FacesContext context = FacesContext.getCurrentInstance();
 
-        // --- Intento 1: Iniciar sesión como Administrador ---
+        System.out.println("Intentando iniciar sesión con correo: " + correo);
+
+        // --- Intento 1: Administrador ---
         try {
-            System.out.println("1. Verificando como Administrador...");
-            Administrador admin = administradorDAO.findByCorreo(this.correo);
-
-            if (admin != null) { // Administrador SÍ fue encontrado
-                System.out.println("Resultado: Administrador ENCONTRADO.");
-                if (admin.getPassword().equals(this.password)) {
-                    System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_admin...");
+            Administrador admin = administradorDAO.findByCorreo(correo);
+            if (admin != null) {
+                if (admin.getPassword().equals(password)) {
+                    context.getExternalContext().getSessionMap().put("usuarioLogueado", admin);
+                    context.getExternalContext().getSessionMap().put("tipoUsuario", "administrador");
                     return "inicio_admin?faces-redirect=true";
                 } else {
-                    System.out.println("Resultado: Contraseña INCORRECTA para Admin.");
-                    // DETENERSE: Usuario encontrado, pero contraseña incorrecta.
-                    FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Correo o contraseña incorrectos."));
-                    return null; // Detiene el proceso, no intentes como Empleado o Paciente
+                    mostrarError("Correo o contraseña incorrectos.");
+                    return null;
                 }
-            } else {
-                System.out.println("Resultado: Administrador NO encontrado. Intentando como Empleado...");
             }
         } catch (Exception e) {
-            System.out.println("ERROR al verificar como Administrador: " + e.getMessage());
+            System.err.println("Error verificando Administrador: " + e.getMessage());
         }
 
-        // --- Intento 2: Iniciar sesión como Empleado ---
-        // (Solo se llega aquí si admin == null)
+        // --- Intento 2: Empleado ---
         try {
-            System.out.println("2. Verificando como Empleado...");
-            Empleado empleado = empleadoDAO.findByCorreo(this.correo);
-
-            if (empleado != null) { // Empleado SÍ fue encontrado
-                System.out.println("Resultado: Empleado ENCONTRADO: " + empleado.getNombre());
-                if (empleado.getPassword().equals(this.password)) {
-                    System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_emp...");
+            Empleado empleado = empleadoDAO.findByCorreo(correo);
+            if (empleado != null) {
+                if (empleado.getPassword().equals(password)) {
+                    context.getExternalContext().getSessionMap().put("usuarioLogueado", empleado);
+                    context.getExternalContext().getSessionMap().put("tipoUsuario", "empleado");
                     return "inicio_emp?faces-redirect=true";
                 } else {
-                    System.out.println("Resultado: Contraseña INCORRECTA para Empleado.");
-                    // DETENERSE: Usuario encontrado, pero contraseña incorrecta.
-                    FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Correo o contraseña incorrectos."));
-                    return null; // Detiene el proceso
+                    mostrarError("Correo o contraseña incorrectos.");
+                    return null;
                 }
-            } else {
-                System.out.println("Resultado: Empleado NO encontrado. Intentando como Paciente...");
             }
         } catch (Exception e) {
-            System.out.println("ERROR al verificar como Empleado: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error verificando Empleado: " + e.getMessage());
         }
 
-        // --- Intento 3: Iniciar sesión como Paciente ---
+        // --- Intento 3: Paciente ---
         try {
-            System.out.println("3. Verificando como Paciente...");
-            Paciente paciente = pacienteDAO.findByCorreo(this.correo);
-
+            Paciente paciente = pacienteDAO.findByCorreo(correo);
             if (paciente != null) {
-                System.out.println("Resultado: Paciente ENCONTRADO.");
+                if (paciente.getPassword().equals(password)) {
+                    this.pacienteLogueado = paciente; // 🔹 Guardar para uso en cita.xhtml
 
-                if (paciente.getPassword().equals(this.password)) {
-                    System.out.println("Resultado: Contraseña CORRECTA. Redirigiendo a inicio_paciente...");
-
-                    // --- ¡ESTA ES LA LÍNEA QUE DEBES DESCOMENTAR! ---
-                    // Asegúrate de que no tenga los '//' al principio
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuarioLogueado", paciente);
+                    // 🔹 Guardar también en sesión
+                    context.getExternalContext().getSessionMap().put("usuarioLogueado", paciente);
+                    context.getExternalContext().getSessionMap().put("tipoUsuario", "paciente");
 
                     return "inicio_paciente?faces-redirect=true";
                 } else {
-                    System.out.println("Resultado: Contraseña INCORRECTA para Paciente.");
-                    FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Correo o contraseña incorrectos."));
+                    mostrarError("Correo o contraseña incorrectos.");
                     return null;
                 }
-            } else {
-                System.out.println("Resultado: Paciente NO encontrado en la base de datos.");
             }
         } catch (Exception e) {
-            System.out.println("ERROR al verificar como Paciente: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error verificando Paciente: " + e.getMessage());
         }
 
-        // --- Si todos los intentos fallan (ningún usuario encontrado con ese correo) ---
-        System.out.println("--- FIN DE SESIÓN: FALLIDO (Correo no existe en ninguna tabla) ---");
+        // --- Si no coincide con ninguno ---
+        mostrarError("Correo o contraseña incorrectos.");
+        return null;
+    }
+
+    private void mostrarError(String mensaje) {
         FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Correo o contraseña incorrectos."));
-        return null; // Se queda en la misma página (login.xhtml)
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", mensaje));
     }
 
     // --- Getters y Setters ---
     public String getCorreo() { return correo; }
     public void setCorreo(String correo) { this.correo = correo; }
+
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public Paciente getPacienteLogueado() { return pacienteLogueado; }
+    public void setPacienteLogueado(Paciente pacienteLogueado) { this.pacienteLogueado = pacienteLogueado; }
 }

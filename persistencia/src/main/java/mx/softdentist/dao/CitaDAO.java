@@ -21,6 +21,15 @@ public class CitaDAO extends AbstractDAO<Cita> {
                 .getResultList();
     }
 
+    public List<Cita> obtenerPorPaciente(Integer idPaciente) {
+        return entityManager.createQuery(
+                        "SELECT c FROM Cita c WHERE c.idPaciente.id = :idPaciente ORDER BY c.fecha DESC, c.hora DESC",
+                        Cita.class)
+                .setParameter("idPaciente", idPaciente)
+                .getResultList();
+    }
+
+
     public void cancelarCita(Integer idCita) {
         Cita cita = getEntityManager().find(Cita.class, idCita);
         if (cita != null) {
