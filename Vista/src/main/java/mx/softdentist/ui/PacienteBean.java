@@ -1,42 +1,43 @@
 package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Named;
-import mx.softdentist.entidad.Paciente;
-import mx.softdentist.integration.ServiceLocator;
-import mx.softdentist.dao.PacienteDAO;
-
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
+import mx.softdentist.entidad.Paciente;
+import mx.softdentist.dao.PacienteDAO;
+import mx.softdentist.integration.ServiceLocator;
+
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Named("pacienteBean")
 @ViewScoped
-public class PacienteBean implements Serializable{
+public class PacienteBean implements Serializable {
 
     private Paciente nuevoPaciente;
     private List<Paciente> listaPacientes;
-    private PacienteDAO pacienteDAO;
+    private Paciente pacienteAEditar;
 
     public PacienteBean() {
-        pacienteDAO = ServiceLocator.getInstancePacienteDAO();
         nuevoPaciente = new Paciente();
-        listaPacientes = new ArrayList<>();
+        pacienteAEditar = new Paciente();
     }
 
     @PostConstruct
     public void init() {
-        listaPacientes = pacienteDAO.obtenerTodos();
+        PacienteDAO dao = ServiceLocator.getInstancePacienteDAO();
+        listaPacientes = dao.obtenerTodos();
     }
 
     public void guardarPaciente() {
         try {
-            pacienteDAO.save(nuevoPaciente);
-            listaPacientes = pacienteDAO.obtenerTodos(); // refresca tabla
+            PacienteDAO dao = ServiceLocator.getInstancePacienteDAO();
+            dao.save(nuevoPaciente);
+
+            listaPacientes = dao.obtenerTodos(); // refresca tabla
             nuevoPaciente = new Paciente(); // limpia formulario
 
             //mensaje de exito
@@ -45,6 +46,7 @@ public class PacienteBean implements Serializable{
 
             // mensaje de exito
             addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente registrado correctamente.");
+
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -63,23 +65,54 @@ public class PacienteBean implements Serializable{
 
     public String irAEditar(Paciente p) {
         // Este es para luego hacer la modificacion con un editarPaciente.xhtml
-        return "editarPaciente.xhtml?faces-redirect=true&id=" + p.getId();
+        return "modificacion_pacientes.xhtml?faces-redirect=true&id=" + p.getId();
+    }
+
+    public void cargarDatosParaEditar() {
+        Map<String, String> params = FacesContext.getCurrentInstance()
+                .getExternalContext().getRequestParameterMap();
+        String idParam = params.get("id");
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                PacienteDAO dao = ServiceLocator.getInstancePacienteDAO();
+                this.pacienteAEditar = dao.find(id).orElse(new Paciente());
+            } catch (NumberFormatException e) {
+                addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "ID de paciente inválido.");
+            }
+        }
+    }
+
+    public String actualizarPaciente() {
+        try {
+            PacienteDAO dao = ServiceLocator.getInstancePacienteDAO();
+            dao.update(pacienteAEditar);
+            return "pacientes.xhtml?faces-redirect=true";
+        } catch (Exception e) {
+            e.printStackTrace();
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar.");
+            return null;
+        }
     }
 
     // Getters y setters
     public Paciente getNuevoPaciente() {
         return nuevoPaciente;
     }
-
     public void setNuevoPaciente(Paciente nuevoPaciente) {
         this.nuevoPaciente = nuevoPaciente;
     }
-
     public List<Paciente> getListaPacientes() {
         return listaPacientes;
     }
-
     public void setListaPacientes(List<Paciente> listaPacientes) {
         this.listaPacientes = listaPacientes;
+    }
+    public Paciente getPacienteAEditar() {
+        return pacienteAEditar;
+    }
+    public void setPacienteAEditar(Paciente pacienteAEditar) {
+        this.pacienteAEditar = pacienteAEditar;
     }
 }
