@@ -2,10 +2,12 @@ package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import mx.softdentist.entidad.Empleado;
-import mx.softdentist.dao.EmpleadoDAO; // Seguimos usando el DAO
-import mx.softdentist.integration.ServiceLocator; // Seguimos usando el ServiceLocator
+import mx.softdentist.facade.FacadeEmpleado;
+import mx.softdentist.integration.ServiceLocator;
+import mx.softdentist.dao.EmpleadoDAO;
 
 import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
@@ -18,17 +20,22 @@ import java.util.Map;
 @ViewScoped
 public class EmpleadoBean implements Serializable {
 
-    // --- ATRIBUTOS ---
+    private FacadeEmpleado facadeEmpleado;
+@Named("empleadoBean")
+@RequestScoped
     private Empleado nuevoEmpleado;
     private List<Empleado> listaEmpleados;
+    private EmpleadoDAO empleadoDAO;
     private List<String> puestosDisponibles;
     private Empleado empleadoAEditar;
 
     public EmpleadoBean() {
-
+        empleadoDAO = ServiceLocator.getInstanceEmpleadoDAO();
         nuevoEmpleado = new Empleado();
         empleadoAEditar = new Empleado();
+        listaEmpleados = new ArrayList<>();
 
+        // Puestos para empleados
         puestosDisponibles = new ArrayList<>();
         puestosDisponibles.add("Dentista");
         puestosDisponibles.add("Asistente Dental");
@@ -38,19 +45,18 @@ public class EmpleadoBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        //obtenemos el DAO aquí
-        EmpleadoDAO dao = ServiceLocator.getInstanceEmpleadoDAO();
-        listaEmpleados = dao.obtenerTodos();
+        facadeEmpleado = new FacadeEmpleado();
+        listaEmpleados = facadeEmpleado.consultarTodosLosEmpleados();
+        listaEmpleados = empleadoDAO.obtenerTodos();
     }
 
     public void guardarEmpleado() {
         try {
-
-            EmpleadoDAO dao = ServiceLocator.getInstanceEmpleadoDAO();
-            dao.save(nuevoEmpleado);
-            listaEmpleados = dao.obtenerTodos(); // refresca tabla
+            empleadoDAO.save(nuevoEmpleado);
+            listaEmpleados = empleadoDAO.obtenerTodos(); // refresca tabla
             nuevoEmpleado = new Empleado(); // limpia formulario
-            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Empleado registrado.");
+            // mensaje de exito
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Empleado registrado correctamente.");
         } catch (Exception e) {
             e.printStackTrace();
             addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar.");
