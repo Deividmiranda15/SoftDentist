@@ -8,7 +8,6 @@ import mx.softdentist.entidad.Paciente;
 
 import java.util.List;
 
-
 public class PacienteDAO extends AbstractDAO<Paciente> {
     private final EntityManager entityManager;
 
@@ -17,7 +16,7 @@ public class PacienteDAO extends AbstractDAO<Paciente> {
         this.entityManager = em;
     }
 
-    public List<Paciente> obtenerTodos(){
+    public List<Paciente> obtenerTodos() {
         return entityManager
                 .createQuery("SELECT a FROM Paciente a", Paciente.class)
                 .getResultList();
@@ -25,13 +24,19 @@ public class PacienteDAO extends AbstractDAO<Paciente> {
 
     public Paciente findByCorreo(String correo) {
         try {
-            // Se usa 'p.correo' que debe coincidir con el campo en tu entidad Paciente.java
             TypedQuery<Paciente> query = getEntityManager().createQuery(
                     "SELECT p FROM Paciente p WHERE p.correo = :correoParam", Paciente.class);
             query.setParameter("correoParam", correo);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            // Si no se encuentra, devuelve null.
+            return null;
+        }
+    }
+
+    public Paciente buscarPorId(int idPaciente) {
+        try {
+            return entityManager.find(Paciente.class, idPaciente);
+        } catch (Exception e) {
             return null;
         }
     }

@@ -9,6 +9,7 @@ import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
 import org.primefaces.PrimeFaces;
 
+import java.io.File;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -181,6 +182,55 @@ public class CitaBean implements Serializable {
             showToastMessage("error", "Error al cancelar", e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    // MÉTODO CORREGIDO - Sin ServletContext
+    public boolean isRecetaDisponible(Cita cita) {
+        if (cita == null || !"Completada".equals(cita.getEstado())) {
+            return false;
+        }
+
+        try {
+            // CORRECCIÓN: Usar getRealPath() en lugar de ServletContext
+            String realPath = FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getRealPath("/resources/recetas/");
+
+            if (realPath == null) {
+                return false;
+            }
+
+            String nombreArchivo = "receta_cita" + cita.getId() + ".pdf";
+            String rutaArchivo = realPath + File.separator + nombreArchivo;
+
+            File archivo = new File(rutaArchivo);
+            return archivo.exists() && archivo.isFile();
+        } catch (Exception e) {
+            System.err.println("Error en isRecetaDisponible: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void descargarReceta(Cita cita) {
+        try {
+            if (!isRecetaDisponible(cita)) {
+                showToastMessage("warn", "Receta no disponible",
+                        "La receta para esta cita no está disponible aún.");
+                return;
+            }
+            // La descarga se maneja automáticamente con el link
+        } catch (Exception e) {
+            showToastMessage("error", "Error", "No se pudo descargar la receta.");
+            e.printStackTrace();
+        }
+    }
+
+    public String getRutaReceta(Cita cita) {
+        if (!isRecetaDisponible(cita)) {
+            return "#";
+        }
+        return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() +
+                "/resources/recetas/receta_cita" + cita.getId() + ".pdf";
     }
 
     // --- Getters y Setters ---

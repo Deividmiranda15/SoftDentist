@@ -40,11 +40,43 @@ public class CitaDAO extends AbstractDAO<Cita> {
         }
     }
 
+    public void update(Cita cita) {
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.merge(cita);
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public EntityManager getEntityManager() {
         return entityManager;
     }
+    public List<Cita> obtenerTodasConPacientes() {
+        return entityManager
+                .createQuery("SELECT c FROM Cita c " +
+                        "LEFT JOIN FETCH c.idPaciente " +
+                        "LEFT JOIN FETCH c.idEmpleado " +
+                        "ORDER BY c.fecha ASC, c.hora ASC", Cita.class)
+                .getResultList();
+    }
 
+    public List<Cita> obtenerPorPacienteConDetalles(Integer idPaciente) {
+        return entityManager.createQuery(
+                        "SELECT c FROM Cita c " +
+                                "LEFT JOIN FETCH c.idPaciente " +
+                                "LEFT JOIN FETCH c.idEmpleado " +
+                                "WHERE c.idPaciente.id = :idPaciente " +
+                                "ORDER BY c.fecha DESC, c.hora DESC",
+                        Cita.class)
+                .setParameter("idPaciente", idPaciente)
+                .getResultList();
+    }
     public List<Cita> findCitasByPacienteId(int idPaciente) {
         return entityManager
                 .createQuery("SELECT c FROM Cita c WHERE c.idPaciente.id = :pacienteId ORDER BY c.fecha DESC", Cita.class)

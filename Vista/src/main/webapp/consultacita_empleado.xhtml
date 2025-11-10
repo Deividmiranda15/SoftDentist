@@ -1,89 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-
-<header>
-    <div class="top-bar">
-        <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
-    </div>
-    <nav class="main-nav">
-        <p:link outcome="inicio_admin" value="INICIO" />
-        <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
-        <p:link outcome="consultacita_empleado" value="Consulta Citas" styleClass="active" />
-        <a href="#">CORTE DE CAJA</a>
-    </nav>
-</header>
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <h:head>
-    <title>Consulta de Citas</title>
+    <title>Consulta de Citas - SoftDentist</title>
     <h:outputStylesheet name="css/patrondental.css" />
     <style>
-        body { background-color: #e0f2f1; font-family: 'Poppins', sans-serif; }
-        .main-container { max-width: 900px; margin: 30px auto; padding: 20px; }
-        .page-title { color: #00695c; text-align: center; margin-bottom: 30px; }
-        .cards-container { display: flex; flex-direction: column; gap: 15px; }
+        body {
+            background-color: #e0f2f1;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-container {
+            max-width: 950px;
+            margin: 40px auto;
+            padding: 25px;
+        }
+
+        .page-title {
+            color: #00695c;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 28px;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         .cita-card {
-            background-color: #80cbc4; border-radius: 12px; padding: 15px 20px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1); display: flex; align-items: center;
-            color: #004d40; position: relative;
+            background-color: #80cbc4;
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            color: #004d40;
+            position: relative;
+            justify-content: space-between;
         }
-        .cita-avatar {
-            background-color: #f8bbd0; width: 45px; height: 45px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            margin-right: 15px; font-size: 1.5rem;
+
+        .cita-info {
+            font-weight: 500;
+            font-size: 1.05rem;
         }
-        .cita-info { font-weight: 500; font-size: 1.05rem; }
-        .cita-date { position: absolute; top: 10px; right: 15px; font-size: 0.8rem; opacity: 0.8; }
-        .cita-info .estado {
-            font-weight: 700; /* Lo pone en negrita */
+
+        .estado {
+            font-weight: 700;
             color: #004d40;
             opacity: 0.9;
+        }
+
+        .btn-receta {
+            background-color: #00796b !important;
+            border: none !important;
+            color: white !important;
+            padding: 8px 14px !important;
+            border-radius: 8px !important;
+            font-weight: 600;
         }
     </style>
 </h:head>
 
 <h:body>
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;" />
+        </div>
+        <nav class="main-nav">
+            <p:link outcome="inicio_admin" value="INICIO" />
+            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
+            <p:link outcome="consultacita_empleado" value="CONSULTA CITAS" styleClass="active" />
+            <a href="#">CORTE DE CAJA</a>
+        </nav>
+    </header>
+
     <main class="main-container">
         <h2 class="page-title">Citas Programadas</h2>
 
-        <div class="cards-container">
-            <ui:repeat value="#{citaConsultaBean.listaCitas}" var="c">
-                <div class="cita-card">
-                    <div class="cita-avatar">👤</div>
-                    <div class="cita-info">
-                        <h:outputText value="#{c.idPaciente.nombre} #{c.idPaciente.apellido}" />
-                        -
-                        <h:outputText value="#{c.fecha}">
-                            <f:convertDateTime type="localDate" pattern="dd 'de' MMMM" locale="es_MX"/>
-                        </h:outputText>
-                        -
-                        <h:outputText value="#{c.hora}">
-                            <f:convertDateTime type="localTime" pattern="h:mm a" locale="es_MX"/>
-                        </h:outputText>
-                        -
-                        <h:outputText value="#{c.motivo}" />
+        <h:form id="formCitas">
+            <div class="cards-container">
+                <ui:repeat value="#{citaEmpleadoBean.citas}" var="c">
+                    <div class="cita-card">
+                        <div class="cita-info">
+                            <h:outputText value="#{citaEmpleadoBean.obtenerNombrePaciente(c.idPaciente)}" />
 
-                        -
-                        <h:outputText value="#{c.estado}" styleClass="estado"/>
+                            <h:outputText value="#{c.fecha}" />
+                            -
+                            <h:outputText value="#{c.hora}" />
+                            -
+                            <h:outputText value="#{c.motivo}" />
+                            -
+                            <h:outputText value="#{c.estado}" styleClass="estado" />
+                        </div>
 
+                        <p:commandButton value="Generar Receta"
+                                         icon="pi pi-file-pdf"
+                                         styleClass="btn-receta"
+                                         rendered="#{c.estado ne 'Completada'}"
+                                         actionListener="#{citaEmpleadoBean.setCitaSeleccionada(c)}"
+                                         oncomplete="PF('dlgReceta').show()"
+                                         update=":formReceta" />
                     </div>
-                    <div class="cita-date">
-                        <h:outputText value="#{c.fecha}">
-                            <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
-                        </h:outputText>
-                    </div>
-                </div>
-            </ui:repeat>
+                </ui:repeat>
 
-            <h:panelGroup rendered="#{empty citaConsultaBean.listaCitas}">
-                <div style="text-align: center; padding: 20px; color: #666;">
-                    <h3>No hay citas registradas.</h3>
-                </div>
-            </h:panelGroup>
-        </div>
+                <h:panelGroup rendered="#{empty citaEmpleadoBean.citas}">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        <h3>No hay citas registradas.</h3>
+                    </div>
+                </h:panelGroup>
+            </div>
+        </h:form>
+
+        <!-- Diálogo para escribir observaciones -->
+        <p:dialog header="Generar Receta Médica" widgetVar="dlgReceta" modal="true" closable="true">
+            <h:form id="formReceta">
+                <p:outputLabel value="Observaciones:"/>
+                <p:inputTextarea value="#{citaEmpleadoBean.observaciones}" rows="5" cols="45" autoResize="true"/>
+
+                <p:commandButton value="Generar"
+                                 icon="pi pi-check"
+                                 actionListener="#{citaEmpleadoBean.generarReceta}"
+                                 update=":formCitas"
+                                 oncomplete="PF('dlgReceta').hide()" />
+            </h:form>
+        </p:dialog>
     </main>
 </h:body>
 </html>
