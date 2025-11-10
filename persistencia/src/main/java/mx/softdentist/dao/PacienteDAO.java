@@ -25,13 +25,11 @@ public class PacienteDAO extends AbstractDAO<Paciente> {
 
     public Paciente findByCorreo(String correo) {
         try {
-            // Se usa 'p.correo' que debe coincidir con el campo en tu entidad Paciente.java
             TypedQuery<Paciente> query = getEntityManager().createQuery(
                     "SELECT p FROM Paciente p WHERE p.correo = :correoParam", Paciente.class);
             query.setParameter("correoParam", correo);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            // Si no se encuentra, devuelve null.
             return null;
         }
     }
