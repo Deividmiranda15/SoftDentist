@@ -98,11 +98,10 @@
                                         <div class="custom-table-cell">#{e.correo}</div>
                                         <div class="custom-table-actions">
                                             <p:commandButton icon="pi pi-pencil" title="Editar"
+                                                             type="button"
                                                              styleClass="ui-button-warning ui-button-flat"
-                                                             action="#{empleadoBean.irAEditar(e)}"
-                                                             ajax="false" />
+                                                             onclick="window.open('modificacion_empleados.xhtml?id=#{e.id}', 'EdicionEmpleado', 'width=800,height=600,top=100,left=100,scrollbars=yes,resizable=yes');" />
 
-                                            <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
                                         </div>
                                     </div>
                                 </ui:repeat>

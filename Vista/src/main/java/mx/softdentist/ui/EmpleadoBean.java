@@ -85,17 +85,15 @@ public class EmpleadoBean implements Serializable {
     }
 
 
-    public String actualizarEmpleado() {
+    public void actualizarEmpleado() {
         try {
-
             EmpleadoDAO dao = ServiceLocator.getInstanceEmpleadoDAO();
             dao.update(empleadoAEditar);
-
-            return "empleados.xhtml?faces-redirect=true";
+            // Ya no retornamos nada, solo actualizamos los datos.
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Empleado actualizado correctamente.");
         } catch (Exception e) {
             e.printStackTrace();
             addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar.");
-            return null;
         }
     }
 

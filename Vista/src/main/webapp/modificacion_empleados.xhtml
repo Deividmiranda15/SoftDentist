@@ -57,7 +57,8 @@
 
                         <p:commandButton value="Guardar Cambios"
                                          action="#{empleadoBean.actualizarEmpleado}"
-                                         ajax="false"
+                                         update="@form"
+                                         oncomplete="if (args &amp;&amp; !args.validationFailed) { if(window.opener){window.opener.location.reload();} window.close(); }"
                                          style="width: 100%; margin-top: 10px;" />
                     </p:panelGrid>
                 </h:form>
