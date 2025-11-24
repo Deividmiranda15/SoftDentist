@@ -16,6 +16,18 @@
     <header>
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
+                                                       styleClass="btn-logout"
+                                                       title="Cerrar Sesión">
+
+                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                style="height: 25px; width: 25px;"
+                                alt="Cerrar Sesión"/>
+            </p:commandLink>
+            </h:form>
         </div>
         <nav class="main-nav">
             <!-- Navegación actualizada con p:link -->

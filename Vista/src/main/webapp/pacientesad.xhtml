@@ -21,6 +21,18 @@
     <header>
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
+                                                       styleClass="btn-logout"
+                                                       title="Cerrar Sesión">
+
+                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                style="height: 25px; width: 25px;"
+                                alt="Cerrar Sesión"/>
+            </p:commandLink>
+            </h:form>
         </div>
         <nav class="main-nav">
             <p:link outcome="inicio_admin" value="INICIO" />
@@ -96,8 +108,11 @@
                                         <div class="custom-table-cell">#{p.telefono}</div>
                                         <div class="custom-table-cell">#{p.correo}</div>
                                         <div class="custom-table-actions">
-                                            <p:commandButton icon="pi pi-pencil" title="Editar" styleClass="ui-button-warning ui-button-flat" />
-                                            <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
+                                            <p:commandButton icon="pi pi-pencil"
+                                                             title="Editar"
+                                                             type="button"
+                                                             styleClass="ui-button-warning ui-button-flat"
+                                                             onclick="window.open('modificacion_pacientes.xhtml?id=#{p.id}', 'EdicionPaciente', 'width=800,height=600,top=100,left=100,scrollbars=yes,resizable=yes');" />                                            <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
                                         </div>
                                     </div>
                                 </ui:repeat>

@@ -6,7 +6,7 @@ import jakarta.inject.Named;
 import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
 import mx.softdentist.dao.PacienteDAO;
-
+import java.util.Map;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -21,10 +21,13 @@ public class PacienteBean implements Serializable{
     private Paciente nuevoPaciente;
     private List<Paciente> listaPacientes;
     private PacienteDAO pacienteDAO;
+    private Paciente pacienteAEditar;
 
     public PacienteBean() {
         pacienteDAO = ServiceLocator.getInstancePacienteDAO();
         nuevoPaciente = new Paciente();
+        listaPacientes = new ArrayList<>();
+        pacienteAEditar = new Paciente();
         listaPacientes = new ArrayList<>();
     }
 
@@ -55,6 +58,30 @@ public class PacienteBean implements Serializable{
             addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al paciente. Intente de nuevo.");
         }
     }
+    public void cargarDatosParaEditar() {
+        Map<String, String> params = FacesContext.getCurrentInstance()
+                .getExternalContext().getRequestParameterMap();
+        String idParam = params.get("id");
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                // Usamos el DAO para buscar el paciente
+                this.pacienteAEditar = pacienteDAO.find(id).orElse(new Paciente());
+            } catch (NumberFormatException e) {
+                addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "ID de paciente inválido.");
+            }
+        }
+    }
+    public void actualizarPaciente() {
+        try {
+            pacienteDAO.update(pacienteAEditar);
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente actualizado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar.");
+        }
+    }
 
     private void addGlobalMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null,
@@ -82,4 +109,8 @@ public class PacienteBean implements Serializable{
     public void setListaPacientes(List<Paciente> listaPacientes) {
         this.listaPacientes = listaPacientes;
     }
+
+    public Paciente getPacienteAEditar() { return pacienteAEditar; }
+
+    public void setPacienteAEditar(Paciente pacienteAEditar) { this.pacienteAEditar = pacienteAEditar; }
 }
