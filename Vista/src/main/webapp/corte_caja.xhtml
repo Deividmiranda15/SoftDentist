@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corte de Caja - Dental Patron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <h:outputStylesheet name="css/patrondental.css" />
+</h:head>
+
+<h:body>
+    <p:growl id="messages" showDetail="true" life="4000" />
+
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
+                                                       styleClass="btn-logout"
+                                                       title="Cerrar Sesión">
+
+                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                style="height: 25px; width: 25px;"
+                                alt="Cerrar Sesión"/>
+            </p:commandLink>
+            </h:form>
+        </div>
+        <nav class="main-nav">
+            <p:link outcome="inicio_emp" value="INICIO"  />
+            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
+            <p:link outcome="consultacita_empleado.xhtml" value="CONSULTA DE CITAS"/>
+            <p:link outcome="corte_caja" value="CAJA" styleClass="active"/>
+            <p:link outcome="chat.xhtml" value="CHAT"/>
+        </nav>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="cards-wrapper">
+
+                <div class="card form-card">
+                    <h2>Registro de Pago en Efectivo</h2>
+                    <h:form id="formCaja">
+                        <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
+                                <p:inputText id="concepto" value="#{cajaBean.nuevoPago.concepto}" required="true" placeholder="Ej. Limpieza dental, Consulta..." />
+                            </h:panelGroup>
+
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="monto" value="Monto Recibido ($):" />
+                                <p:inputNumber id="monto" value="#{cajaBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
+                                               decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="paciente" value="Paciente:" />
+                                <p:inputText id="paciente" value="#{cajaBean.nuevoPago.nombrePaciente}" required="true" placeholder="Nombre del paciente" />
+                            </h:panelGroup>
+
+                            <h:panelGroup styleClass="ui-grid-col-12">
+                                <p:outputLabel for="fechaPago" value="Fecha del Pago:" />
+                                <p:datePicker id="fechaPago" value="#{cajaBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"/>
+                            </h:panelGroup>
+
+                            <p:commandButton value="Registrar Ingreso"
+                                             actionListener="#{cajaBean.guardarPago}"
+                                             update="formCaja :formConsulta:consultaContainer messages"
+                                             style="width: 100%; margin-top: 10px;"
+                                             icon="pi pi-wallet"/>
+                        </p:panelGrid>
+                    </h:form>
+                </div>
+
+                <div class="card table-card">
+                    <h2>Movimientos del Día</h2>
+                    <h:form id="formConsulta">
+                        <div class="search-bar">
+                            <p:inputText placeholder="Buscar concepto..." />
+                            <p:commandButton value="Buscar" />
+
+                            <p:commandButton value="Cerrar Caja" styleClass="ui-button-secondary" update="consultaContainer"
+                                             action="#{cajaBean.realizarCorte}" icon="pi pi-lock"/>
+                        </div>
+
+                        <h:panelGroup id="consultaContainer" layout="block">
+                            <div class="custom-table">
+                                <div class="custom-table-header">
+                                    <div>CONCEPTO</div>
+                                    <div>PACIENTE</div>
+                                    <div>MONTO</div>
+                                    <div style="text-align: right;">HORA</div>
+                                </div>
+
+                                <ui:repeat value="#{cajaBean.listaMovimientos}" var="m">
+                                    <div class="custom-table-row">
+                                        <div class="custom-table-cell">#{m.concepto}</div>
+                                        <div class="custom-table-cell">#{m.nombrePaciente}</div>
+                                        <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">
+                                            $#{m.monto}
+                                        </div>
+                                        <div class="custom-table-actions">
+                                            <h:outputText value="#{m.fecha}">
+                                                <f:convertDateTime pattern="HH:mm" />
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+
+                                <h:panelGroup rendered="#{empty cajaBean.listaMovimientos}">
+                                    <div class="empty-message">No hay movimientos registrados hoy.</div>
+                                </h:panelGroup>
+
+                                <div class="custom-table-row" style="background-color: #f8f9fa; font-weight: bold; border-top: 2px solid #ddd;">
+                                    <div class="custom-table-cell">TOTAL</div>
+                                    <div class="custom-table-cell"></div>
+                                    <div class="custom-table-cell">$#{cajaBean.totalDia}</div>
+                                    <div class="custom-table-cell"></div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </main>
+</h:body>
+</html>
