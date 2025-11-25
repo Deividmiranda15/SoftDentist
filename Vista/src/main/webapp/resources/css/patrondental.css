@@ -352,3 +352,20 @@ body {
 .btn-solicitar.ui-button:hover {
     background: #063a38;
 }
+
+/* Estilo para grid 2x2 en selección de motivos */
+.grid-motivos .ui-selectonebutton {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.grid-motivos .ui-selectonebutton > div {
+    flex: 1 0 45%; /* Cada botón ocupa aprox el 50% */
+    text-align: center;
+    margin: 0 !important;
+}
+
+.grid-motivos .ui-button {
+    width: 100%; /* El botón llena su contenedor */
+}
