@@ -8,7 +8,10 @@ import mx.softdentist.entidad.Cita;
 import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
 import org.primefaces.PrimeFaces;
-
+import mx.softdentist.entidad.Empleado;
+import mx.softdentist.dao.EmpleadoDAO;
+import java.util.stream.Collectors;
+import java.util.Map;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -31,13 +34,76 @@ public class CitaBean implements Serializable {
     private List<LocalDate> fechasDisponibles;
     private List<Cita> citasRegistradas;
     private Cita citaSeleccionada;
+    private Paciente pacienteObjetivo;
+    private Empleado dentistaSeleccionado;
+    private List<Empleado> listaDentistas;
 
     public CitaBean() {
         cargarFechasDisponibles();
         cargarCitasRegistradas();
     }
 
-    // --- Solicitar cita asociada al paciente en sesión ---
+    public void cargarDatosParaAgendar() {
+        Map<String, String> params = FacesContext.getCurrentInstance()
+                .getExternalContext().getRequestParameterMap();
+        String idParam = params.get("id");
+
+        cargarFechasDisponibles(); // Aseguramos que la utilidad de fechas esté lista
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                // Buscar al paciente
+                this.pacienteObjetivo = ServiceLocator.getInstancePacienteDAO().find(id).orElse(null);
+
+                // Cargar lista de Dentistas (Filtramos por puesto si es necesario, o traemos todos)
+                EmpleadoDAO empleadoDAO = ServiceLocator.getInstanceEmpleadoDAO();
+                List<Empleado> todos = empleadoDAO.obtenerTodos();
+
+                // Filtramos solo los que tienen puesto de Dentista (ajusta el string exacto según tu BD)
+                this.listaDentistas = todos.stream()
+                        .filter(e -> "Dentista".equalsIgnoreCase(e.getPuesto()))
+                        .collect(Collectors.toList());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void agendarCitaPorAdmin() {
+        try {
+            if (pacienteObjetivo == null) {
+                showToastMessage("error", "Error", "No hay paciente seleccionado.");
+                return;
+            }
+            if (dentistaSeleccionado == null) {
+                showToastMessage("error", "Error", "Debe asignar un dentista.");
+                return;
+            }
+
+            // Crear la cita
+            Cita nuevaCita = new Cita();
+            nuevaCita.setFecha(fecha);
+            nuevaCita.setHora(LocalTime.parse(hora));
+            nuevaCita.setMotivo(motivo);
+            nuevaCita.setEstado("Programada"); // Estado inicial
+            nuevaCita.setIdPaciente(pacienteObjetivo);
+            nuevaCita.setIdEmpleado(dentistaSeleccionado); // Asignamos al dentista
+
+            ServiceLocator.getInstanceCitaDAO().save(nuevaCita);
+
+            // Mensaje de éxito (el oncomplete del xhtml cerrará la ventana)
+            showToastMessage("success", "Éxito", "Cita agendada correctamente.");
+
+            limpiarFormulario(); // Limpiar variables
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToastMessage("error", "Error", "No se pudo agendar la cita: " + e.getMessage());
+        }
+    }
+
     public void solicitarCita() {
         FacesContext context = FacesContext.getCurrentInstance();
 
@@ -196,6 +262,11 @@ public class CitaBean implements Serializable {
     public void setHora(String hora) { this.hora = hora; }
     public String getMotivo() { return motivo; }
     public void setMotivo(String motivo) { this.motivo = motivo; }
+    public Paciente getPacienteObjetivo() { return pacienteObjetivo; }
+    public void setPacienteObjetivo(Paciente pacienteObjetivo) { this.pacienteObjetivo = pacienteObjetivo; }
+    public Empleado getDentistaSeleccionado() { return dentistaSeleccionado; }
+    public void setDentistaSeleccionado(Empleado dentistaSeleccionado) { this.dentistaSeleccionado = dentistaSeleccionado; }
+    public List<Empleado> getListaDentistas() { return listaDentistas; }
 
     public List<String> getHorasDisponibles() { return horasDisponibles; }
     public List<LocalDate> getFechasDisponibles() { return fechasDisponibles; }
