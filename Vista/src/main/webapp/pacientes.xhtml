@@ -114,12 +114,12 @@
                                                              title="Editar"
                                                              type="button"
                                                              styleClass="ui-button-warning ui-button-flat"
-                                                             onclick="window.open('modificacion_pacientes.xhtml?id=#{p.id}', 'EdicionPaciente', 'width=800,height=600,top=100,left=100,scrollbars=yes,resizable=yes');" />
+                                                             onclick="window.open('modificacion_pacientes.xhtml?id=#{p.id}', 'EdicionPaciente', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />
                                             <p:commandButton icon="pi pi-calendar-plus"
                                                              title="Agendar Cita"
                                                              type="button"
                                                              styleClass="ui-button-success ui-button-flat"
-                                                             onclick="window.open('agendar_cita_paciente.xhtml?id=#{p.id}', 'AgendarCita', 'width=500,height=650,top=100,left=100,scrollbars=yes,resizable=yes');" />                                        </div>
+                                                             onclick="window.open('agendar_cita_paciente.xhtml?id=#{p.id}', 'AgendarCita', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />                                        </div>
                                     </div>
                                 </ui:repeat>
                                 <h:panelGroup rendered="#{empty pacienteBean.listaPacientes}">
