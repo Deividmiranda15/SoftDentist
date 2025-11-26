@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>SoftDentist - Nuevo Anuncio</title>
+    <h:outputStylesheet name="css/patrondental.css" />
+    <style>
+        .anuncio-container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        .info-destinatarios {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .info-destinatarios i {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        .editor-mensaje {
+            width: 100%;
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <!-- Barra superior -->
+    <header class="top-bar">
+        <div class="logo">
+            <h:graphicImage name="images/logo.png" style="height: 40px;"/>
+        </div>
+        <div class="user-info">
+            <h:form>
+                <p:commandButton value="Cerrar Sesión" styleClass="boton-barra"
+                                 action="#{sessionBean.cerrarSesion}" />
+            </h:form>
+        </div>
+    </header>
+
+    <!-- Barra de navegación -->
+    <nav class="main-nav">
+        <h:form>
+            <p:button value="Inicio" outcome="inicio_admin" icon="pi pi-home" styleClass="boton-barra"/>
+            <p:button value="Pacientes" outcome="pacientes" icon="pi pi-users" styleClass="boton-barra"/>
+            <p:button value="Empleados" outcome="empleados" icon="pi pi-id-card" styleClass="boton-barra"/>
+            <p:button value="Citas" outcome="cita" icon="pi pi-calendar" styleClass="boton-barra"/>
+            <p:button value="Hacer un Anuncio" outcome="anuncio" icon="pi pi-megaphone" styleClass="boton-barra active"/>
+        </h:form>
+    </nav>
+
+    <div class="contenedor-centrado">
+        <h:form id="formAnuncio">
+            <p:growl id="msg" showDetail="true" life="5000" />
+
+            <h2 class="titulo-pagina">Redactar Anuncio General</h2>
+
+            <p:panel styleClass="panel-sombra anuncio-container">
+
+                <!-- Tarjeta informativa -->
+                <div class="info-destinatarios">
+                    <i class="pi pi-info-circle"></i>
+                    <div>
+                        <h:outputText value="Este mensaje será enviado a " />
+                        <strong><h:outputText value="#{anuncioBean.totalDestinatarios}" /> pacientes</strong>
+                        <h:outputText value=" registrados en la base de datos." />
+                        <br/>
+                        <small>Los correos se envían con Copia Oculta (BCC) para proteger la privacidad.</small>
+                    </div>
+                </div>
+
+                <div class="ui-fluid">
+
+                    <!-- Asunto -->
+                    <div style="margin-bottom: 20px;">
+                        <p:outputLabel for="asunto" value="Asunto del Anuncio:" style="font-weight: bold; font-size: 1.1em;"/>
+                        <div class="ui-inputgroup">
+                            <span class="ui-inputgroup-addon">[ANUNCIO: Dental Patron]</span>
+                            <p:inputText id="asunto" value="#{anuncioBean.asunto}" required="true"
+                                         placeholder="Ej: Aviso de vacaciones de Semana Santa" />
+                        </div>
+                    </div>
+
+                    <!-- Cuerpo del Mensaje -->
+                    <div style="margin-bottom: 20px;">
+                        <p:outputLabel for="mensaje" value="Contenido:" style="font-weight: bold; font-size: 1.1em;"/>
+                        <p:inputTextarea id="mensaje" value="#{anuncioBean.mensaje}" rows="10"
+                                         required="true" counter="display" maxlength="2000"
+                                         counterTemplate="{0} caracteres restantes." autoResize="false"
+                                         placeholder="Escribe aquí la información importante para tus pacientes..." />
+                        <h:outputText id="display" style="font-size: 0.8em; color: gray;" />
+                    </div>
+
+                    <p:separator />
+
+                    <!-- Botones de Acción -->
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                        <p:button value="Cancelar" outcome="inicio_admin" styleClass="ui-button-secondary ui-button-flat"/>
+
+                        <p:commandButton value="Enviar Anuncio a Todos"
+                                         icon="pi pi-send"
+                                         actionListener="#{anuncioBean.enviarAnuncio}"
+                                         update="@form"
+                                         styleClass="ui-button-success">
+                            <p:confirm header="Confirmación de Envío"
+                                       message="¿Estás seguro de enviar este correo a TODOS los pacientes?"
+                                       icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+                    </div>
+
+                </div>
+            </p:panel>
+
+            <!-- Diálogo de confirmación para evitar clics accidentales -->
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="Sí, enviar" type="button" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+
+        </h:form>
+    </div>
+
+</h:body>
+</html>

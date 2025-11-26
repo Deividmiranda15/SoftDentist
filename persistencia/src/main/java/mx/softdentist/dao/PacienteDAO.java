@@ -38,4 +38,11 @@ public class PacienteDAO extends AbstractDAO<Paciente> {
     public EntityManager getEntityManager() {
         return entityManager;
     }
+
+    public List<String> obtenerTodosLosCorreos() {
+        // JPQL para seleccionar únicamente la columna 'correo' y evitamos los nulos o vacíos para que el envío no falle.
+        String jpql = "SELECT p.correo FROM Paciente p WHERE p.correo IS NOT NULL AND p.correo <> ''";
+
+        return getEntityManager().createQuery(jpql, String.class).getResultList();
+    }
 }
