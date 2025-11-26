@@ -109,11 +109,13 @@
                                         <div class="custom-table-cell">#{e.telefono}</div>
                                         <div class="custom-table-cell">#{e.correo}</div>
                                         <div class="custom-table-actions">
-                                            <p:commandButton icon="pi pi-pencil" title="Editar"
-                                                             type="button"
-                                                             styleClass="ui-button-warning ui-button-flat"
-                                                             onclick="window.open('modificacion_empleados.xhtml?id=#{e.id}', 'EdicionEmpleado', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />
-
+                                            <p:commandButton icon="pi pi-pencil"
+                                                              title="Editar"
+                                                              update=":formEditarDialog"
+                                                              oncomplete="PF('dlgEditar').show()"
+                                                              styleClass="ui-button-warning ui-button-flat">
+                                            <f:setPropertyActionListener value="#{e}" target="#{empleadoBean.empleadoAEditar}" />
+                                        </p:commandButton>
                                         </div>
                                     </div>
                                 </ui:repeat>
@@ -127,5 +129,46 @@
             </div>
         </div>
     </main>
+    <p:dialog header="Modificar Empleado" widgetVar="dlgEditar" modal="true" resizable="false" showEffect="fade" hideEffect="fade" width="600">
+        <h:form id="formEditarDialog">
+            <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank"
+                         rendered="#{not empty empleadoBean.empleadoAEditar}">
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="nombreEd" value="Nombre:" />
+                    <p:inputText id="nombreEd" value="#{empleadoBean.empleadoAEditar.nombre}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="apellidoEd" value="Apellido:" />
+                    <p:inputText id="apellidoEd" value="#{empleadoBean.empleadoAEditar.apellido}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="telefonoEd" value="Teléfono:" />
+                    <p:inputText id="telefonoEd" value="#{empleadoBean.empleadoAEditar.telefono}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="correoEd" value="Correo:" />
+                    <p:inputText id="correoEd" value="#{empleadoBean.empleadoAEditar.correo}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="puestoEd" value="Puesto:" />
+                    <p:selectOneMenu id="puestoEd" value="#{empleadoBean.empleadoAEditar.puesto}" required="true">
+                        <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+                <p:commandButton value="Guardar Cambios"
+                                 actionListener="#{empleadoBean.actualizarEmpleado}"
+                                 update=":formConsulta:consultaContainer :messages"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();"
+                                 style="width: 100%; margin-top: 10px;" />
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+
 </h:body>
 </html>
