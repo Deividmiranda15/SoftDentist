@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consulta de Caja - Dental Patron (Admin)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <h:outputStylesheet name="css/patrondental.css" />
+
+    <style>
+        .single-card-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .table-card-admin {
+            width: 100%;
+            max-width: 900px; /* Limita el ancho para que no se vea exagerado */
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <p:growl id="messages" showDetail="true" life="4000" />
+
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;">
+                <p:commandLink action="#{sessionBean.cerrarSesion}"
+                               styleClass="btn-logout"
+                               title="Cerrar Sesión">
+                    <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                    style="height: 25px; width: 25px;"
+                                    alt="Cerrar Sesión"/>
+                </p:commandLink>
+            </h:form>
+        </div>
+
+        <nav class="main-nav">
+            <p:link outcome="inicio_admin" value="INICIO" />
+            <p:link outcome="empleados" value="EMPLEADOS" />
+            <p:link outcome="pacientesad" value="PACIENTES" />
+            <p:link outcome="corte_caja_admin" value="CAJA" styleClass="active"/>
+        </nav>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="single-card-container">
+
+                <div class="table-card-admin">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0; color: #2c3e50;">Consulta de Movimientos del Día</h2>
+                        <h:panelGroup id="totalHeader">
+                            <span style="font-size: 1.2rem; font-weight: bold; color: #2e7d32;">
+                                Total: $#{cajaBean.totalDia}
+                            </span>
+                        </h:panelGroup>
+                    </div>
+
+                    <h:form id="formConsulta">
+                        <div class="search-bar" style="margin-bottom: 20px;">
+                            <p:inputText placeholder="Buscar concepto..." style="width: 300px;"/>
+                            <p:commandButton value="Buscar" icon="pi pi-search"/>
+
+                            <p:commandButton value="Actualizar" action="#{cajaBean.init}"
+                                             update="consultaContainer totalHeader"
+                                             styleClass="ui-button-outlined" icon="pi pi-refresh"/>
+
+                            <p:commandButton value="Realizar Corte" styleClass="ui-button-secondary"
+                                             update="consultaContainer totalHeader messages"
+                                             action="#{cajaBean.realizarCorte}"
+                                             icon="pi pi-lock"
+                                             style="margin-left: auto;">
+                                <p:confirm header="Confirmación" message="¿Está seguro de realizar el corte de caja? Esto podría archivar los movimientos actuales." icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
+                        </div>
+
+                        <h:panelGroup id="consultaContainer" layout="block">
+                            <div class="custom-table">
+                                <div class="custom-table-header">
+                                    <div style="flex: 2;">CONCEPTO</div>
+                                    <div style="flex: 2;">PACIENTE</div>
+                                    <div style="flex: 1;">MONTO</div>
+                                    <div style="flex: 1; text-align: right;">HORA</div>
+                                </div>
+
+                                <ui:repeat value="#{cajaBean.listaMovimientos}" var="m">
+                                    <div class="custom-table-row">
+                                        <div class="custom-table-cell" style="flex: 2;">#{m.concepto}</div>
+                                        <div class="custom-table-cell" style="flex: 2;">#{m.nombrePaciente}</div>
+                                        <div class="custom-table-cell" style="flex: 1; font-weight: bold; color: #2e7d32;">
+                                            $#{m.monto}
+                                        </div>
+                                        <div class="custom-table-actions" style="flex: 1; justify-content: flex-end;">
+                                            <h:outputText value="#{m.fecha}">
+                                                <f:convertDateTime pattern="HH:mm" />
+                                            </h:outputText>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+
+                                <h:panelGroup rendered="#{empty cajaBean.listaMovimientos}">
+                                    <div class="empty-message" style="text-align: center; padding: 20px; color: #666;">
+                                        No hay movimientos registrados hoy.
+                                    </div>
+                                </h:panelGroup>
+
+                                <div class="custom-table-row" style="background-color: #f8f9fa; font-weight: bold; border-top: 2px solid #ddd;">
+                                    <div class="custom-table-cell" style="flex: 2;">TOTAL DEL DÍA</div>
+                                    <div class="custom-table-cell" style="flex: 2;"></div>
+                                    <div class="custom-table-cell" style="flex: 1; font-size: 1.1rem;">$#{cajaBean.totalDia}</div>
+                                    <div class="custom-table-cell" style="flex: 1;"></div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+                        </p:confirmDialog>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </main>
+</h:body>
+</html>
