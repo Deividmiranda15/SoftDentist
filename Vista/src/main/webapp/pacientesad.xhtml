@@ -11,8 +11,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestión de Usuarios - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
-    <!-- Enlace al archivo CSS con el nuevo nombre -->
     <h:outputStylesheet name="css/patrondental.css" />
+
+    <style>
+        .ui-dialog {
+            max-width: 90vw;
+        }
+    </style>
 </h:head>
 
 <h:body>
@@ -22,16 +27,11 @@
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
 
-            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
-                                                       styleClass="btn-logout"
-                                                       title="Cerrar Sesión">
-
-                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
-
-                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
-                                style="height: 25px; width: 25px;"
-                                alt="Cerrar Sesión"/>
-            </p:commandLink>
+            <h:form style="margin: 0;">
+                <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
+                    <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png" style="height: 25px; width: 25px;" alt="Cerrar Sesión"/>
+                </p:commandLink>
             </h:form>
         </div>
         <nav class="main-nav">
@@ -45,6 +45,7 @@
     <main class="main-content-backdrop">
         <div class="transparent-container">
             <div class="cards-wrapper">
+
                 <div class="card form-card">
                     <h2>Alta de Nuevo Paciente</h2>
                     <h:form id="formAlta">
@@ -86,13 +87,14 @@
                         </p:panelGrid>
                     </h:form>
                 </div>
+
                 <div class="card table-card">
                     <h2>Consulta de Pacientes</h2>
                     <h:form id="formConsulta">
                         <div class="search-bar">
                             <p:inputText placeholder="Buscar por nombre o usuario..." />
                             <p:commandButton value="Buscar" />
-                            <p:commandButton value="Actualizar" update="consultaContainer" />
+                            <p:commandButton value="Actualizar" update="consultaContainer" icon="pi pi-refresh" />
                         </div>
                         <h:panelGroup id="consultaContainer" layout="block">
                             <div class="custom-table">
@@ -108,16 +110,25 @@
                                         <div class="custom-table-cell">#{p.telefono}</div>
                                         <div class="custom-table-cell">#{p.correo}</div>
                                         <div class="custom-table-actions">
+
                                             <p:commandButton icon="pi pi-pencil"
                                                              title="Editar"
-                                                             type="button"
-                                                             styleClass="ui-button-warning ui-button-flat"
-                                                             onclick="window.open('modificacion_pacientes.xhtml?id=#{p.id}', 'EdicionPaciente', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />
+                                                             update=":formEditarDialog"
+                                                             oncomplete="PF('dlgEditar').show()"
+                                                             styleClass="ui-button-warning ui-button-flat">
+                                                <f:setPropertyActionListener value="#{p}" target="#{pacienteBean.pacienteAEditar}" />
+                                            </p:commandButton>
+
                                             <p:commandButton icon="pi pi-calendar-plus"
                                                              title="Agendar Cita"
-                                                             type="button"
-                                                             styleClass="ui-button-success ui-button-flat"
-                                                             onclick="window.open('agendar_cita_paciente.xhtml?id=#{p.id}', 'AgendarCita', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />                                        </div>
+                                                             actionListener="#{citaBean.cargarDatosParaAgendar}"
+                                                             update=":formAgendarDialog"
+                                                             oncomplete="PF('dlgAgendar').show()"
+                                                             styleClass="ui-button-success ui-button-flat">
+
+                                                <f:setPropertyActionListener value="#{p}" target="#{citaBean.pacienteObjetivo}" />
+                                            </p:commandButton>
+                                        </div>
                                     </div>
                                 </ui:repeat>
                                 <h:panelGroup rendered="#{empty pacienteBean.listaPacientes}">
@@ -130,5 +141,141 @@
             </div>
         </div>
     </main>
+
+    <p:dialog header="Modificar Paciente"
+              widgetVar="dlgEditar"
+              modal="true"
+              resizable="false"
+              showEffect="fade"
+              hideEffect="fade"
+              width="700"
+              responsive="true"
+              blockScroll="true">
+
+        <h:form id="formEditarDialog">
+            <p:panelGrid columns="2" layout="grid"
+                         styleClass="ui-panelgrid-blank ui-fluid"
+                         columnClasses="ui-grid-col-6, ui-grid-col-6"
+                         rendered="#{not empty pacienteBean.pacienteAEditar}">
+
+                <h:panelGroup>
+                    <p:outputLabel for="nombreEd" value="Nombre:" />
+                    <p:inputText id="nombreEd" value="#{pacienteBean.pacienteAEditar.nombre}"
+                                 required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="apellidoEd" value="Apellido:" />
+                    <p:inputText id="apellidoEd" value="#{pacienteBean.pacienteAEditar.apellido}"
+                                 required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="telefonoEd" value="Teléfono:" />
+                    <p:inputText id="telefonoEd" value="#{pacienteBean.pacienteAEditar.telefono}"
+                                 required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="correoEd" value="Correo:" />
+                    <p:inputText id="correoEd" value="#{pacienteBean.pacienteAEditar.correo}"
+                                 required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12" style="grid-column: span 2;">
+                    <p:outputLabel for="direccionEd" value="Dirección:" />
+                    <p:inputText id="direccionEd" value="#{pacienteBean.pacienteAEditar.direccion}"
+                                 required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="fechaNacimientoEd" value="Fecha de Nacimiento:" />
+                    <p:datePicker id="fechaNacimientoEd" value="#{pacienteBean.pacienteAEditar.fechaNacimiento}"
+                                  showIcon="true" monthNavigator="true" yearNavigator="true" />
+                </h:panelGroup>
+
+                <h:panelGroup />
+
+
+                <h:panelGroup style="grid-column: span 2;">
+                </h:panelGroup>
+            </p:panelGrid>
+                    <p:commandButton value="Guardar Cambios"
+                                     actionListener="#{pacienteBean.actualizarPaciente}"
+                                     update=":formConsulta:consultaContainer :messages"
+                                     oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();"
+                                     style="width: 100%; margin-top: 15px;" />
+        </h:form>
+    </p:dialog>
+
+
+    <p:dialog header="Agendar Cita"
+              widgetVar="dlgAgendar"
+              modal="true"
+              resizable="false"
+              showEffect="fade"
+              hideEffect="fade"
+              width="600"
+              responsive="true"
+              blockScroll="true">
+
+        <h:form id="formAgendarDialog">
+
+            <h:panelGroup rendered="#{not empty citaBean.pacienteObjetivo}" style="display:block; text-align:center; margin-bottom: 15px;">
+                <h:outputText value="Paciente: #{citaBean.pacienteObjetivo.nombre} #{citaBean.pacienteObjetivo.apellido}"
+                              style="font-weight: bold; font-size: 1.1em; color: #444;"/>
+            </h:panelGroup>
+
+            <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+
+                <h:panelGroup style="grid-column: span 2;">
+                    <p:outputLabel for="dentista" value="Especialista:" />
+                    <p:selectOneMenu id="dentista" value="#{citaBean.dentistaSeleccionado}"
+                                     converter="#{empleadoConverter}" required="true">
+                        <f:selectItem itemLabel="Seleccione un dentista..." itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{citaBean.listaDentistas}" var="d"
+                                       itemLabel="#{d.nombre} #{d.apellido}" itemValue="#{d}"/>
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="fecha" value="Fecha:" />
+                    <p:datePicker id="fecha" value="#{citaBean.fecha}" locale="es"
+                                  minDate="#{citaBean.manana}" showIcon="true" pattern="dd/MM/yyyy">
+                        <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="horas"/>
+                    </p:datePicker>
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="horas" value="Hora:" />
+                    <p:selectOneMenu id="horas" value="#{citaBean.hora}" required="true">
+                        <f:selectItem itemLabel="Seleccione fecha..." itemValue="" />
+                        <f:selectItems value="#{citaBean.horasDisponibles}" />
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+                <h:panelGroup style="grid-column: span 2;">
+                    <p:outputLabel for="motivo" value="Motivo:" />
+                    <div class="grid-motivos">
+                        <p:selectOneButton id="motivo" value="#{citaBean.motivo}" required="true" unselectable="false">
+                            <f:selectItem itemLabel="Consulta" itemValue="Consulta"/>
+                            <f:selectItem itemLabel="Limpieza" itemValue="Limpieza"/>
+                            <f:selectItem itemLabel="Ortodoncia" itemValue="Ortodoncia"/>
+                            <f:selectItem itemLabel="Otro" itemValue="Otro"/>
+                        </p:selectOneButton>
+                    </div>
+                </h:panelGroup>
+
+            </p:panelGrid>
+                <h:panelGroup style="grid-column: span 2;">
+                    <p:commandButton value="Confirmar Cita"
+                                     actionListener="#{citaBean.agendarCitaPorAdmin}"
+                                     update=":messages"
+                                     oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgAgendar').hide();"
+                                     style="width: 100%; margin-top: 15px;" />
+                </h:panelGroup>
+        </h:form>
+    </p:dialog>
+
 </h:body>
 </html>
