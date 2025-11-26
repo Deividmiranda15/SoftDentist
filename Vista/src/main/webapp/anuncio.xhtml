@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuevo Anuncio - Dental Patron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <h:outputStylesheet name="css/patrondental.css" />
+
+    <style>
+        /* Estilos específicos para el formulario de anuncios */
+        .anuncio-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white; /* Asegura fondo blanco para el panel */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .info-destinatarios {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .info-destinatarios i {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        .titulo-pagina {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Ajuste para que el panel de PrimeFaces se integre bien */
+        .ui-panel .ui-panel-content {
+            border: none;
+            padding: 0;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;">
+                <p:commandLink action="#{sessionBean.cerrarSesion}"
+                               styleClass="btn-logout"
+                               title="Cerrar Sesión">
+                    <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                    style="height: 25px; width: 25px;"
+                                    alt="Cerrar Sesión"/>
+                </p:commandLink>
+            </h:form>
+        </div>
+
+        <nav class="main-nav">
+            <p:link outcome="inicio_admin" value="INICIO" />
+<!--            <p:link outcome="pacientesad" value="GESTIONAR PACIENTES" />-->
+            <p:link outcome="empleados" value="GESTIONAR EMPLEADOS" />
+<!--            <p:link outcome="corte_caja_admin" value="CAJA"/>-->
+            <p:link outcome="anuncio" value="ANUNCIOS" styleClass="active" />
+        </nav>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container" style="display: block; padding-top: 40px;">
+
+            <h:form id="formAnuncio">
+                <p:growl id="msg" showDetail="true" life="5000" />
+
+                <h2 class="titulo-pagina">Redactar Anuncio General</h2>
+
+                <p:panel styleClass="panel-sombra anuncio-container">
+
+                    <div class="info-destinatarios">
+                        <i class="pi pi-info-circle"></i>
+                        <div>
+                            <h:outputText value="Este mensaje será enviado a " />
+                            <strong><h:outputText value="#{anuncioBean.totalDestinatarios}" /> pacientes</strong>
+                            <h:outputText value=" registrados en la base de datos." />
+                            <br/>
+                            <small>Los correos se envían con Copia Oculta (BCC) para proteger la privacidad.</small>
+                        </div>
+                    </div>
+
+                    <div class="ui-fluid">
+                        <div style="margin-bottom: 20px;">
+                            <p:outputLabel for="asunto" value="Asunto del Anuncio:" style="font-weight: bold; font-size: 1.1em; font-family: 'Poppins', sans-serif;"/>
+                            <div class="ui-inputgroup">
+                                <span class="ui-inputgroup-addon" style="font-weight: bold;">[ANUNCIO: Dental Patron]</span>
+                                <p:inputText id="asunto" value="#{anuncioBean.asunto}" required="true"
+                                             placeholder="Ej: Aviso de vacaciones de Semana Santa" />
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <p:outputLabel for="mensaje" value="Contenido:" style="font-weight: bold; font-size: 1.1em; font-family: 'Poppins', sans-serif;"/>
+                            <p:inputTextarea id="mensaje" value="#{anuncioBean.mensaje}" rows="10"
+                                             required="true" counter="display" maxlength="2000"
+                                             counterTemplate="{0} caracteres restantes." autoResize="false"
+                                             placeholder="Escribe aquí la información importante para tus pacientes..." />
+                            <h:outputText id="display" style="font-size: 0.8em; color: gray;" />
+                        </div>
+
+                        <p:separator />
+
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                            <p:button value="Cancelar" outcome="inicio_admin" styleClass="ui-button-secondary ui-button-flat"/>
+
+                            <p:commandButton value="Enviar Anuncio a Todos"
+                                             icon="pi pi-send"
+                                             actionListener="#{anuncioBean.enviarAnuncio}"
+                                             update="@form"
+                                             styleClass="ui-button-success">
+                                <p:confirm header="Confirmación de Envío"
+                                           message="¿Estás seguro de enviar este correo a TODOS los pacientes?"
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </p:panel>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                    <p:commandButton value="Sí, enviar" type="button" styleClass="ui-confirmdialog-yes" />
+                </p:confirmDialog>
+
+            </h:form>
+        </div>
+    </main>
+</h:body>
+</html>
