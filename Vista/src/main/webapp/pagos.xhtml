@@ -36,10 +36,10 @@
         </div>
         <nav class="main-nav">
             <p:link outcome="inicio_admin" value="INICIO" />
-            <p:link outcome="pacientesad" value="GESTIONAR PACIENTES" styleClass="active" />
+            <p:link outcome="pacientesad" value="GESTIONAR PACIENTES" />
             <p:link outcome="empleados" value="GESTIONAR EMPLEADOS" />
-            <!-- Activamos el enlace a la administración de pagos -->
-            <p:link outcome="pagos" value="CORTE DE CAJA" />
+            <!-- Activamos el enlace a la administración de pagos, este es en donde estamos -->
+            <p:link outcome="pagos" value="CORTE DE CAJA" styleClass="active" />
         </nav>
     </header>
 
@@ -47,82 +47,88 @@
         <div class="transparent-container">
             <div class="cards-wrapper">
                 <div class="card form-card">
-                    <h2>Alta de Nuevo Paciente</h2>
+                    <h2>Alta de Nuevo Pago</h2>
                     <h:form id="formAlta">
                         <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+<!--                            LOOKHERE, SI agregar id PERO agarrarlo de las citas registradas
+                                https://showcase.primefaces.org/ui/input/oneMenu.xhtml -->
                             <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="#{pacienteBean.nuevoPaciente.nombre}" required="true" placeholder="Nombre completo" />
+                                <p:outputLabel for="cita" value="Cita:" />
+                                <p:selectOneMenu id="cita" value="#{pagoBean.nuevoPago.cita}"
+                                                 placeholder="Selecciona una cita...">
+                                    <f:selectItem itemLabel="Seleciona Uno" itemValue=""/>
+<!--                                    LOOKHERE CITAS: Revisa si esto de agarrar varias citas muestra correctamente
+                                        un texto-->
+                                    <f:selectItems value="#{CitaBean.citasRegistradas}"/>
+                                </p:selectOneMenu >
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="apellido" value="Apellido:" />
-                                <p:inputText id="apellido" value="#{pacienteBean.nuevoPaciente.apellido}" required="true" placeholder="Apellidos del paciente"/>
+                                <p:outputLabel for="descripcion" value="Descripción:" />
+                                <p:inputText id="descripcion" value="#{pagoBean.nuevoPago.descripcion}"
+                                             required="false"
+                                             placeholder="Describa el motivo del pago..." />
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="telefono" value="Teléfono:" />
-                                <p:inputText id="telefono" value="#{pacienteBean.nuevoPaciente.telefono}" required="true" placeholder="Ej. 686-123-4567" />
+                                <p:outputLabel for="monto" value="Monto: $" />
+                                <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}"
+                                             required="true"
+                                             placeholder="Monto del pago en pesos"
+                                             decimalPlaces="2"/>
                             </h:panelGroup>
+<!--                            LOOKHERE FECHA: la fecha es en forma de LocalDate en la clase, pero
+                                el tag datePicker trabaja con Date, revisa por si esta mal-->
                             <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="correo" value="Correo:" />
-                                <p:inputText id="correo" value="#{pacienteBean.nuevoPaciente.correo}" required="true" placeholder="correo@ejemplo.com">
-                                    <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
-                                </p:inputText>
+                                <p:outputLabel for="fecha" value="Fecha del pago:" />
+                                <p:datePicker id="fecha" value="#{pagoBean.nuevoPago.fecha}"
+                                              inline="true" />
                             </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="password" value="Contraseña:" />
-                                <p:password id="password" value="#{pacienteBean.nuevoPaciente.password}" required="true" placeholder="Contraseña" />
-                            </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="direccion" value="Dirección:" />
-                                <p:inputText id="direccion" value="#{pacienteBean.nuevoPaciente.direccion}" required="true" placeholder="Dirección del paciente"/>
-                            </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="fechaNacimiento" value="Fecha de Nacimiento:" />
-                                <p:datePicker id="fechaNacimiento" value="#{pacienteBean.nuevoPaciente.fechaNacimiento}" showIcon="true" />
-                            </h:panelGroup>
-                            <p:commandButton value="Guardar Paciente"
-                                             actionListener="#{pacienteBean.guardarPaciente}"
+                            <p:commandButton value="Guardar Pago"
+                                             actionListener="#{pagoBean.guardarPago}"
                                              update="formAlta :formConsulta:consultaContainer messages"
                                              style="width: 100%; margin-top: 10px;" />
                         </p:panelGrid>
                     </h:form>
                 </div>
                 <div class="card table-card">
-                    <h2>Consulta de Pacientes</h2>
+                    <h2>Consulta de Pagos</h2>
                     <h:form id="formConsulta">
                         <div class="search-bar">
-                            <p:inputText placeholder="Buscar por nombre o usuario..." />
+                            <p:inputText placeholder="Buscar por fecha..." />
                             <p:commandButton value="Buscar" />
                             <p:commandButton value="Actualizar" update="consultaContainer" />
                         </div>
                         <h:panelGroup id="consultaContainer" layout="block">
                             <div class="custom-table">
                                 <div class="custom-table-header">
-                                    <div>NOMBRE COMPLETO</div>
-                                    <div>TELÉFONO</div>
-                                    <div>CORREO</div>
+                                    <div>CITA</div>
+                                    <div>DESCRIPCIÓN</div>
+                                    <div>MONTO</div>
+                                    <div>FECHA</div>
                                     <div style="text-align: right;">ACCIONES</div>
                                 </div>
-                                <ui:repeat value="#{pacienteBean.listaPacientes}" var="p">
+                                <ui:repeat value="#{pagoBean.listaPagos}" var="p">
                                     <div class="custom-table-row">
-                                        <div class="custom-table-cell">#{p.nombre} #{p.apellido}</div>
-                                        <div class="custom-table-cell">#{p.telefono}</div>
-                                        <div class="custom-table-cell">#{p.correo}</div>
+<!--                                        LOOKHERE AVERIGUAR COMO AGARRAR INFORMACION DE LA CITA, mostrar fecha?-->
+                                        <div class="custom-table-cell">#{p.id_cita}</div>
+                                        <div class="custom-table-cell">#{p.descripcion}</div>
+                                        <div class="custom-table-cell">#{p.monto}</div>
+                                        <div class="custom-table-cell">#{p.fecha}</div>
                                         <div class="custom-table-actions">
                                             <p:commandButton icon="pi pi-pencil"
                                                              title="Editar"
                                                              type="button"
                                                              styleClass="ui-button-warning ui-button-flat"
                                                              onclick="window.open('modificacion_pacientes.xhtml?id=#{p.id}', 'EdicionPaciente', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />
-                                            <p:commandButton icon="pi pi-calendar-plus"
-                                                             title="Agendar Cita"
-                                                             type="button"
-                                                             styleClass="ui-button-success ui-button-flat"
-                                                             onclick="window.open('agendar_cita_paciente.xhtml?id=#{p.id}', 'AgendarCita', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />                                        </div>
+<!--                                            <p:commandButton icon="pi pi-calendar-plus"-->
+<!--                                                             title="Agendar Cita"-->
+<!--                                                             type="button"-->
+<!--                                                             styleClass="ui-button-success ui-button-flat"-->
+<!--                                                             onclick="window.open('agendar_cita_paciente.xhtml?id=#{p.id}', 'AgendarCita', 'width=800,height=700,top=50,left=100,scrollbars=yes,resizable=yes');" />-->
+                                        </div>
                                     </div>
                                 </ui:repeat>
-                                <h:panelGroup rendered="#{empty pacienteBean.listaPacientes}">
-                                    <div class="empty-message">No hay pacientes registrados.</div>
+                                <h:panelGroup rendered="#{empty pagoBean.listaPagos}">
+                                    <div class="empty-message">No hay pagos registrados.</div>
                                 </h:panelGroup>
                             </div>
                         </h:panelGroup>
