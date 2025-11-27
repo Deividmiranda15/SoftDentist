@@ -24,10 +24,26 @@
             padding: 20px;
         }
 
-        .page-title {
-            color: #00695c;
+        .header-wrapper {
             text-align: center;
             margin-bottom: 30px;
+            margin-top: 10px;
+        }
+
+
+        .page-title {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px 60px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+            display: inline-block;
+
+            color: #00695c;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+            border: 1px solid #e0f2f1;
         }
 
         .card-calendario {
@@ -40,7 +56,26 @@
         .top-bar { padding: 10px 20px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center;}
         .main-nav { background: #004d40; padding: 15px; display: flex; gap: 20px; justify-content: center; }
         .main-nav a, .main-nav span { color: white; text-decoration: none; font-weight: 500; font-size: 1.1em;}
-        .main-nav a.active { border-bottom: 2px solid #80cbc4; color: #80cbc4; }
+        .main-nav .active {
+            background-color: #000000 !important;
+            color: #80cbc4 !important;
+            border: 1px solid #80cbc4 !important;
+            border-radius: 8px !important;
+
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+
+            height: 40px !important;
+            padding: 0 25px !important;
+
+            font-size: 16px !important;
+            font-weight: bold !important;
+            text-decoration: none !important;
+            text-transform: uppercase !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+        }
         .ui-schedule, .fc {
             height: 600px !important;
             min-height: 600px !important;
@@ -111,7 +146,9 @@
     </header>
 
     <main class="main-container">
-        <h2 class="page-title">Agenda de Citas</h2>
+        <div class="header-wrapper">
+            <h2 class="page-title">Agenda de Citas</h2>
+        </div>
 
         <div class="view-switcher-container">
             <p:link outcome="consultacita_empleado" value="Ver Lista" styleClass="view-btn first" />

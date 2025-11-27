@@ -11,8 +11,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestión de Usuarios - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
-    <!-- Enlace al archivo CSS con el nuevo nombre -->
     <h:outputStylesheet name="css/patrondental.css" />
+
+    <style>
+        .top-bar {
+            padding: 10px 20px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+        }
+
+        .main-nav {
+            background: #004d40;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-item {
+            color: white !important;
+            text-decoration: none !important;
+            font-weight: 500;
+            font-size: 1.1em;
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            border-bottom: 4px solid transparent;
+            transition: all 0.2s ease-in-out;
+            box-sizing: border-box;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background-color: #000000 !important;
+            color: #80cbc4 !important;
+            border: 1px solid #80cbc4 !important;
+            border-radius: 8px !important;
+
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 40px !important;
+            padding: 0 25px !important;
+
+            font-size: 16px !important;
+            font-weight: bold !important;
+            text-decoration: none !important;
+            text-transform: uppercase !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+            margin-top: 0 !important;
+        }
+    </style>
 </h:head>
 
 <h:body>
@@ -22,17 +79,20 @@
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
         </div>
+
         <nav class="main-nav">
-            <!-- Navegación actualizada con p:link -->
-            <p:link outcome="inicio_admin" value="INICIO" />
-            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" styleClass="active" />
-            <a href="#">CORTE DE CAJA</a>
+            <a href="inicio_admin.xhtml" class="nav-item">INICIO</a>
+
+            <a href="#" class="nav-item active">GESTIONAR PACIENTES</a>
+
+            <a href="consultacita_empleado.xhtml" class="nav-item">CONSULTAR CITAS</a>
         </nav>
     </header>
 
     <main class="main-content-backdrop">
         <div class="transparent-container">
             <div class="cards-wrapper">
+
                 <div class="card form-card">
                     <h2>Alta de Nuevo Paciente</h2>
                     <h:form id="formAlta">
@@ -74,6 +134,7 @@
                         </p:panelGrid>
                     </h:form>
                 </div>
+
                 <div class="card table-card">
                     <h2>Consulta de Pacientes</h2>
                     <h:form id="formConsulta">
