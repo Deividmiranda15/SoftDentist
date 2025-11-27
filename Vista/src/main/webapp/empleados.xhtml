@@ -129,44 +129,47 @@
             </div>
         </div>
     </main>
-    <p:dialog header="Modificar Empleado" widgetVar="dlgEditar" modal="true" resizable="false" showEffect="fade" hideEffect="fade" width="600">
+    <p:dialog header="Modificar Empleado" widgetVar="dlgEditar" modal="true" appendTo="@(body)" dismissableMask="true" blockScroll="true" resizable="false" showEffect="fade" hideEffect="fade" width="600">
         <h:form id="formEditarDialog">
-            <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank"
+
+            <p:panelGrid columns="2" layout="grid"
+                         styleClass="ui-panelgrid-blank ui-fluid"
+                         columnClasses="ui-grid-col-6, ui-grid-col-6"
                          rendered="#{not empty empleadoBean.empleadoAEditar}">
 
-                <h:panelGroup styleClass="ui-grid-col-12">
+                <h:panelGroup>
                     <p:outputLabel for="nombreEd" value="Nombre:" />
                     <p:inputText id="nombreEd" value="#{empleadoBean.empleadoAEditar.nombre}" required="true" />
                 </h:panelGroup>
 
-                <h:panelGroup styleClass="ui-grid-col-12">
+                <h:panelGroup>
                     <p:outputLabel for="apellidoEd" value="Apellido:" />
                     <p:inputText id="apellidoEd" value="#{empleadoBean.empleadoAEditar.apellido}" required="true" />
                 </h:panelGroup>
 
-                <h:panelGroup styleClass="ui-grid-col-12">
+                <h:panelGroup>
                     <p:outputLabel for="telefonoEd" value="Teléfono:" />
                     <p:inputText id="telefonoEd" value="#{empleadoBean.empleadoAEditar.telefono}" required="true" />
                 </h:panelGroup>
 
-                <h:panelGroup styleClass="ui-grid-col-12">
+                <h:panelGroup>
                     <p:outputLabel for="correoEd" value="Correo:" />
                     <p:inputText id="correoEd" value="#{empleadoBean.empleadoAEditar.correo}" required="true" />
                 </h:panelGroup>
 
-                <h:panelGroup styleClass="ui-grid-col-12">
+                <h:panelGroup style="grid-column: span 2;">
                     <p:outputLabel for="puestoEd" value="Puesto:" />
                     <p:selectOneMenu id="puestoEd" value="#{empleadoBean.empleadoAEditar.puesto}" required="true">
                         <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
                     </p:selectOneMenu>
                 </h:panelGroup>
 
-                <p:commandButton value="Guardar Cambios"
-                                 actionListener="#{empleadoBean.actualizarEmpleado}"
-                                 update=":formConsulta:consultaContainer :messages"
-                                 oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();"
-                                 style="width: 100%; margin-top: 10px;" />
             </p:panelGrid>
+            <p:commandButton value="Guardar Cambios"
+                             actionListener="#{empleadoBean.actualizarEmpleado}"
+                             update=":formConsulta:consultaContainer :messages"
+                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();"
+                             style="width: 100%; margin-top: 20px;" />
         </h:form>
     </p:dialog>
 
