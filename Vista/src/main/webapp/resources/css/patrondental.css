@@ -394,4 +394,21 @@ body {
 
 .grid-motivos .ui-button {
     width: 100%;
+} */
+
+.full-width-card {
+    background: #000000;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    /* Asegura que los botones inferiores siempre tengan espacio */
+    padding-bottom: 70px;
+    min-height: 500px;
+}
+.tab-btn.active-tab {
+    /* Cambia este código #0d6efd por el color que quieras (ej. #28a745 para verde) */
+    color: #28a745 !important;
+
+    /* Asegúrate de cambiar este también para que la línea combine */
+    border-bottom: 3px solid #28a745 !important;
 }
