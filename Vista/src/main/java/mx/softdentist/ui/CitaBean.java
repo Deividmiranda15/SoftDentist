@@ -166,7 +166,7 @@ public class CitaBean implements Serializable {
             citaDAO.save(cita);
 
             showToastMessage("success", "Cita registrada",
-                    "Su cita para el " + fecha + " a las " + hora + " fue registrada correctamente.");
+                    "La cita para el " + fecha + " a las " + hora + " fue registrada correctamente.");
 
             limpiarFormulario();
             cargarCitasRegistradas();
@@ -295,11 +295,17 @@ public class CitaBean implements Serializable {
     }
 
     private void showToastMessage(String severity, String summary, String detail) {
-        PrimeFaces.current().executeScript(
-                "PrimeFaces.toast.show({severity: '" + severity + "', summary: '" + summary +
-                        "', detail: '" + detail + "', life: 5000});"
-        );
+        FacesMessage.Severity sev;
+
+        switch (severity) {
+            case "error": sev = FacesMessage.SEVERITY_ERROR; break;
+            case "warn":  sev = FacesMessage.SEVERITY_WARN; break;
+            default:      sev = FacesMessage.SEVERITY_INFO;
+        }
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, summary, detail));
     }
+
 
     private void limpiarFormulario() {
         fecha = null;
