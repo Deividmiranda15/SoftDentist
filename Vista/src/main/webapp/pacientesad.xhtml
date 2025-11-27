@@ -82,6 +82,7 @@
                             </h:panelGroup>
                             <p:commandButton value="Guardar Paciente"
                                              actionListener="#{pacienteBean.guardarPaciente}"
+                                             process="@form"
                                              update="formAlta :formConsulta:consultaContainer messages"
                                              style="width: 100%; margin-top: 10px;" />
                         </p:panelGrid>
@@ -94,7 +95,7 @@
                         <div class="search-bar">
                             <p:inputText placeholder="Buscar por nombre o usuario..." />
                             <p:commandButton value="Buscar" />
-                            <p:commandButton value="Actualizar" update="consultaContainer" icon="pi pi-refresh" />
+                            <p:commandButton value="Actualizar" actionListener="#{pacienteBean.cargarPacientes}" update="consultaContainer" icon="pi pi-refresh" />
                         </div>
                         <h:panelGroup id="consultaContainer" layout="block">
                             <div class="custom-table">
@@ -113,6 +114,7 @@
 
                                             <p:commandButton icon="pi pi-pencil"
                                                              title="Editar"
+                                                             process="@this"
                                                              update=":formEditarDialog"
                                                              oncomplete="PF('dlgEditar').show()"
                                                              styleClass="ui-button-warning ui-button-flat">
@@ -122,10 +124,10 @@
                                             <p:commandButton icon="pi pi-calendar-plus"
                                                              title="Agendar Cita"
                                                              actionListener="#{citaBean.cargarDatosParaAgendar}"
+                                                             process="@this"
                                                              update=":formAgendarDialog"
                                                              oncomplete="PF('dlgAgendar').show()"
                                                              styleClass="ui-button-success ui-button-flat">
-
                                                 <f:setPropertyActionListener value="#{p}" target="#{citaBean.pacienteObjetivo}" />
                                             </p:commandButton>
                                         </div>
@@ -194,20 +196,17 @@
                                   showIcon="true" monthNavigator="true" yearNavigator="true" />
                 </h:panelGroup>
 
-                <h:panelGroup />
-
-
                 <h:panelGroup style="grid-column: span 2;">
-                </h:panelGroup>
-            </p:panelGrid>
                     <p:commandButton value="Guardar Cambios"
                                      actionListener="#{pacienteBean.actualizarPaciente}"
-                                     update=":formConsulta:consultaContainer :messages"
+                                     process="@form"
+                                     update=":formConsulta:consultaContainer messages"
                                      oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();"
                                      style="width: 100%; margin-top: 15px;" />
+                </h:panelGroup>
+            </p:panelGrid>
         </h:form>
     </p:dialog>
-
 
     <p:dialog header="Agendar Cita"
               widgetVar="dlgAgendar"
@@ -220,7 +219,6 @@
               blockScroll="true">
 
         <h:form id="formAgendarDialog">
-
             <h:panelGroup rendered="#{not empty citaBean.pacienteObjetivo}" style="display:block; text-align:center; margin-bottom: 15px;">
                 <h:outputText value="Paciente: #{citaBean.pacienteObjetivo.nombre} #{citaBean.pacienteObjetivo.apellido}"
                               style="font-weight: bold; font-size: 1.1em; color: #444;"/>
@@ -228,33 +226,38 @@
 
             <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
 
-                <h:panelGroup style="grid-column: span 2;">
-                    <p:outputLabel for="dentista" value="Especialista:" />
-                    <p:selectOneMenu id="dentista" value="#{citaBean.dentistaSeleccionado}"
-                                     converter="#{empleadoConverter}" required="true">
-                        <f:selectItem itemLabel="Seleccione un dentista..." itemValue="#{null}" noSelectionOption="true"/>
-                        <f:selectItems value="#{citaBean.listaDentistas}" var="d"
-                                       itemLabel="#{d.nombre} #{d.apellido}" itemValue="#{d}"/>
-                    </p:selectOneMenu>
-                </h:panelGroup>
-
                 <h:panelGroup>
                     <p:outputLabel for="fecha" value="Fecha:" />
-                    <p:datePicker id="fecha" value="#{citaBean.fecha}" locale="es"
-                                  minDate="#{citaBean.manana}" showIcon="true" pattern="dd/MM/yyyy">
-                        <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="horas"/>
+                    <p:datePicker id="fecha"
+                                  value="#{citaBean.fecha}"
+                                  locale="es"
+                                  minDate="#{citaBean.manana}"
+                                  showIcon="true"
+                                  pattern="dd/MM/yyyy"
+                    >
+                        <p:ajax event="dateSelect"
+                                listener="#{citaBean.onDateSelect}"
+                                update="horas messages" />
                     </p:datePicker>
                 </h:panelGroup>
 
                 <h:panelGroup>
                     <p:outputLabel for="horas" value="Hora:" />
-                    <p:selectOneMenu id="horas" value="#{citaBean.hora}" required="true">
-                        <f:selectItem itemLabel="Seleccione fecha..." itemValue="" />
-                        <f:selectItems value="#{citaBean.horasDisponibles}" />
+                    <p:selectOneMenu id="horas"
+                                     value="#{citaBean.hora}"
+                                     required="true"
+                                     style="width: 100%">
+
+                        <f:selectItem itemLabel="Seleccione una hora..." itemValue="" />
+
+                        <f:selectItems value="#{citaBean.horasDisponibles}"
+                                       var="horaItem"
+                                       itemLabel="#{horaItem}"
+                                       itemValue="#{horaItem}" />
                     </p:selectOneMenu>
                 </h:panelGroup>
 
-                <h:panelGroup style="grid-column: span 2;">
+            <h:panelGroup style="grid-column: span 2;">
                     <p:outputLabel for="motivo" value="Motivo:" />
                     <div class="grid-motivos">
                         <p:selectOneButton id="motivo" value="#{citaBean.motivo}" required="true" unselectable="false">
@@ -265,15 +268,16 @@
                         </p:selectOneButton>
                     </div>
                 </h:panelGroup>
-
             </p:panelGrid>
-                <h:panelGroup style="grid-column: span 2;">
-                    <p:commandButton value="Confirmar Cita"
-                                     actionListener="#{citaBean.agendarCitaPorAdmin}"
-                                     update=":messages"
-                                     oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgAgendar').hide();"
-                                     style="width: 100%; margin-top: 15px;" />
-                </h:panelGroup>
+
+            <h:panelGroup style="grid-column: span 2;">
+                <p:commandButton value="Confirmar Cita"
+                                 actionListener="#{citaBean.solicitarCita}"
+                                 process="@form"
+                                 update="messages"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgAgendar').hide();"
+                                 style="width: 100%; margin-top: 15px;" />
+            </h:panelGroup>
         </h:form>
     </p:dialog>
 
