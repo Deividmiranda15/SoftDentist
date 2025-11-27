@@ -31,7 +31,6 @@ public class Cita {
     private String motivo;
 
     @ColumnDefault("'Pendiente'")
-    @Lob
     @Column(name = "estado")
     private String estado;
 
