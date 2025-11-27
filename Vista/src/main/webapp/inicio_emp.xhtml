@@ -16,12 +16,26 @@
     <header>
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
+                                                       styleClass="btn-logout"
+                                                       title="Cerrar Sesión">
+
+                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                style="height: 25px; width: 25px;"
+                                alt="Cerrar Sesión"/>
+            </p:commandLink>
+            </h:form>
         </div>
         <nav class="main-nav">
-            <!-- Navegación actualizada con p:link -->
-            <p:link outcome="inicio_admin" value="INICIO" styleClass="active" />
+            <!-- Navegación empleado -->
+            <p:link outcome="inicio_emp" value="INICIO" styleClass="active" />
             <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
-            <a href="#">CORTE DE CAJA</a>
+            <p:link outcome="consultacita_empleado.xhtml" value="CONSULTA DE CITAS"/>
+            <p:link outcome="corte_caja" value="CAJA"/>
+            <p:link outcome="chat.xhtml" value="CHAT"/>
         </nav>
     </header>
 
@@ -32,7 +46,6 @@
                 <div class="welcome-text">
                     <h2>Bienvenido a <a href="#">Dental Patron</a>, Empleado</h2>
                     <h3>Qué gusto tenerte aquí un día más.</h3>
-                    <h1>FUNCIONA</h1>
                 </div>
             </div>
         </div>

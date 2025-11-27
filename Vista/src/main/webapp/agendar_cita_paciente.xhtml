@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Agendar Cita</title>
+    <h:outputStylesheet name="css/patrondental.css"/>
+</h:head>
+
+<h:body>
+    <f:metadata>
+        <f:viewAction action="#{citaBean.cargarDatosParaAgendar}" />
+    </f:metadata>
+
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+        </div>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="card form-card" style="margin: 20px auto; max-width: 600px;">
+                <h2>Agendar Cita</h2>
+
+                <h:panelGroup rendered="#{not empty citaBean.pacienteObjetivo}" style="display:block; text-align:center; margin-bottom: 20px;">
+                    <h:outputText value="Paciente: #{citaBean.pacienteObjetivo.nombre} #{citaBean.pacienteObjetivo.apellido}"
+                                  style="font-weight: bold; font-size: 1.1em; color: #444;"/>
+                </h:panelGroup>
+
+                <h:form id="formCitaAdmin">
+                    <p:growl id="messages" showDetail="true" life="4000"/>
+
+                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="dentista" value="Especialista:" />
+                            <p:selectOneMenu id="dentista" value="#{citaBean.dentistaSeleccionado}"
+                                             converter="#{empleadoConverter}" required="true"
+                                             style="width:100%;">
+                                <f:selectItem itemLabel="Seleccione un dentista..." itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{citaBean.listaDentistas}" var="d"
+                                               itemLabel="#{d.nombre} #{d.apellido}" itemValue="#{d}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="fecha" value="Fecha:" />
+                            <p:datePicker id="fecha" value="#{citaBean.fecha}" locale="es"
+                                          minDate="#{citaBean.manana}" showIcon="true" pattern="dd/MM/yyyy">
+                                <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="horas"/>
+                            </p:datePicker>
+                        </h:panelGroup>
+
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="horas" value="Hora:" />
+                            <p:selectOneMenu id="horas" value="#{citaBean.hora}" required="true" style="width:100%;">
+                                <f:selectItem itemLabel="Seleccione fecha primero..." itemValue="" />
+                                <f:selectItems value="#{citaBean.horasDisponibles}" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="motivo" value="Motivo:" />
+                            <div class="grid-motivos">
+                                <p:selectOneButton id="motivo" value="#{citaBean.motivo}" required="true" unselectable="false">
+                                    <f:selectItem itemLabel="Consulta" itemValue="Consulta"/>
+                                    <f:selectItem itemLabel="Limpieza" itemValue="Limpieza"/>
+                                    <f:selectItem itemLabel="Ortodoncia" itemValue="Ortodoncia"/>
+                                    <f:selectItem itemLabel="Otro" itemValue="Otro"/>
+                                </p:selectOneButton>
+                            </div>
+                        </h:panelGroup>
+
+                        <p:commandButton value="Confirmar Cita"
+                                         action="#{citaBean.agendarCitaPorAdmin}"
+                                         update="@form"
+                                         oncomplete="if (args &amp;&amp; !args.validationFailed) { if(window.opener){window.opener.location.reload();} window.close(); }"
+                                         style="width: 100%; margin-top: 15px;" />
+                    </p:panelGrid>
+                </h:form>
+            </div>
+        </div>
+    </main>
+</h:body>
+</html>

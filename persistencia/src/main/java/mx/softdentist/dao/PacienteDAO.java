@@ -8,6 +8,7 @@ import mx.softdentist.entidad.Paciente;
 
 import java.util.List;
 
+
 public class PacienteDAO extends AbstractDAO<Paciente> {
     private final EntityManager entityManager;
 
@@ -16,7 +17,7 @@ public class PacienteDAO extends AbstractDAO<Paciente> {
         this.entityManager = em;
     }
 
-    public List<Paciente> obtenerTodos() {
+    public List<Paciente> obtenerTodos(){
         return entityManager
                 .createQuery("SELECT a FROM Paciente a", Paciente.class)
                 .getResultList();
@@ -33,16 +34,15 @@ public class PacienteDAO extends AbstractDAO<Paciente> {
         }
     }
 
-    public Paciente buscarPorId(int idPaciente) {
-        try {
-            return entityManager.find(Paciente.class, idPaciente);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     @Override
     public EntityManager getEntityManager() {
         return entityManager;
+    }
+
+    public List<String> obtenerTodosLosCorreos() {
+        // JPQL para seleccionar únicamente la columna 'correo' y evitamos los nulos o vacíos para que el envío no falle.
+        String jpql = "SELECT p.correo FROM Paciente p WHERE p.correo IS NOT NULL AND p.correo <> ''";
+
+        return getEntityManager().createQuery(jpql, String.class).getResultList();
     }
 }

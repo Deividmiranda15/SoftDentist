@@ -6,13 +6,13 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <h:head>
-    <title>Modificar Empleado</title>
+    <title>Modificar Paciente</title>
     <h:outputStylesheet name="css/patrondental.css" />
 </h:head>
 
 <h:body>
     <f:metadata>
-        <f:viewAction action="#{empleadoBean.cargarDatosParaEditar}" />
+        <f:viewAction action="#{pacienteBean.cargarDatosParaEditar}" />
     </f:metadata>
 
     <header>
@@ -24,39 +24,42 @@
     <main class="main-content-backdrop">
         <div class="transparent-container">
             <div class="card form-card" style="margin: 20px auto; max-width: 600px;">
-                <h2>Modificar Empleado</h2>
+                <h2>Modificar Paciente</h2>
                 <h:form id="formEditar">
                     <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
 
                         <h:panelGroup styleClass="ui-grid-col-12">
                             <p:outputLabel for="nombre" value="Nombre:" />
-                            <p:inputText id="nombre" value="#{empleadoBean.empleadoAEditar.nombre}" required="true" />
+                            <p:inputText id="nombre" value="#{pacienteBean.pacienteAEditar.nombre}" required="true" />
                         </h:panelGroup>
+
                         <h:panelGroup styleClass="ui-grid-col-12">
                             <p:outputLabel for="apellido" value="Apellido:" />
-                            <p:inputText id="apellido" value="#{empleadoBean.empleadoAEditar.apellido}" required="true" />
+                            <p:inputText id="apellido" value="#{pacienteBean.pacienteAEditar.apellido}" required="true" />
                         </h:panelGroup>
+
                         <h:panelGroup styleClass="ui-grid-col-12">
                             <p:outputLabel for="telefono" value="Teléfono:" />
-                            <p:inputText id="telefono" value="#{empleadoBean.empleadoAEditar.telefono}" required="true" />
+                            <p:inputText id="telefono" value="#{pacienteBean.pacienteAEditar.telefono}" required="true" />
                         </h:panelGroup>
+
                         <h:panelGroup styleClass="ui-grid-col-12">
                             <p:outputLabel for="correo" value="Correo:" />
-                            <p:inputText id="correo" value="#{empleadoBean.empleadoAEditar.correo}" required="true" />
+                            <p:inputText id="correo" value="#{pacienteBean.pacienteAEditar.correo}" required="true" />
                         </h:panelGroup>
+
                         <h:panelGroup styleClass="ui-grid-col-12">
-                            <p:outputLabel for="password" value="Nueva Contraseña (opcional):" />
-                            <p:password id="password" value="#{empleadoBean.empleadoAEditar.password}" placeholder="Dejar en blanco para no cambiar" />
+                            <p:outputLabel for="direccion" value="Dirección:" />
+                            <p:inputText id="direccion" value="#{pacienteBean.pacienteAEditar.direccion}" required="true" />
                         </h:panelGroup>
+
                         <h:panelGroup styleClass="ui-grid-col-12">
-                            <p:outputLabel for="puesto" value="Puesto:" />
-                            <p:selectOneMenu id="puesto" value="#{empleadoBean.empleadoAEditar.puesto}" required="true">
-                                <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
-                            </p:selectOneMenu>
+                            <p:outputLabel for="fechaNacimiento" value="Fecha de Nacimiento:" />
+                            <p:datePicker id="fechaNacimiento" value="#{pacienteBean.pacienteAEditar.fechaNacimiento}" showIcon="true" />
                         </h:panelGroup>
 
                         <p:commandButton value="Guardar Cambios"
-                                         action="#{empleadoBean.actualizarEmpleado}"
+                                         action="#{pacienteBean.actualizarPaciente}"
                                          update="@form"
                                          oncomplete="if (args &amp;&amp; !args.validationFailed) { if(window.opener){window.opener.location.reload();} window.close(); }"
                                          style="width: 100%; margin-top: 10px;" />

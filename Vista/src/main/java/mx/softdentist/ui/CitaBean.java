@@ -4,72 +4,155 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
+import mx.softdentist.dao.CitaDAO;
 import mx.softdentist.entidad.Cita;
 import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
 import org.primefaces.PrimeFaces;
+import mx.softdentist.entidad.Empleado;
+import mx.softdentist.dao.EmpleadoDAO;
+import org.primefaces.event.SelectEvent;
 
-import java.io.File;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Named("citaBean")
 @ViewScoped
 public class CitaBean implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
 
     private LocalDate fecha;
     private String hora;
     private String motivo;
 
-    private List<String> horasDisponibles;
+    private List<String> horasDisponibles = new ArrayList<>();
     private List<LocalDate> fechasDisponibles;
     private List<Cita> citasRegistradas;
     private Cita citaSeleccionada;
+    private Paciente pacienteObjetivo;
+    private Empleado dentistaSeleccionado;
+    private List<Empleado> listaDentistas;
+
+    private CitaDAO citaDAO;
 
     public CitaBean() {
+        this.citaDAO = ServiceLocator.getInstanceCitaDAO();
         cargarFechasDisponibles();
         cargarCitasRegistradas();
     }
 
-    // --- Solicitar cita asociada al paciente en sesión ---
+    public void cargarDatosParaAgendar() {
+        try {
+            EmpleadoDAO empleadoDAO = ServiceLocator.getInstanceEmpleadoDAO();
+            List<Empleado> todos = empleadoDAO.obtenerTodos();
+
+            this.listaDentistas = todos.stream()
+                    .filter(e -> "Dentista".equalsIgnoreCase(e.getPuesto()))
+                    .collect(Collectors.toList());
+
+            if (fecha == null) {
+                fecha = LocalDate.now().plusDays(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToastMessage("error", "Error", "No se pudieron cargar los datos: " + e.getMessage());
+        }
+    }
+
+    public void agendarCitaPorAdmin() {
+        try {
+            if (pacienteObjetivo == null) {
+                showToastMessage("error", "Error", "No hay paciente seleccionado.");
+                return;
+            }
+            if (dentistaSeleccionado == null) {
+                showToastMessage("error", "Error", "Debe asignar un dentista.");
+                return;
+            }
+            if (fecha == null) {
+                showToastMessage("error", "Error", "Seleccione una fecha.");
+                return;
+            }
+            if (hora == null || hora.isEmpty()) {
+                showToastMessage("error", "Error", "Seleccione una hora.");
+                return;
+            }
+
+            // Crear la cita
+            Cita nuevaCita = new Cita();
+            nuevaCita.setFecha(fecha);
+            nuevaCita.setHora(LocalTime.parse(hora));
+            nuevaCita.setMotivo(motivo);
+            nuevaCita.setEstado(Cita.EstadoCita.valueOf("Programada"));
+            nuevaCita.setIdPaciente(pacienteObjetivo);
+            nuevaCita.setIdEmpleado(dentistaSeleccionado);
+
+            // Guardar en base de datos
+            ServiceLocator.getInstanceCitaDAO().save(nuevaCita);
+
+            showToastMessage("success", "Éxito", "Cita agendada correctamente.");
+            limpiarFormulario();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToastMessage("error", "Error", "No se pudo agendar la cita: " + e.getMessage());
+        }
+    }
+
     public void solicitarCita() {
         FacesContext context = FacesContext.getCurrentInstance();
 
         try {
-            Paciente pacienteLogueado = (Paciente) context.getExternalContext().getSessionMap().get("usuarioLogueado");
-
-            if (pacienteLogueado == null) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Error de sesión", "No se encontró el paciente autenticado. Inicie sesión nuevamente."));
+            if (pacienteObjetivo == null) {
+                showToastMessage("error", "Error de sesión",
+                        "No se encontró la sesión del paciente. Inicie sesión nuevamente.");
                 return;
             }
 
-            // Validaciones
             if (fecha == null) {
-                showToastMessage("error", "Error de Validación", "Debe seleccionar una fecha.");
+                showToastMessage("error", "Fecha requerida",
+                        "Debe seleccionar una fecha.");
                 return;
             }
+
             if (!fecha.isAfter(LocalDate.now())) {
-                showToastMessage("error", "Fecha inválida", "No puede agendar citas el mismo día o en días pasados.");
+                showToastMessage("error", "Fecha no permitida",
+                        "No puede agendar citas hoy ni en días anteriores.");
                 return;
             }
+
             if (fecha.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                showToastMessage("error", "Horario no disponible", "No se pueden agendar citas los domingos.");
+                showToastMessage("error", "Consultorio cerrado",
+                        "No se pueden registrar citas en domingo.");
                 return;
             }
+
             if (hora == null || hora.isEmpty()) {
-                showToastMessage("error", "Error de Validación", "Debe seleccionar una hora.");
+                showToastMessage("error", "Hora requerida",
+                        "Debe seleccionar una hora.");
                 return;
             }
+
             if (motivo == null || motivo.trim().isEmpty()) {
-                showToastMessage("error", "Error de Validación", "Debe indicar el motivo de la cita.");
+                showToastMessage("error", "Motivo requerido",
+                        "Debe especificar el motivo de la cita.");
+                return;
+            }
+
+            List<LocalTime> ocupadas = citaDAO.obtenerHorasOcupadas(fecha);
+            if (ocupadas.contains(LocalTime.parse(hora))) {
+                showToastMessage("warn", "Hora no disponible",
+                        "La hora seleccionada ya fue tomada, elija otra por favor.");
+                cargarHorasDisponibles();
                 return;
             }
 
@@ -77,33 +160,67 @@ public class CitaBean implements Serializable {
             cita.setFecha(fecha);
             cita.setHora(LocalTime.parse(hora));
             cita.setMotivo(motivo);
-            cita.setEstado("Pendiente");
+            cita.setEstado(Cita.EstadoCita.Pendiente);
+            cita.setIdPaciente(pacienteObjetivo);
 
-            cita.setIdPaciente(pacienteLogueado);
+            citaDAO.save(cita);
 
-            ServiceLocator.getInstanceCitaDAO().save(cita);
-
-            showToastMessage("success", "¡Cita solicitada con éxito!",
-                    "Su cita para el " + fecha + " a las " + hora + " ha sido registrada correctamente.");
+            showToastMessage("success", "Cita registrada",
+                    "Su cita para el " + fecha + " a las " + hora + " fue registrada correctamente.");
 
             limpiarFormulario();
             cargarCitasRegistradas();
 
         } catch (Exception e) {
-            showToastMessage("error", "Error del Sistema",
-                    "Ocurrió un error al solicitar la cita: " + e.getMessage());
+            showToastMessage("error", "Error del sistema",
+                    "Ocurrió un error al registrar la cita: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public void onDateSelect() {
-        cargarHorasDisponibles();
-        if (fecha != null) {
-            String mensaje = fecha.getDayOfWeek() == DayOfWeek.SATURDAY ?
-                    "Horario de sábado: 10:00 - 14:00" :
-                    "Horario: 10:00 - 20:00";
-            showToastMessage("info", "Horario", mensaje);
+
+    public void onDateSelect(SelectEvent<LocalDate> event) {
+
+        this.fecha = event.getObject();
+
+        if (fecha == null) {
+            horasDisponibles = new ArrayList<>();
+            return;
         }
+
+        if (fecha.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            horasDisponibles = new ArrayList<>();
+            showToastMessage("warn", "Consultorio cerrado",
+                    "Los domingos no se atienden citas.");
+            return;
+        }
+
+        if (!fecha.isAfter(LocalDate.now())) {
+            horasDisponibles = new ArrayList<>();
+            showToastMessage("error", "Fecha inválida",
+                    "Solo puede agendar citas desde mañana en adelante.");
+            return;
+        }
+
+        cargarHorasDisponibles();
+    }
+
+
+
+    private List<String> generarHorasDisponibles(LocalDate fecha) {
+        List<String> generadas = new ArrayList<>();
+        if (fecha == null) return generadas;
+
+        if (fecha.getDayOfWeek() == DayOfWeek.SATURDAY) {
+            String[] sabado = {"10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"};
+            generadas.addAll(Arrays.asList(sabado));
+        } else {
+            for (int h = 10; h < 20; h++) {
+                generadas.add(String.format("%02d:00", h));
+                generadas.add(String.format("%02d:30", h));
+            }
+        }
+        return generadas;
     }
 
     private void cargarFechasDisponibles() {
@@ -117,17 +234,63 @@ public class CitaBean implements Serializable {
         }
     }
 
-    private void cargarHorasDisponibles() {
-        horasDisponibles = new ArrayList<>();
-        if (fecha == null) return;
-        if (fecha.getDayOfWeek() == DayOfWeek.SATURDAY) {
-            String[] sabado = {"10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"};
-            for (String h : sabado) horasDisponibles.add(h);
+    private List<LocalTime> generarHorasDisponiblesLocalTime(LocalDate fecha) {
+        List<LocalTime> horas = new ArrayList<>();
+
+        if (fecha == null) return horas;
+
+        DayOfWeek dia = fecha.getDayOfWeek();
+
+        if (dia == DayOfWeek.SUNDAY) {
+            return horas;
+        }
+
+        LocalTime inicio;
+        LocalTime fin;
+
+        if (dia == DayOfWeek.SATURDAY) {
+            inicio = LocalTime.of(10, 0);
+            fin = LocalTime.of(14, 0);
         } else {
-            for (int h = 10; h < 20; h++) {
-                horasDisponibles.add(h + ":00");
-                horasDisponibles.add(h + ":30");
-            }
+            inicio = LocalTime.of(10, 0);
+            fin = LocalTime.of(20, 0);
+        }
+
+        LocalTime actual = inicio;
+        while (!actual.isAfter(fin.minusMinutes(30))) {
+            horas.add(actual);
+            actual = actual.plusMinutes(30);
+        }
+
+        return horas;
+    }
+
+
+    private void cargarHorasDisponibles() {
+
+        if (fecha == null) {
+            horasDisponibles = new ArrayList<>();
+            return;
+        }
+
+        if (!fecha.isAfter(LocalDate.now())) {
+            horasDisponibles = new ArrayList<>();
+            showToastMessage("error", "Fecha no válida",
+                    "Solo puede seleccionar fechas posteriores a hoy.");
+            return;
+        }
+
+        List<LocalTime> generadas = generarHorasDisponiblesLocalTime(fecha);
+        List<LocalTime> ocupadas = citaDAO.obtenerHorasOcupadas(fecha);
+
+        horasDisponibles = generadas.stream()
+                .filter(h -> !ocupadas.contains(h))
+                .map(h -> h.format(DateTimeFormatter.ofPattern("HH:mm")))
+                .toList();
+
+        if (horasDisponibles.isEmpty()) {
+            showToastMessage("info", "Sin disponibilidad",
+                    "No hay horarios disponibles para este día.");
         }
     }
 
@@ -158,7 +321,7 @@ public class CitaBean implements Serializable {
 
         if (citasRegistradas != null) {
             citasRegistradas = citasRegistradas.stream()
-                    .filter(c -> !"Cancelada".equalsIgnoreCase(c.getEstado()))
+                    .filter(c -> c.getEstado() != Cita.EstadoCita.Cancelada)
                     .toList();
         }
     }
@@ -169,7 +332,7 @@ public class CitaBean implements Serializable {
                 showToastMessage("warn", "Aviso", "Debe seleccionar una cita para cancelar.");
                 return;
             }
-            if ("Cancelada".equalsIgnoreCase(citaSeleccionada.getEstado())) {
+            if (citaSeleccionada.getEstado() == Cita.EstadoCita.Cancelada) {
                 showToastMessage("info", "Cita ya cancelada", "Esta cita ya fue cancelada anteriormente.");
                 return;
             }
@@ -184,58 +347,12 @@ public class CitaBean implements Serializable {
         }
     }
 
-    // MÉTODO CORREGIDO - Sin ServletContext
-    public boolean isRecetaDisponible(Cita cita) {
-        if (cita == null || !"Completada".equals(cita.getEstado())) {
-            return false;
-        }
-
-        try {
-            // CORRECCIÓN: Usar getRealPath() en lugar de ServletContext
-            String realPath = FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .getRealPath("/resources/recetas/");
-
-            if (realPath == null) {
-                return false;
-            }
-
-            String nombreArchivo = "receta_cita" + cita.getId() + ".pdf";
-            String rutaArchivo = realPath + File.separator + nombreArchivo;
-
-            File archivo = new File(rutaArchivo);
-            return archivo.exists() && archivo.isFile();
-        } catch (Exception e) {
-            System.err.println("Error en isRecetaDisponible: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public void descargarReceta(Cita cita) {
-        try {
-            if (!isRecetaDisponible(cita)) {
-                showToastMessage("warn", "Receta no disponible",
-                        "La receta para esta cita no está disponible aún.");
-                return;
-            }
-            // La descarga se maneja automáticamente con el link
-        } catch (Exception e) {
-            showToastMessage("error", "Error", "No se pudo descargar la receta.");
-            e.printStackTrace();
-        }
-    }
-
-    public String getRutaReceta(Cita cita) {
-        if (!isRecetaDisponible(cita)) {
-            return "#";
-        }
-        return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() +
-                "/resources/recetas/receta_cita" + cita.getId() + ".pdf";
-    }
-
     // --- Getters y Setters ---
     public Cita getCitaSeleccionada() { return citaSeleccionada; }
     public void setCitaSeleccionada(Cita citaSeleccionada) { this.citaSeleccionada = citaSeleccionada; }
+    public void setListaDentistas(List<Empleado> listaDentistas) {
+        this.listaDentistas = listaDentistas;
+    }
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) {
@@ -246,6 +363,11 @@ public class CitaBean implements Serializable {
     public void setHora(String hora) { this.hora = hora; }
     public String getMotivo() { return motivo; }
     public void setMotivo(String motivo) { this.motivo = motivo; }
+    public Paciente getPacienteObjetivo() { return pacienteObjetivo; }
+    public void setPacienteObjetivo(Paciente pacienteObjetivo) { this.pacienteObjetivo = pacienteObjetivo; }
+    public Empleado getDentistaSeleccionado() { return dentistaSeleccionado; }
+    public void setDentistaSeleccionado(Empleado dentistaSeleccionado) { this.dentistaSeleccionado = dentistaSeleccionado; }
+    public List<Empleado> getListaDentistas() { return listaDentistas; }
 
     public List<String> getHorasDisponibles() { return horasDisponibles; }
     public List<LocalDate> getFechasDisponibles() { return fechasDisponibles; }

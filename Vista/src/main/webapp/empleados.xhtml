@@ -21,11 +21,24 @@
     <header>
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
+                                                       styleClass="btn-logout"
+                                                       title="Cerrar Sesión">
+
+                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                style="height: 25px; width: 25px;"
+                                alt="Cerrar Sesión"/>
+            </p:commandLink>
+            </h:form>
         </div>
         <nav class="main-nav">
             <!-- Navegación actualizada con p:link -->
             <p:link outcome="inicio_admin" value="INICIO" />
-            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" styleClass="active" />
+            <p:link outcome="pacientesad" value="GESTIONAR PACIENTES"  />
+            <p:link outcome="empleados" value="GESTIONAR EMPLEADOS" styleClass="active"/>
             <a href="#">CORTE DE CAJA</a>
         </nav>
     </header>
@@ -96,12 +109,13 @@
                                         <div class="custom-table-cell">#{e.telefono}</div>
                                         <div class="custom-table-cell">#{e.correo}</div>
                                         <div class="custom-table-actions">
-                                            <p:commandButton icon="pi pi-pencil" title="Editar"
-                                                             styleClass="ui-button-warning ui-button-flat"
-                                                             action="#{empleadoBean.irAEditar(e)}"
-                                                             ajax="false" />
-
-                                            <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
+                                            <p:commandButton icon="pi pi-pencil"
+                                                              title="Editar"
+                                                              update=":formEditarDialog"
+                                                              oncomplete="PF('dlgEditar').show()"
+                                                              styleClass="ui-button-warning ui-button-flat">
+                                            <f:setPropertyActionListener value="#{e}" target="#{empleadoBean.empleadoAEditar}" />
+                                        </p:commandButton>
                                         </div>
                                     </div>
                                 </ui:repeat>
@@ -115,5 +129,46 @@
             </div>
         </div>
     </main>
+    <p:dialog header="Modificar Empleado" widgetVar="dlgEditar" modal="true" resizable="false" showEffect="fade" hideEffect="fade" width="600">
+        <h:form id="formEditarDialog">
+            <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank"
+                         rendered="#{not empty empleadoBean.empleadoAEditar}">
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="nombreEd" value="Nombre:" />
+                    <p:inputText id="nombreEd" value="#{empleadoBean.empleadoAEditar.nombre}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="apellidoEd" value="Apellido:" />
+                    <p:inputText id="apellidoEd" value="#{empleadoBean.empleadoAEditar.apellido}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="telefonoEd" value="Teléfono:" />
+                    <p:inputText id="telefonoEd" value="#{empleadoBean.empleadoAEditar.telefono}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="correoEd" value="Correo:" />
+                    <p:inputText id="correoEd" value="#{empleadoBean.empleadoAEditar.correo}" required="true" />
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="ui-grid-col-12">
+                    <p:outputLabel for="puestoEd" value="Puesto:" />
+                    <p:selectOneMenu id="puestoEd" value="#{empleadoBean.empleadoAEditar.puesto}" required="true">
+                        <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+                <p:commandButton value="Guardar Cambios"
+                                 actionListener="#{empleadoBean.actualizarEmpleado}"
+                                 update=":formConsulta:consultaContainer :messages"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();"
+                                 style="width: 100%; margin-top: 10px;" />
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+
 </h:body>
 </html>

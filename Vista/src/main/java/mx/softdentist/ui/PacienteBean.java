@@ -6,7 +6,7 @@ import jakarta.inject.Named;
 import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
 import mx.softdentist.dao.PacienteDAO;
-
+import java.util.Map;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -21,11 +21,13 @@ public class PacienteBean implements Serializable{
     private Paciente nuevoPaciente;
     private List<Paciente> listaPacientes;
     private PacienteDAO pacienteDAO;
+    private Paciente pacienteAEditar;
 
     public PacienteBean() {
         pacienteDAO = ServiceLocator.getInstancePacienteDAO();
         nuevoPaciente = new Paciente();
         listaPacientes = new ArrayList<>();
+        pacienteAEditar = new Paciente();
     }
 
     @PostConstruct
@@ -35,24 +37,55 @@ public class PacienteBean implements Serializable{
 
     public void guardarPaciente() {
         try {
+            System.out.println("Datos del paciente: " + nuevoPaciente);
+
             pacienteDAO.save(nuevoPaciente);
-            listaPacientes = pacienteDAO.obtenerTodos(); // refresca tabla
-            nuevoPaciente = new Paciente(); // limpia formulario
+            listaPacientes = pacienteDAO.obtenerTodos();
+            nuevoPaciente = new Paciente();
 
-            //mensaje de exito
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Exito", "Paciente guardado"));
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente guardado correctamente"));
 
-            // mensaje de exito
-            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente registrado correctamente.");
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("ERROR al guardar: " + e.getMessage());
 
-            //menaje de error
+            // Mensaje de error
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el paciente"));
-            // mensaje de fallo
-            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al paciente. Intente de nuevo.");
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el paciente: " + e.getMessage()));
+        }
+    }
+
+    public void cargarDatosParaEditar() {
+        Map<String, String> params = FacesContext.getCurrentInstance()
+                .getExternalContext().getRequestParameterMap();
+        String idParam = params.get("id");
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                // Usamos el DAO para buscar el paciente
+                this.pacienteAEditar = pacienteDAO.find(id).orElse(new Paciente());
+            } catch (NumberFormatException e) {
+                addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "ID de paciente inválido.");
+            }
+        }
+    }
+
+    public void actualizarPaciente() {
+        try {
+            System.out.println("Paciente a editar: " + pacienteAEditar);
+
+            pacienteDAO.update(pacienteAEditar);
+            listaPacientes = pacienteDAO.obtenerTodos();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente actualizado correctamente"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar: " + e.getMessage()));
         }
     }
 
@@ -82,4 +115,8 @@ public class PacienteBean implements Serializable{
     public void setListaPacientes(List<Paciente> listaPacientes) {
         this.listaPacientes = listaPacientes;
     }
+
+    public Paciente getPacienteAEditar() { return pacienteAEditar; }
+
+    public void setPacienteAEditar(Paciente pacienteAEditar) { this.pacienteAEditar = pacienteAEditar; }
 }
