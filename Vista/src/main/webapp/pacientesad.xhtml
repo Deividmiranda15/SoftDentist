@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
@@ -12,73 +12,6 @@
     <title>Gestión de Usuarios - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
     <h:outputStylesheet name="css/patrondental.css" />
-
-    <style>
-        .ui-dialog {
-            max-width: 90vw;
-        }
-
-        /* --- ESTILOS DE LA TARJETA PRINCIPAL --- */
-        .full-view-card {
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            min-height: 80vh;
-            overflow: hidden; /* Para que el header respete los bordes redondeados */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- NUEVO ENCABEZADO TIPO TABS --- */
-        .card-header-tabs {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            padding: 0 20px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            height: 60px;
-        }
-
-        .tab-btn {
-            background: none !important;
-            border: none !important;
-            box-shadow: none !important;
-            font-weight: 600 !important;
-            font-size: 1rem !important;
-            color: #6c757d !important;
-            padding: 0 10px !important;
-            height: 100%;
-            border-radius: 0 !important;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        /* Estilo para la pestaña activa (borde inferior de color) */
-        .tab-btn.active-tab {
-            color: #0d6efd !important; /* Azul corporativo, cámbialo si gustas */
-            border-bottom: 3px solid #0d6efd !important;
-        }
-
-        .tab-btn:hover {
-            color: #0a58ca !important;
-            background-color: rgba(0,0,0,0.02) !important;
-        }
-
-        /* Contenedor del contenido para dar margen */
-        .card-content {
-            padding: 30px;
-            flex-grow: 1;
-        }
-
-        /* Ajuste para alinear botón con input */
-        .field-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            height: 100%;
-        }
-    </style>
 </h:head>
 
 <h:body>
@@ -86,12 +19,13 @@
 
     <header>
         <div class="top-bar">
-            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="logo-img"/>
 
-            <h:form style="margin: 0;">
+            <h:form styleClass="logout-form">
                 <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
-                    <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
-                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png" style="height: 25px; width: 25px;" alt="Cerrar Sesión"/>
+                    <span class="logout-text">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                    alt="Cerrar Sesión" styleClass="logout-icon"/>
                 </p:commandLink>
             </h:form>
         </div>
@@ -126,12 +60,11 @@
                     <h:panelGroup id="contenedorPrincipal">
 
                         <h:panelGroup rendered="#{pacienteBean.vistaActual eq 'ALTA'}">
-                            <h2 style="margin-top:0; color: #333;">Alta de Nuevo Paciente</h2>
+                            <h2 class="section-title">Alta de Nuevo Paciente</h2>
                             <h:form id="formAlta">
                                 <p:panelGrid columns="2" layout="grid"
-                                             styleClass="ui-panelgrid-blank ui-fluid"
-                                             columnClasses="ui-grid-col-6, ui-grid-col-6"
-                                             style="margin-top: 20px;">
+                                             styleClass="ui-panelgrid-blank ui-fluid grid-mt-20"
+                                             columnClasses="ui-grid-col-6, ui-grid-col-6">
 
                                     <h:panelGroup>
                                         <p:outputLabel for="nombre" value="Nombre:" />
@@ -172,13 +105,12 @@
 
                                 </p:panelGrid>
 
-                                <h:panelGroup layout="block" style="margin-top: 25px; width: 100%;" monthNavigator="true" yearNavigator="true" yearRange="1940:2050">
+                                <h:panelGroup layout="block" styleClass="btn-wrapper-full">
                                     <p:commandButton value="Guardar Paciente"
                                                      icon="pi pi-check"
                                                      actionListener="#{pacienteBean.guardarPaciente}"
                                                      update="formAlta :contenedorPrincipal messages :formTabs"
-                                                     styleClass="ui-button-success"
-                                                     style="width: 100%; height: 3.5rem; font-size: 1.1em;" />
+                                                     styleClass="ui-button-success btn-guardar-large" />
                                 </h:panelGroup>
 
                             </h:form>
@@ -186,7 +118,7 @@
 
 
                         <h:panelGroup rendered="#{pacienteBean.vistaActual eq 'CONSULTA' or empty pacienteBean.vistaActual}">
-                            <h2 style="margin-top:0; color: #333;">Consulta de Pacientes</h2>
+                            <h2 class="section-title">Consulta de Pacientes</h2>
                             <h:form id="formConsulta">
                                 <div class="search-bar">
                                     <p:inputText placeholder="Buscar por nombre o usuario..." />
@@ -199,7 +131,7 @@
                                             <div>NOMBRE COMPLETO</div>
                                             <div>TELÉFONO</div>
                                             <div>CORREO</div>
-                                            <div style="text-align: right;">ACCIONES</div>
+                                            <div class="text-right">ACCIONES</div>
                                         </div>
                                         <ui:repeat value="#{pacienteBean.listaPacientes}" var="p">
                                             <div class="custom-table-row">
@@ -237,38 +169,48 @@
 
     <p:dialog header="Modificar Paciente" widgetVar="dlgEditar" modal="true" resizable="false" showEffect="fade" hideEffect="fade" width="700" responsive="true" blockScroll="true">
         <h:form id="formEditarDialog">
-            <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid" columnClasses="ui-grid-col-6, ui-grid-col-6" rendered="#{not empty pacienteBean.pacienteAEditar}">
+            <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+                         columnClasses="ui-grid-col-6, ui-grid-col-6"
+                         rendered="#{not empty pacienteBean.pacienteAEditar}">
                 <h:panelGroup><p:outputLabel for="nombreEd" value="Nombre:" /><p:inputText id="nombreEd" value="#{pacienteBean.pacienteAEditar.nombre}" required="true" /></h:panelGroup>
                 <h:panelGroup><p:outputLabel for="apellidoEd" value="Apellido:" /><p:inputText id="apellidoEd" value="#{pacienteBean.pacienteAEditar.apellido}" required="true" /></h:panelGroup>
                 <h:panelGroup><p:outputLabel for="telefonoEd" value="Teléfono:" /><p:inputText id="telefonoEd" value="#{pacienteBean.pacienteAEditar.telefono}" required="true" /></h:panelGroup>
                 <h:panelGroup><p:outputLabel for="correoEd" value="Correo:" /><p:inputText id="correoEd" value="#{pacienteBean.pacienteAEditar.correo}" required="true" /></h:panelGroup>
-                <h:panelGroup styleClass="ui-grid-col-12" style="grid-column: span 2;"><p:outputLabel for="direccionEd" value="Dirección:" /><p:inputText id="direccionEd" value="#{pacienteBean.pacienteAEditar.direccion}" required="true" /></h:panelGroup>
+
+                <h:panelGroup styleClass="grid-col-span-2 ui-grid-col-12">
+                    <p:outputLabel for="direccionEd" value="Dirección:" />
+                    <p:inputText id="direccionEd" value="#{pacienteBean.pacienteAEditar.direccion}" required="true" />
+                </h:panelGroup>
+
                 <h:panelGroup><p:outputLabel for="fechaNacimientoEd" value="Fecha de Nacimiento:" /><p:datePicker id="fechaNacimientoEd" value="#{pacienteBean.pacienteAEditar.fechaNacimiento}" showIcon="true" monthNavigator="true" yearNavigator="true" yearRange="1930:2030" /></h:panelGroup>
                 <h:panelGroup />
             </p:panelGrid>
-            <p:commandButton value="Guardar Cambios" actionListener="#{pacienteBean.actualizarPaciente}" update=":formConsulta:consultaContainer :messages" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();" style="width: 100%; margin-top: 15px;" />
+            <p:commandButton value="Guardar Cambios" actionListener="#{pacienteBean.actualizarPaciente}" update=":formConsulta:consultaContainer :messages" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();" styleClass="btn-full-width-mt" />
         </h:form>
     </p:dialog>
 
     <p:dialog header="Agendar Cita" widgetVar="dlgAgendar" modal="true" resizable="false" showEffect="fade" hideEffect="fade" width="600" responsive="true" blockScroll="true">
         <h:form id="formAgendarDialog">
-            <h:panelGroup rendered="#{not empty citaBean.pacienteObjetivo}" style="display:block; text-align:center; margin-bottom: 15px;">
-                <h:outputText value="Paciente: #{citaBean.pacienteObjetivo.nombre} #{citaBean.pacienteObjetivo.apellido}" style="font-weight: bold; font-size: 1.1em; color: #444;"/>
+            <h:panelGroup rendered="#{not empty citaBean.pacienteObjetivo}" styleClass="dialog-header-centered">
+                <h:outputText value="Paciente: #{citaBean.pacienteObjetivo.nombre} #{citaBean.pacienteObjetivo.apellido}" styleClass="paciente-highlight"/>
             </h:panelGroup>
+
             <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
-                <h:panelGroup style="grid-column: span 2;">
+                <h:panelGroup styleClass="grid-col-span-2">
                     <p:outputLabel for="dentista" value="Especialista:" />
                     <p:selectOneMenu id="dentista" value="#{citaBean.dentistaSeleccionado}" converter="#{empleadoConverter}" required="true">
                         <f:selectItem itemLabel="Seleccione un dentista..." itemValue="#{null}" noSelectionOption="true"/>
                         <f:selectItems value="#{citaBean.listaDentistas}" var="d" itemLabel="#{d.nombre} #{d.apellido}" itemValue="#{d}"/>
                     </p:selectOneMenu>
                 </h:panelGroup>
+
                 <h:panelGroup>
                     <p:outputLabel for="fecha" value="Fecha:" />
                     <p:datePicker id="fecha" value="#{citaBean.fecha}" locale="es" minDate="#{citaBean.manana}" showIcon="true" pattern="dd/MM/yyyy">
                         <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="horas"/>
                     </p:datePicker>
                 </h:panelGroup>
+
                 <h:panelGroup>
                     <p:outputLabel for="horas" value="Hora:" />
                     <p:selectOneMenu id="horas" value="#{citaBean.hora}" required="true">
@@ -276,7 +218,8 @@
                         <f:selectItems value="#{citaBean.horasDisponibles}" />
                     </p:selectOneMenu>
                 </h:panelGroup>
-                <h:panelGroup style="grid-column: span 2;">
+
+                <h:panelGroup styleClass="grid-col-span-2">
                     <p:outputLabel for="motivo" value="Motivo:" />
                     <div class="grid-motivos">
                         <p:selectOneButton id="motivo" value="#{citaBean.motivo}" required="true" unselectable="false">
@@ -288,8 +231,9 @@
                     </div>
                 </h:panelGroup>
             </p:panelGrid>
-            <h:panelGroup style="grid-column: span 2;">
-                <p:commandButton value="Confirmar Cita" actionListener="#{citaBean.agendarCitaPorAdmin}" update=":messages" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgAgendar').hide();" style="width: 100%; margin-top: 15px;" />
+
+            <h:panelGroup styleClass="grid-col-span-2">
+                <p:commandButton value="Confirmar Cita" actionListener="#{citaBean.agendarCitaPorAdmin}" update=":messages" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgAgendar').hide();" styleClass="btn-full-width-mt" />
             </h:panelGroup>
         </h:form>
     </p:dialog>
