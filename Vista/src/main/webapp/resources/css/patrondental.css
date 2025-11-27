@@ -365,3 +365,74 @@ body .tab-btn.ui-button:hover {
     background-color: #e6fffa !important; /* Fondo verde muy claro */
     color: #084D4A !important;            /* Texto verde oscuro */
 }
+
+/* =========================================
+   INICIO
+   ========================================= */
+
+/* Centrado vertical y horizontal en la tarjeta */
+.dashboard-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 60vh;
+}
+
+/* Contenedor Flex: Logo Izquierda | Texto Derecha */
+.dashboard-welcome-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px; /* Espacio entre logo y texto */
+    padding: 0 40px;
+}
+
+/* Columna Logo */
+.welcome-logo-wrapper {
+    flex-shrink: 0; /* Evita que el logo se aplaste */
+}
+
+/* Logo con tamaño controlado */
+.dashboard-logo-img {
+    width: 180px; /* Tamaño moderado, no gigante */
+    height: auto;
+    display: block;
+}
+
+/* Columna Texto */
+.welcome-text-wrapper {
+    text-align: left;
+    color: #333333; /* Texto oscuro para fondo blanco */
+}
+
+.welcome-text-wrapper h1 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #555;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.welcome-text-wrapper h2.highlight-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #084D4A; /* Verde corporativo */
+    margin: 5px 0 10px 0;
+}
+
+.welcome-text-wrapper p {
+    font-size: 1.1rem;
+    color: #777;
+    margin: 0;
+}
+
+/* Responsive: En celular se pone uno abajo del otro */
+@media (max-width: 768px) {
+    .dashboard-welcome-row {
+        flex-direction: column;
+        text-align: center;
+    }
+    .welcome-text-wrapper {
+        text-align: center;
+    }
+}
