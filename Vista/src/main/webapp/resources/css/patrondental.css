@@ -292,3 +292,76 @@ body .tab-btn.ui-button:hover {
     margin-top: 10px !important;
 }
 .login-button:hover { background-color: #333 !important; }
+
+/* =========================================
+   FILTRO TIPO BOTÓN (Dropdown estilizado)
+   ========================================= */
+/* El contenedor principal del SelectOneMenu se disfraza de botón */
+.custom-filter-dropdown.ui-selectonemenu {
+    background: #084D4A !important;
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+    height: auto !important;
+    min-width: 200px !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: background-color 0.3s ease !important;
+}
+
+/* Efecto Hover */
+.custom-filter-dropdown.ui-selectonemenu:hover {
+    background: #063a38 !important;
+}
+
+/* El texto seleccionado (Label) */
+.custom-filter-dropdown .ui-selectonemenu-label {
+    color: #FFFFFF !important;           /* Texto blanco */
+    font-weight: 600 !important;
+    padding: 12px 15px !important;       /* Padding generoso como botón */
+    margin: 0 !important;
+    flex-grow: 1 !important;             /* Ocupa el espacio disponible */
+}
+
+/* La zona del icono de flecha (Trigger) */
+.custom-filter-dropdown .ui-selectonemenu-trigger {
+    background: transparent !important;  /* Transparente para unirse al "botón" */
+    border: none !important;
+    width: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 0 8px 8px 0 !important;
+    border-left: 1px solid rgba(255,255,255,0.2) !important; /* Separador sutil */
+}
+
+/* El icono de la flecha en sí */
+.custom-filter-dropdown .ui-selectonemenu-trigger .ui-icon {
+    /* Forzamos el color blanco. */
+    /* Nota: PrimeFaces a veces usa imágenes, esto invierte el color a blanco si es negro */
+    filter: brightness(0) invert(1) !important;
+    margin-top: 0 !important; /* Centrado */
+}
+.custom-filter-dropdown .ui-selectonemenu-trigger .ui-icon:before {
+    color: #FFFFFF !important;
+}
+
+/* ESTILOS DEL PANEL DESPLEGABLE (La lista que se abre) */
+.custom-filter-panel {
+    border-radius: 8px !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15) !important;
+    border: none !important;
+    margin-top: 5px !important;
+}
+.custom-filter-panel .ui-selectonemenu-items .ui-selectonemenu-item {
+    padding: 10px 15px !important;
+    font-size: 0.95rem !important;
+    color: #444 !important;
+    border-radius: 4px !important;
+    margin: 2px 5px !important;
+}
+.custom-filter-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-highlight,
+.custom-filter-panel .ui-selectonemenu-items .ui-selectonemenu-item:hover {
+    background-color: #e6fffa !important; /* Fondo verde muy claro */
+    color: #084D4A !important;            /* Texto verde oscuro */
+}

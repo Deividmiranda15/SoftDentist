@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
@@ -121,10 +121,11 @@
                             <h2 class="section-title">Consulta de Pacientes</h2>
                             <h:form id="formConsulta">
                                 <div class="search-bar">
-                                    <p:inputText placeholder="Buscar por nombre o usuario..." />
-                                    <p:commandButton value="Buscar" icon="pi pi-search"/>
-                                    <p:commandButton value="Actualizar" update="consultaContainer" icon="pi pi-refresh" styleClass="ui-button-secondary ui-button-flat"/>
+                                    <p:inputText id="txtBusqueda" placeholder="Buscar por nombre, teléfono o correo..."
+                                                 onkeyup="filtrarTabla()"
+                                                 style="width: 100%;" />
                                 </div>
+
                                 <h:panelGroup id="consultaContainer" layout="block">
                                     <div class="custom-table">
                                         <div class="custom-table-header">
@@ -237,6 +238,31 @@
             </h:panelGroup>
         </h:form>
     </p:dialog>
+
+    <script>
+        function filtrarTabla() {
+            // 1. Obtenemos el texto del input de búsqueda
+            var input = document.getElementById('formConsulta:txtBusqueda');
+            var filtro = input ? input.value.toUpperCase() : '';
+
+            // 2. Obtenemos todas las filas de la tabla
+            var filas = document.getElementsByClassName('custom-table-row');
+
+            // 3. Recorremos cada fila para ver si coincide
+            for (var i = 0; i &lt; filas.length; i++) {
+                var fila = filas[i];
+                // Obtenemos todo el texto visible de la fila (Nombre, Teléfono, Correo)
+                var textoFila = fila.innerText || fila.textContent;
+
+                // 4. Si el texto de la fila contiene lo que buscamos, la mostramos
+                if (textoFila.toUpperCase().indexOf(filtro) > -1) {
+                    fila.style.display = "";
+                } else {
+                    fila.style.display = "none"; // Oculta la fila
+                }
+            }
+        }
+    </script>
 
 </h:body>
 </html>
