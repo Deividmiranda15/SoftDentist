@@ -12,15 +12,14 @@ import java.time.LocalDate;
 @Table(name = "pago", schema = "softdentist")
 public class Pago {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cita", nullable = false)
     private Integer id;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "id_cita", nullable = false)
-    private Cita cita;
+    @JoinColumn(name = "id_cita", nullable = false, referencedColumnName = "id_cita")
+    private Cita citas;
 
     @Size(max = 200)
     @Column(name = "descripcion", length = 200)
@@ -59,11 +58,11 @@ public class Pago {
     }
 
     public Cita getCitas() {
-        return cita;
+        return citas;
     }
 
     public void setCitas(Cita citas) {
-        this.cita = citas;
+        this.citas = citas;
     }
 
     public Integer getId() {

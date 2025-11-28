@@ -35,7 +35,11 @@ public class PagoBean implements Serializable {
     }
 
     public void guardarPago() {
+        FacesContext context = FacesContext.getCurrentInstance();
+
         try {
+            nuevoPago.setId(nuevoPago.getCitas().getId());
+
             pagoDAO.save(nuevoPago);
             listaPagos = pagoDAO.obtenerTodos(); // refresca tabla
             nuevoPago = new Pago(); // limpia formulario
@@ -101,6 +105,7 @@ public class PagoBean implements Serializable {
     }
 
     public List<Pago> getListaPagos() {
+        listaPagos = pagoDAO.obtenerTodos();    // Para no accidentalmente enviar resultados de busqueda
         return listaPagos;
     }
 
