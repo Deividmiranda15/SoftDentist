@@ -137,11 +137,11 @@
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
         </div>
-
         <nav class="main-nav">
-            <a href="inicio_emp.xhtml" class="nav-item">INICIO</a>
-            <a href="pacientes.xhtml" class="nav-item">GESTION PACIENTES</a>
-            <a href="#" class="nav-item active">CONSULTAR CITAS</a>
+            <p:link outcome="inicio_admin" value="INICIO" />
+            <p:link outcome="pacientesad" value="GESTIONAR PACIENTES" />
+            <p:link outcome="empleados" value="GESTIONAR EMPLEADOS" />
+            <a href="#" class="active">CONSULTAR CITAS</a>
             <a href="corte_caja.xhtml" class="nav-item">CAJA</a>
 
         </nav>
@@ -153,7 +153,7 @@
         </div>
 
         <div class="view-switcher-container">
-            <p:link outcome="consultacita_empleado" value="Ver Lista" styleClass="view-btn first" />
+            <p:link outcome="consultacita_admin" value="Ver Lista" styleClass="view-btn first" />
 
             <a href="#" class="view-btn last active">Ver Calendario</a>
         </div>

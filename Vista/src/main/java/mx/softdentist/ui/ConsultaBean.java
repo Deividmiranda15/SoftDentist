@@ -11,7 +11,7 @@ import java.util.List;
 @Named("citaConsultaBean")
 @ViewScoped
 
-public class ConsultaBeam implements Serializable {
+public class ConsultaBean implements Serializable {
 
     private List<Cita> listaCitas;
     private DelegateCita delegateCita;
