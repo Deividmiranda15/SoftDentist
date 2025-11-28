@@ -6,7 +6,7 @@ import jakarta.inject.Named;
 import mx.softdentist.entidad.Paciente;
 import mx.softdentist.integration.ServiceLocator;
 import mx.softdentist.dao.PacienteDAO;
-
+import java.util.Map;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -16,15 +16,23 @@ import java.util.List;
 
 @Named("pacienteBean")
 @ViewScoped
-public class PacienteBean implements Serializable{
+public class PacienteBean implements Serializable {
 
     private Paciente nuevoPaciente;
     private List<Paciente> listaPacientes;
     private PacienteDAO pacienteDAO;
+    private Paciente pacienteAEditar;
+
+    // --- NUEVA VARIABLE DE ESTADO ---
+    // Esta variable le dice al XHTML qué mostrar: "CONSULTA" o "ALTA"
+    private String vistaActual = "CONSULTA";
 
     public PacienteBean() {
         pacienteDAO = ServiceLocator.getInstancePacienteDAO();
         nuevoPaciente = new Paciente();
+        listaPacientes = new ArrayList<>();
+        pacienteAEditar = new Paciente();
+        // Inicializamos la lista para evitar nulos
         listaPacientes = new ArrayList<>();
     }
 
@@ -33,26 +41,58 @@ public class PacienteBean implements Serializable{
         listaPacientes = pacienteDAO.obtenerTodos();
     }
 
+    // --- NUEVO MÉTODO PARA CAMBIAR VISTA ---
+    public void cambiarVista(String vista) {
+        this.vistaActual = vista;
+        // Si vamos a registrar uno nuevo, limpiamos el objeto
+        if ("ALTA".equals(vista)) {
+            this.nuevoPaciente = new Paciente();
+        }
+    }
+
     public void guardarPaciente() {
         try {
             pacienteDAO.save(nuevoPaciente);
             listaPacientes = pacienteDAO.obtenerTodos(); // refresca tabla
             nuevoPaciente = new Paciente(); // limpia formulario
 
-            //mensaje de exito
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Exito", "Paciente guardado"));
+            // Al guardar exitosamente, regresamos a la vista de consulta
+            this.vistaActual = "CONSULTA";
 
-            // mensaje de exito
-            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente registrado correctamente.");
+            // Mensaje de éxito
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente guardado correctamente.");
+
         } catch (Exception e) {
             e.printStackTrace();
-
-            //menaje de error
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el paciente"));
-            // mensaje de fallo
+            // Mensaje de error
             addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al paciente. Intente de nuevo.");
+        }
+    }
+
+    public void cargarDatosParaEditar() {
+        Map<String, String> params = FacesContext.getCurrentInstance()
+                .getExternalContext().getRequestParameterMap();
+        String idParam = params.get("id");
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                // Usamos el DAO para buscar el paciente
+                this.pacienteAEditar = pacienteDAO.find(id).orElse(new Paciente());
+            } catch (NumberFormatException e) {
+                addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "ID de paciente inválido.");
+            }
+        }
+    }
+
+    public void actualizarPaciente() {
+        try {
+            pacienteDAO.update(pacienteAEditar);
+            listaPacientes = pacienteDAO.obtenerTodos(); // Refrescamos la lista para ver el cambio
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente actualizado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar.");
         }
     }
 
@@ -62,11 +102,11 @@ public class PacienteBean implements Serializable{
     }
 
     public String irAEditar(Paciente p) {
-        // Este es para luego hacer la modificacion con un editarPaciente.xhtml
         return "editarPaciente.xhtml?faces-redirect=true&id=" + p.getId();
     }
 
-    // Getters y setters
+    // --- GETTERS Y SETTERS ---
+
     public Paciente getNuevoPaciente() {
         return nuevoPaciente;
     }
@@ -81,5 +121,18 @@ public class PacienteBean implements Serializable{
 
     public void setListaPacientes(List<Paciente> listaPacientes) {
         this.listaPacientes = listaPacientes;
+    }
+
+    public Paciente getPacienteAEditar() { return pacienteAEditar; }
+
+    public void setPacienteAEditar(Paciente pacienteAEditar) { this.pacienteAEditar = pacienteAEditar; }
+
+    // --- GETTERS Y SETTERS DE LA NUEVA PROPIEDAD ---
+    public String getVistaActual() {
+        return vistaActual;
+    }
+
+    public void setVistaActual(String vistaActual) {
+        this.vistaActual = vistaActual;
     }
 }

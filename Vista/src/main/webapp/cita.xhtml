@@ -1,117 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
 <h:head>
-    <h:outputStylesheet name="css/patrondental.css" />
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Solicitar Cita - SoftDentist</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <h:outputStylesheet name="css/patrondental.css" />
+
     <style>
-        .form-container {
+        .form-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 70vh;
+            padding-top: 30px;
+        }
+
+        .card.form-card {
+            width: 100%;
             max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
+            margin: auto;
         }
-        .field-group {
-            margin-bottom: 20px;
+
+        .ui-selectonemenu-trigger .ui-icon {
+            color: white !important;
         }
-        .field-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
+
+        .ui-selectonemenu {
+            width: 100% !important;
         }
+
         .horario-info {
-            display: block;
             font-size: 12px;
             color: #666;
             margin-top: 5px;
             font-style: italic;
         }
-        .ui-selectonemenu {
-            width: 100% !important;
+
+        .paciente-info {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
         }
     </style>
 </h:head>
 
 <h:body>
-    <!-- Toast para mensajes -->
-    <p:growl id="messages" showDetail="true" life="3000" />
+    <!-- Mensajes de notificación -->
+    <p:growl id="messages" showDetail="true" life="4000" />
 
-    <div class="form-container">
-        <h:form id="citaForm">
-            <p:panel header="Solicitar Nueva Cita" style="width: 100%">
+    <!-- ENCABEZADO -->
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+        </div>
+        <nav class="main-nav">
+            <p:link outcome="inicio_paciente" value="INICIO" />
+            <p:link outcome="cita" value="SOLICITAR CITA" styleClass="active" />
+            <p:link outcome="mis_citas" value="MIS CITAS" />
+        </nav>
+    </header>
 
-                <div class="field-group">
-                    <p:outputLabel for="paciente" value="Paciente: *" styleClass="field-label" />
-                    <p:selectOneMenu id="paciente" value="#{citaBean.pacienteSeleccionadoId}" style="width:100%">
-                        <f:selectItem itemLabel="Seleccione un paciente" itemValue="#{null}" />
-                        <f:selectItems value="#{citaBean.pacientesDisponibles}" var="p"
-                                       itemLabel="#{p.nombre} #{p.apellido}"
-                                       itemValue="#{p.id}" />
-                    </p:selectOneMenu>
-                    <p:message for="paciente" />
-                </div>
+    <main class="main-content-backdrop">
+        <div class="transparent-container form-wrapper">
+            <div class="card form-card">
+                <h2>Solicitar Nueva Cita</h2>
 
+                <h:form id="citaForm">
+                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
 
-                <div class="field-group">
-                    <p:outputLabel for="fecha" value="Fecha de la cita: *" styleClass="field-label" />
-                    <p:datePicker id="fecha"
-                                  value="#{citaBean.fecha}"
-                                  required="true"
-                                  requiredMessage="La fecha es obligatoria"
-                                  showIcon="true"
-                                  pattern="yyyy-MM-dd">
-                        <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="hora motivo"/>
-                    </p:datePicker>
-                    <p:message for="fecha" />
-                </div>
+                        <!-- Paciente actual (solo se muestra, no se selecciona) -->
+                        <h:panelGroup>
+                            <h:outputText value="Paciente:" styleClass="paciente-info" />
+                            <h:outputText value="#{sessionScope['usuarioLogueado'].nombre} #{sessionScope['usuarioLogueado'].apellido}" />
+                        </h:panelGroup>
 
-                <!-- Hora como menú desplegable -->
-                <div class="field-group">
-                    <p:outputLabel for="hora" value="Hora de la cita: *" styleClass="field-label" />
-                    <p:selectOneMenu id="hora" value="#{citaBean.hora}"
-                                     required="true"
-                                     requiredMessage="La hora es obligatoria"
-                                     style="width: 100%">
-                        <f:selectItem itemLabel="Seleccione una hora" itemValue="#{null}" />
-                        <f:selectItems value="#{citaBean.horasDisponibles}" var="horaItem"
-                                       itemLabel="#{horaItem}" itemValue="#{horaItem}" />
-                    </p:selectOneMenu>
+                        <!-- Fecha -->
+                        <h:panelGroup>
+                            <p:outputLabel for="fecha" value="Fecha de la cita: *" />
+                            <p:datePicker id="fecha"
+                                          value="#{citaBean.fecha}"
+                                          required="true"
+                                          requiredMessage="La fecha es obligatoria."
+                                          showIcon="true"
+                                          pattern="yyyy-MM-dd"
+                                          minDate="#{citaBean.manana}">
+                                <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="hora motivo" />
+                            </p:datePicker>
+                            <p:message for="fecha" />
+                        </h:panelGroup>
 
-                    <p:message for="hora" />
-                    <p:outputLabel value="Horario: Lunes a Viernes 10:00 - 20:00, Sábados 8:00 - 14:00, Domingos Cerrado"
-                                   styleClass="horario-info" />
-                </div>
+                        <!-- Hora -->
+                        <h:panelGroup>
+                            <p:outputLabel for="hora" value="Hora de la cita: *" />
+                            <p:selectOneMenu id="hora"
+                                             value="#{citaBean.hora}"
+                                             required="true"
+                                             requiredMessage="Debe seleccionar una hora.">
+                                <f:selectItem itemLabel="Seleccione una hora" itemValue="#{null}" />
+                                <f:selectItems value="#{citaBean.horasDisponibles}" var="horaItem"
+                                               itemLabel="#{horaItem}" itemValue="#{horaItem}" />
+                            </p:selectOneMenu>
+                            <p:message for="hora" />
+                            <p:outputLabel value="Horario: Lunes a Viernes 10:00 - 20:00, Sábados 8:00 - 14:00, Domingos Cerrado"
+                                           styleClass="horario-info" />
+                        </h:panelGroup>
 
-                <!-- Motivo -->
-                <div class="field-group">
-                    <p:outputLabel for="motivo" value="Motivo de la cita: *" styleClass="field-label" />
-                    <p:inputTextarea id="motivo" value="#{citaBean.motivo}"
-                                     rows="4"
-                                     style="width: 100%"
-                                     required="true"
-                                     requiredMessage="El motivo es obligatorio"
-                                     placeholder="Describa el motivo de su consulta..."
-                                     autoResize="false" />
-                    <p:message for="motivo" />
-                </div>
+                        <!-- Motivo -->
+                        <h:panelGroup>
+                            <p:outputLabel for="motivo" value="Motivo de la cita: *" />
+                            <p:inputTextarea id="motivo" value="#{citaBean.motivo}"
+                                             rows="4"
+                                             style="width: 100%"
+                                             required="true"
+                                             requiredMessage="Debe ingresar el motivo de la cita."
+                                             placeholder="Describa el motivo de su consulta..."
+                                             autoResize="false" />
+                            <p:message for="motivo" />
+                        </h:panelGroup>
 
-                <!-- Botones -->
-                <div class="field-group" style="text-align: center; margin-top: 30px;">
-                    <p:commandButton value="Solicitar Cita"
-                                     action="#{citaBean.solicitarCita}"
-                                     update=":messages"
-                                     oncomplete="if(!args.validationFailed) PF('messages').show()"
-                                     styleClass="ui-button-primary"
-                                     icon="pi pi-calendar-plus"
-                                     process="@form" />
-                </div>
-
-            </p:panel>
-        </h:form>
-    </div>
-
+                        <!-- Botón -->
+                        <p:commandButton value="Solicitar Cita"
+                                         action="#{citaBean.solicitarCita}"
+                                         update=":messages citaForm"
+                                         icon="pi pi-calendar-plus"
+                                         styleClass="ui-button-primary"
+                                         style="width: 100%; margin-top: 15px;" />
+                    </p:panelGrid>
+                </h:form>
+            </div>
+        </div>
+    </main>
 </h:body>
 </html>

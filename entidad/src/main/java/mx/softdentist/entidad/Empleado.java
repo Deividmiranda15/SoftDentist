@@ -112,13 +112,7 @@ public class Empleado {
         this.correo = correo;
     }
 
-    public String getContrasena() {
-        return contrasena;
-    }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
-    }
 
     public String getPuesto() {
         return puesto;

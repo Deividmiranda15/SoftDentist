@@ -12,7 +12,7 @@ public class DelegateAdministrador {
         List<Administrador> usuarios = ServiceLocator.getInstanceAdministradorDAO().findAll();
 
         for(Administrador us:usuarios){
-            if(us.getContrasena().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)){
+            if(us.getPassword().equalsIgnoreCase(password) && us.getCorreo().equalsIgnoreCase(correo)){
                 admin = us;
             }
         }

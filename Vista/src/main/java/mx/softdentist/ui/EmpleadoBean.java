@@ -2,7 +2,6 @@ package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import mx.softdentist.entidad.Empleado;
 import mx.softdentist.facade.FacadeEmpleado;
@@ -12,26 +11,34 @@ import mx.softdentist.dao.EmpleadoDAO;
 import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-@Named
+@Named("empleadoBean")
 @ViewScoped
 public class EmpleadoBean implements Serializable {
 
     private FacadeEmpleado facadeEmpleado;
-@Named("empleadoBean")
-@RequestScoped
+
+    // Propiedades principales
     private Empleado nuevoEmpleado;
     private List<Empleado> listaEmpleados;
     private EmpleadoDAO empleadoDAO;
     private List<String> puestosDisponibles;
+    private Empleado empleadoAEditar;
+
+    // --- NUEVA PROPIEDAD PARA EL CONTROL DE TABS ---
+    private String vistaActual;
 
     public EmpleadoBean() {
         empleadoDAO = ServiceLocator.getInstanceEmpleadoDAO();
         nuevoEmpleado = new Empleado();
+        empleadoAEditar = new Empleado();
         listaEmpleados = new ArrayList<>();
+
+        // Inicializamos la vista por defecto en CONSULTA
+        this.vistaActual = "CONSULTA";
 
         // Puestos para empleados
         puestosDisponibles = new ArrayList<>();
@@ -44,8 +51,27 @@ public class EmpleadoBean implements Serializable {
     @PostConstruct
     public void init() {
         facadeEmpleado = new FacadeEmpleado();
-        listaEmpleados = facadeEmpleado.consultarTodosLosEmpleados();
-        listaEmpleados = empleadoDAO.obtenerTodos();
+        // Cargar la lista al iniciar
+        try {
+            listaEmpleados = empleadoDAO.obtenerTodos();
+        } catch (Exception e) {
+            System.out.println("Error al cargar empleados: " + e.getMessage());
+            listaEmpleados = new ArrayList<>();
+        }
+    }
+
+    // --- NUEVO MÉTODO PARA CAMBIAR ENTRE PESTAÑAS ---
+    public void cambiarVista(String vista) {
+        this.vistaActual = vista;
+
+        // Si cambiamos a consulta, refrescamos la lista por si hubo cambios
+        if ("CONSULTA".equals(vista)) {
+            this.listaEmpleados = empleadoDAO.obtenerTodos();
+        }
+        // Si cambiamos a alta, limpiamos el formulario
+        if ("ALTA".equals(vista)) {
+            this.nuevoEmpleado = new Empleado();
+        }
     }
 
     public void guardarEmpleado() {
@@ -53,43 +79,51 @@ public class EmpleadoBean implements Serializable {
             empleadoDAO.save(nuevoEmpleado);
             listaEmpleados = empleadoDAO.obtenerTodos(); // refresca tabla
             nuevoEmpleado = new Empleado(); // limpia formulario
-            // mensaje de exito
+
+             this.vistaActual = "CONSULTA";
+
             addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Empleado registrado correctamente.");
         } catch (Exception e) {
             e.printStackTrace();
-            // mensaje de fallo
-            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al Empleado. Intente de nuevo.");
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar.");
         }
     }
 
+    public void actualizarEmpleado() {
+        try {
+            empleadoDAO.update(empleadoAEditar);
+            listaEmpleados = empleadoDAO.obtenerTodos(); // refrescar lista
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Empleado actualizado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar.");
+        }
+    }
+
+    // Método auxiliar para mensajes
     private void addGlobalMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(severity, summary, detail));
     }
 
-    public String irAEditar(Empleado e) {
-        // Este es para luego hacer la modificacion con un editarEmpleado.xhtml
-        return "editarEmpleado.xhtml?faces-redirect=true&id=" + e.getId();
+    // --- Getters y Setters ---
+
+    public String getVistaActual() {
+        return vistaActual;
     }
 
-    // Getters y setters
-    public Empleado getNuevoEmpleado() {
-        return nuevoEmpleado;
+    public void setVistaActual(String vistaActual) {
+        this.vistaActual = vistaActual;
     }
 
-    public void setNuevoEmpleado(Empleado nuevoEmpleado) {
-        this.nuevoEmpleado = nuevoEmpleado;
-    }
+    public Empleado getNuevoEmpleado() { return nuevoEmpleado; }
+    public void setNuevoEmpleado(Empleado nuevoEmpleado) { this.nuevoEmpleado = nuevoEmpleado; }
 
-    public List<String> getPuestosDisponibles() {
-        return puestosDisponibles;
-    }
+    public List<String> getPuestosDisponibles() { return puestosDisponibles; }
 
-    public List<Empleado> getListaEmpleados() {
-        return listaEmpleados;
-    }
+    public List<Empleado> getListaEmpleados() { return listaEmpleados; }
+    public void setListaEmpleados(List<Empleado> listaEmpleados) { this.listaEmpleados = listaEmpleados; }
 
-    public void setListaEmpleados(List<Empleado> listaEmpleados) {
-        this.listaEmpleados = listaEmpleados;
-    }
+    public Empleado getEmpleadoAEditar() { return empleadoAEditar; }
+    public void setEmpleadoAEditar(Empleado empleadoAEditar) { this.empleadoAEditar = empleadoAEditar; }
 }

@@ -1,6 +1,8 @@
 package mx.softdentist.dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import mx.softdentist.persistence.AbstractDAO;
 import mx.softdentist.entidad.Empleado;
 
@@ -19,6 +21,18 @@ public class EmpleadoDAO extends AbstractDAO<Empleado> {
         return entityManager
                 .createQuery("SELECT a FROM Empleado a", Empleado.class)
                 .getResultList();
+    }
+
+    public Empleado findByCorreo(String correo) {
+        try {
+            TypedQuery<Empleado> query = getEntityManager().createQuery(
+                    "SELECT e FROM Empleado e WHERE e.correo = :correoParam", Empleado.class);
+            query.setParameter("correoParam", correo);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            // Si no se encuentra, devuelve null.
+            return null;
+        }
     }
 
     @Override

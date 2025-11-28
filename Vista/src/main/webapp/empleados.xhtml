@@ -9,9 +9,8 @@
 <h:head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestión de Usuarios - Dental Patron</title>
+    <title>Gestión de Empleados - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
-    <!-- Enlace al archivo CSS con el nuevo nombre -->
     <h:outputStylesheet name="css/patrondental.css" />
 </h:head>
 
@@ -20,96 +19,218 @@
 
     <header>
         <div class="top-bar">
-            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="logo-img"/>
+
+            <h:form styleClass="logout-form">
+                <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
+                    <span class="logout-text">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                    alt="Cerrar Sesión" styleClass="logout-icon"/>
+                </p:commandLink>
+            </h:form>
         </div>
         <nav class="main-nav">
-            <!-- Navegación actualizada con p:link -->
             <p:link outcome="inicio_admin" value="INICIO" />
-            <p:link outcome="pacientes" value="GESTIONAR PACIENTES" styleClass="active" />
+            <p:link outcome="pacientesad" value="GESTIONAR PACIENTES" />
+            <p:link outcome="empleados" value="GESTIONAR EMPLEADOS" styleClass="active" />
             <a href="#">CORTE DE CAJA</a>
         </nav>
     </header>
 
     <main class="main-content-backdrop">
         <div class="transparent-container">
-            <div class="cards-wrapper">
-                <div class="card form-card">
-                    <h2>Alta de Nuevo Empleado</h2>
-                    <h:form id="formAlta">
-                        <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="nombre" value="Nombre:" />
-                                <p:inputText id="nombre" value="#{empleadoBean.nuevoEmpleado.nombre}" required="true"  requiredMessage="El campo 'Nombre' está vacío." placeholder="Nombre completo" />
-                            </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="apellido" value="Apellido:" />
-                                <p:inputText id="apellido" value="#{empleadoBean.nuevoEmpleado.apellido}" required="true" requiredMessage="El campo 'Apellido' está vacío." placeholder="Apellidos del paciente"/>
-                            </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="telefono" value="Teléfono:" />
-                                <p:inputText id="telefono" value="#{empleadoBean.nuevoEmpleado.telefono}" required="true" requiredMessage="El campo 'Teléfono' está vacío."
-                                             placeholder="Ej. 686-123-4567" />
-                            </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="correo" value="Correo:" />
-                                <p:inputText id="correo" value="#{empleadoBean.nuevoEmpleado.correo}" required="true" requiredMessage="El campo 'Correo' está vacío."
-                                             validatorMessage="El formato del correo es inválido." placeholder="correo@ejemplo.com" >
-                                    <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
-                                </p:inputText>
-                            </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="password" value="Contraseña:" />
-                                <p:password id="password" value="#{empleadoBean.nuevoEmpleado.password}" required="true" requiredMessage="El campo 'Contraseña' está vacío." placeholder="Contraseña" />
-                            </h:panelGroup>
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="puesto" value="Puesto:" />
-                                <p:selectOneMenu id="puesto" value="#{empleadoBean.nuevoEmpleado.puesto}" required="true" requiredMessage="Debe seleccionar un puesto.">
-                                    <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
-                                </p:selectOneMenu>
-                            </h:panelGroup>
-                            <p:commandButton value="Guardar Paciente"
-                                             actionListener="#{empleadoBean.guardarEmpleado}"
-                                             update="formAlta :formConsulta:consultaContainer messages"
-                                             style="width: 100%; margin-top: 10px;" />
-                        </p:panelGrid>
-                    </h:form>
-                </div>
-                <div class="card table-card">
-                    <h2>Consulta de Empleados</h2>
-                    <h:form id="formConsulta">
-                        <div class="search-bar">
-                            <p:inputText placeholder="Buscar por nombre o usuario..." />
-                            <p:commandButton value="Buscar" />
-                            <p:commandButton value="Actualizar" update="consultaContainer" />
-                        </div>
-                        <h:panelGroup id="consultaContainer" layout="block">
-                            <div class="custom-table">
-                                <div class="custom-table-header">
-                                    <div>NOMBRE COMPLETO</div>
-                                    <div>TELÉFONO</div>
-                                    <div>CORREO</div>
-                                    <div style="text-align: right;">ACCIONES</div>
-                                </div>
-                                <ui:repeat value="#{empleadoBean.listaEmpleados}" var="e">
-                                    <div class="custom-table-row">
-                                        <div class="custom-table-cell">#{e.nombre} #{e.apellido}</div>
-                                        <div class="custom-table-cell">#{e.telefono}</div>
-                                        <div class="custom-table-cell">#{e.correo}</div>
-                                        <div class="custom-table-actions">
-                                            <p:commandButton icon="pi pi-pencil" title="Editar" styleClass="ui-button-warning ui-button-flat" />
-                                            <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
-                                        </div>
-                                    </div>
-                                </ui:repeat>
-                                <h:panelGroup rendered="#{empty empleadoBean.listaEmpleados}">
-                                    <div class="empty-message">No hay pacientes registrados.</div>
+
+            <div class="full-view-card">
+
+                <h:form id="formTabs" class="card-header-tabs">
+                    <p:commandButton value="Consulta de Empleados"
+                                     icon="pi pi-list"
+                                     actionListener="#{empleadoBean.cambiarVista('CONSULTA')}"
+                                     update=":contenedorPrincipal :formTabs"
+                                     styleClass="tab-btn #{empleadoBean.vistaActual eq 'CONSULTA' or empty empleadoBean.vistaActual ? 'active-tab' : ''}" />
+
+                    <p:commandButton value="Nuevo Empleado"
+                                     icon="pi pi-user-plus"
+                                     actionListener="#{empleadoBean.cambiarVista('ALTA')}"
+                                     update=":contenedorPrincipal :formTabs"
+                                     styleClass="tab-btn #{empleadoBean.vistaActual eq 'ALTA' ? 'active-tab' : ''}" />
+                </h:form>
+
+                <div class="card-content">
+                    <h:panelGroup id="contenedorPrincipal">
+
+                        <h:panelGroup rendered="#{empleadoBean.vistaActual eq 'ALTA'}">
+                            <h2 class="section-title">Alta de Nuevo Empleado</h2>
+                            <h:form id="formAlta">
+                                <p:panelGrid columns="2" layout="grid"
+                                             styleClass="ui-panelgrid-blank ui-fluid grid-mt-20"
+                                             columnClasses="ui-grid-col-6, ui-grid-col-6">
+
+                                    <h:panelGroup>
+                                        <p:outputLabel for="nombre" value="Nombre:" />
+                                        <p:inputText id="nombre" value="#{empleadoBean.nuevoEmpleado.nombre}" required="true" placeholder="Nombre completo" />
+                                    </h:panelGroup>
+
+                                    <h:panelGroup>
+                                        <p:outputLabel for="apellido" value="Apellido:" />
+                                        <p:inputText id="apellido" value="#{empleadoBean.nuevoEmpleado.apellido}" required="true" placeholder="Apellidos" />
+                                    </h:panelGroup>
+
+                                    <h:panelGroup>
+                                        <p:outputLabel for="telefono" value="Teléfono:" />
+                                        <p:inputText id="telefono" value="#{empleadoBean.nuevoEmpleado.telefono}" required="true" placeholder="Ej. 686-123-4567" />
+                                    </h:panelGroup>
+
+                                    <h:panelGroup>
+                                        <p:outputLabel for="correo" value="Correo:" />
+                                        <p:inputText id="correo" value="#{empleadoBean.nuevoEmpleado.correo}" required="true" placeholder="correo@ejemplo.com">
+                                            <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
+                                        </p:inputText>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="grid-col-span-2 ui-grid-col-12">
+                                        <p:outputLabel for="puesto" value="Puesto:" />
+                                        <p:selectOneMenu id="puesto" value="#{empleadoBean.nuevoEmpleado.puesto}" required="true">
+                                            <f:selectItem itemLabel="Seleccione un puesto..." itemValue="" noSelectionOption="true"/>
+                                            <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
+                                        </p:selectOneMenu>
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+                                <h:panelGroup layout="block" styleClass="btn-wrapper-full">
+                                    <p:commandButton value="Registrar Empleado"
+                                                     icon="pi pi-check"
+                                                     actionListener="#{empleadoBean.guardarEmpleado}"
+                                                     update="formAlta :contenedorPrincipal messages :formTabs"
+                                                     styleClass="ui-button-success btn-guardar-large" />
                                 </h:panelGroup>
-                            </div>
+                            </h:form>
                         </h:panelGroup>
-                    </h:form>
+
+
+                        <h:panelGroup rendered="#{empleadoBean.vistaActual eq 'CONSULTA' or empty empleadoBean.vistaActual}">
+                            <h2 class="section-title">Consulta de Empleados</h2>
+                            <h:form id="formConsulta">
+                                <div class="search-bar">
+                                    <p:inputText id="txtBusqueda" placeholder="Buscar por nombre..." onkeyup="filtrarTabla()" style="flex-grow: 2;" />
+
+                                    <p:selectOneMenu id="filtroPuesto" widgetVar="wFilterPuesto" onchange="filtrarTabla()"
+                                                     styleClass="custom-filter-dropdown"
+                                                     panelStyleClass="custom-filter-panel">
+                                        <f:selectItem itemLabel="Todos los puestos" itemValue="" />
+                                        <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <h:panelGroup id="consultaContainer" layout="block">
+                                    <div id="tablaEmpleados" class="custom-table">
+                                        <div class="custom-table-header">
+                                            <div>NOMBRE COMPLETO</div>
+                                            <div>PUESTO</div>
+                                            <div>CONTACTO</div>
+                                            <div class="text-right">ACCIONES</div>
+                                        </div>
+
+                                        <ui:repeat value="#{empleadoBean.listaEmpleados}" var="e">
+                                            <div class="custom-table-row">
+                                                <div class="custom-table-cell col-nombre">
+                                                    <h:outputText value="#{e.nombre} #{e.apellido}" style="font-weight: 600;"/>
+                                                </div>
+                                                <div class="custom-table-cell col-puesto">
+                                                    <span style="background: #e6fffa; color: #084D4A; padding: 4px 10px; border-radius: 15px; font-size: 0.85em; font-weight: 600;">
+                                                        #{e.puesto}
+                                                    </span>
+                                                </div>
+                                                <div class="custom-table-cell">
+                                                    <div><i class="pi pi-phone" style="font-size: 0.8em; margin-right: 5px;"></i>#{e.telefono}</div>
+                                                    <div style="font-size: 0.85em; color: #777;">#{e.correo}</div>
+                                                </div>
+                                                <div class="custom-table-actions">
+                                                    <p:commandButton icon="pi pi-pencil" title="Editar"
+                                                                     update=":formEditarDialog" oncomplete="PF('dlgEditar').show()"
+                                                                     styleClass="ui-button-warning ui-button-flat">
+                                                        <f:setPropertyActionListener value="#{e}" target="#{empleadoBean.empleadoAEditar}" />
+                                                    </p:commandButton>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+
+                                        <h:panelGroup rendered="#{empty empleadoBean.listaEmpleados}">
+                                            <div class="empty-message">No hay empleados registrados en el sistema.</div>
+                                        </h:panelGroup>
+                                    </div>
+                                </h:panelGroup>
+                            </h:form>
+                        </h:panelGroup>
+
+                    </h:panelGroup>
                 </div>
             </div>
         </div>
     </main>
+
+    <p:dialog header="Modificar Datos de Empleado" widgetVar="dlgEditar" modal="true" resizable="false"
+              showEffect="fade" hideEffect="fade" width="600" responsive="true" blockScroll="true">
+        <h:form id="formEditarDialog">
+            <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+                         columnClasses="ui-grid-col-6, ui-grid-col-6"
+                         rendered="#{not empty empleadoBean.empleadoAEditar}">
+
+                <h:panelGroup><p:outputLabel for="nombreEd" value="Nombre:" /><p:inputText id="nombreEd" value="#{empleadoBean.empleadoAEditar.nombre}" required="true" /></h:panelGroup>
+                <h:panelGroup><p:outputLabel for="apellidoEd" value="Apellido:" /><p:inputText id="apellidoEd" value="#{empleadoBean.empleadoAEditar.apellido}" required="true" /></h:panelGroup>
+                <h:panelGroup><p:outputLabel for="telefonoEd" value="Teléfono:" /><p:inputText id="telefonoEd" value="#{empleadoBean.empleadoAEditar.telefono}" required="true" /></h:panelGroup>
+                <h:panelGroup><p:outputLabel for="correoEd" value="Correo:" /><p:inputText id="correoEd" value="#{empleadoBean.empleadoAEditar.correo}" required="true" /></h:panelGroup>
+
+                <h:panelGroup styleClass="grid-col-span-2 ui-grid-col-12">
+                    <p:outputLabel for="puestoEd" value="Puesto:" />
+                    <p:selectOneMenu id="puestoEd" value="#{empleadoBean.empleadoAEditar.puesto}" required="true">
+                        <f:selectItems value="#{empleadoBean.puestosDisponibles}" />
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+            </p:panelGrid>
+
+            <p:commandButton value="Guardar Cambios"
+                             actionListener="#{empleadoBean.actualizarEmpleado}"
+                             update=":formConsulta:consultaContainer :messages"
+                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();"
+                             styleClass="btn-full-width-mt" />
+        </h:form>
+    </p:dialog>
+
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+        <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+    </p:confirmDialog>
+
+    <script>
+        function filtrarTabla() {
+            var inputNombre = document.getElementById('formConsulta:txtBusqueda');
+            var filtroTexto = inputNombre ? inputNombre.value.toUpperCase() : '';
+            var filtroPuesto = PF('wFilterPuesto').getSelectedValue();
+
+            var filas = document.getElementsByClassName('custom-table-row');
+
+            for (var i = 0; i &lt; filas.length; i++) {
+                var fila = filas[i];
+                var celdaNombre = fila.querySelector('.col-nombre');
+                var celdaPuesto = fila.querySelector('.col-puesto');
+
+                var textoNombre = celdaNombre ? celdaNombre.innerText.toUpperCase() : '';
+                var textoPuesto = celdaPuesto ? celdaPuesto.innerText : '';
+
+                var coincideNombre = textoNombre.indexOf(filtroTexto) > -1;
+                var coincidePuesto = (filtroPuesto === '' || textoPuesto.indexOf(filtroPuesto) > -1);
+
+                if (coincideNombre &amp;&amp; coincidePuesto) {
+                    fila.style.display = "";
+                } else {
+                    fila.style.display = "none";
+                }
+            }
+        }
+    </script>
+
 </h:body>
 </html>

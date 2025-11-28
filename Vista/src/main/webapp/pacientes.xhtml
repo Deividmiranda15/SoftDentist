@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestión de Usuarios - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <!-- Enlace al archivo CSS con el nuevo nombre -->
     <h:outputStylesheet name="css/patrondental.css" />
 
     <style>
@@ -78,6 +79,18 @@
     <header>
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
+                                                       styleClass="btn-logout"
+                                                       title="Cerrar Sesión">
+
+                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                style="height: 25px; width: 25px;"
+                                alt="Cerrar Sesión"/>
+            </p:commandLink>
+            </h:form>
         </div>
 
         <nav class="main-nav">
@@ -92,7 +105,6 @@
     <main class="main-content-backdrop">
         <div class="transparent-container">
             <div class="cards-wrapper">
-
                 <div class="card form-card">
                     <h2>Alta de Nuevo Paciente</h2>
                     <h:form id="formAlta">
@@ -134,7 +146,6 @@
                         </p:panelGrid>
                     </h:form>
                 </div>
-
                 <div class="card table-card">
                     <h2>Consulta de Pacientes</h2>
                     <h:form id="formConsulta">
