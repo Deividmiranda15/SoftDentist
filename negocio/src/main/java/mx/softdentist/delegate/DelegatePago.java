@@ -10,8 +10,8 @@ public class DelegatePago {
         ServiceFacadeLocator.getInstanceFacadePago().savePago(pago);
     }
 
-    public Pago findPagoByCitaId(int idCita) {
-        return ServiceFacadeLocator.getInstanceFacadePago().findPagoByCitaId(idCita);
+    public Pago findPagoById(int idPago) {
+        return ServiceFacadeLocator.getInstanceFacadePago().findPagoById(idPago);
     }
 
     public List<Pago> obtenerTodosLosPagos() {

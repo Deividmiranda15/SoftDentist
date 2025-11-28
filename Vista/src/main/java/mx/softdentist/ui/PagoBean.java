@@ -9,6 +9,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,11 @@ public class PagoBean implements Serializable {
     }
 
     public void guardarPago() {
-        FacesContext context = FacesContext.getCurrentInstance();
-
         try {
-            nuevoPago.setId(nuevoPago.getCitas().getId());
+            // Si no se ingreso una fecha, usamos la fecha actual
+            if (nuevoPago.getFecha() == null) {
+                nuevoPago.setFecha(LocalDate.now());
+            }
 
             pagoDAO.save(nuevoPago);
             listaPagos = pagoDAO.obtenerTodos(); // refresca tabla

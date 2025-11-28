@@ -17,7 +17,7 @@ public class FacadePago {
         }
     }
 
-    public Pago findPagoByCitaId(Integer id) {
+    public Pago findPagoById(Integer id) {
         return ServiceLocator.getInstancePagoDAO().find(id).orElse(null);
     }
 

@@ -51,12 +51,6 @@
                     <h:form id="formCaja">
                         <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
                             <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="cita" value="ID de Cita:" />
-                                <p:inputNumber id="cita" value="#{pagoBean.nuevoPago.citas.id}" required="true"
-                                               minValue="1" decimalPlaces="0" />
-                            </h:panelGroup>
-
-                            <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
                                 <p:inputText id="concepto" value="#{pagoBean.nuevoPago.descripcion}" required="true" placeholder="Ej. Limpieza dental, Consulta..." />
                             </h:panelGroup>
@@ -64,12 +58,14 @@
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="monto" value="Monto Recibido ($):" />
                                 <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
-                                               decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"/>
+                                               decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"
+                                               minValue="1" decimalPlaces="2"/>
                             </h:panelGroup>
 
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="fechaPago" value="Fecha del Pago:" />
-                                <p:datePicker id="fechaPago" value="#{pagoBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"/>
+                                <p:datePicker id="fechaPago" value="#{pagoBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"
+                                              placeholder="(Dejar vacío para dejar el registro como hoy.)"/>
                             </h:panelGroup>
 
                             <p:commandButton value="Registrar Ingreso"
@@ -111,7 +107,8 @@
                                         </div>
                                         <div class="custom-table-actions">
                                             <h:outputText value="#{m.fecha}">
-<!--                                                <f:convertDateTime pattern="HH:mm" />-->
+                                                <!-- no le averiguo como formatearlo se vera feo -->
+<!--                                                <f:convertDateTime pattern="dd/mm/yyyy" />-->
                                             </h:outputText>
                                         </div>
                                     </div>
