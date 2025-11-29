@@ -1,5 +1,6 @@
 package mx.softdentist.integration;
 
+import mx.softdentist.entidad.Cita;
 import mx.softdentist.facade.FacadeAdministrador;
 import mx.softdentist.facade.FacadeCita;
 import mx.softdentist.facade.FacadeEmpleado;

@@ -70,6 +70,29 @@ public class EmailService {
         return instance;
     }
 
+    public void enviarCorreoIndividual(String destinatario, String asunto, String cuerpo) {
+        CompletableFuture.runAsync(() -> {
+            try {
+
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(EMAIL_ORIGEN));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
+                message.setSubject(asunto);
+                message.setSentDate(new java.util.Date());
+                MimeBodyPart messageBodyPart = new MimeBodyPart();
+                messageBodyPart.setContent(cuerpo, "text/html; charset=utf-8");
+                message.setContent(cuerpo, "text/html; charset=utf-8");
+
+                Transport.send(message);
+
+
+            } catch (MessagingException e) {
+                System.err.println("Mensaje: " + e.getMessage());
+                // Error completo
+                e.printStackTrace();
+            }
+        });
+    }
 
     public void enviarAnuncioMasivo(List<String> destinatarios, String asunto, String cuerpo) {
         if (destinatarios == null || destinatarios.isEmpty()) return;

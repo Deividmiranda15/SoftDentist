@@ -5,31 +5,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-<header>
-    <div class="top-bar">
-        <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
 
-        <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
-                                                   styleClass="btn-logout"
-                                                   title="Cerrar Sesión">
-
-            <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
-
-            <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
-                            style="height: 25px; width: 25px;"
-                            alt="Cerrar Sesión"/>
-        </p:commandLink>
-        </h:form>
-    </div>
-    <nav class="main-nav">
-        <!-- Navegación empleado -->
-        <p:link outcome="inicio_emp" value="INICIO"  />
-        <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
-        <p:link outcome="consultacita_empleado.xhtml" value="CONSULTA DE CITAS" styleClass="active"/>
-        <p:link outcome="corte_caja" value="CAJA"/>
-        <p:link outcome="chat.xhtml" value="CHAT"/>
-    </nav>
-</header>
 
 <h:head>
     <title>Consulta de Citas</title>
@@ -56,48 +32,163 @@
             color: #004d40;
             opacity: 0.9;
         }
+        .view-btn.first {
+            border-radius: 4px 0 0 4px;
+            border-right: none;
+        }
+
+        .view-switcher-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .view-btn {
+            padding: 8px 20px;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: #333;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn.first {
+            border-radius: 4px 0 0 4px;
+            border-right: none;
+        }
+
+        .view-btn.last {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .view-btn.active {
+            background-color: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .view-btn:hover:not(.active) {
+            background-color: #f5f5f5;
+        }
     </style>
 </h:head>
 
 <h:body>
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+
+            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
+                                                       styleClass="btn-logout"
+                                                       title="Cerrar Sesión">
+
+                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
+
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                style="height: 25px; width: 25px;"
+                                alt="Cerrar Sesión"/>
+            </p:commandLink>
+            </h:form>
+        </div>
+        <nav class="main-nav">
+            <p:link outcome="inicio_emp" value="INICIO"  />
+            <p:link outcome="pacientesem" value="GESTIONAR PACIENTES" />
+            <p:link outcome="consultacita_empleado.xhtml" value="CONSULTA DE CITAS" styleClass="active"/>
+            <p:link outcome="corte_caja" value="CAJA"/>
+            <p:link outcome="chat.xhtml" value="CHAT"/>
+        </nav>
+    </header>
     <main class="main-container">
+
+        <div class="view-switcher-container">
+            <a href="#" class="view-btn last active">Ver Lista</a>
+            <p:link outcome="agenda_calendario" value="Ver Calendario" styleClass="view-btn first" />
+        </div>
+
         <h2 class="page-title">Citas Programadas</h2>
 
-        <div class="cards-container">
-            <ui:repeat value="#{citaConsultaBean.listaCitas}" var="c">
-                <div class="cita-card">
-                    <div class="cita-avatar">👤</div>
-                    <div class="cita-info">
-                        <h:outputText value="#{c.idPaciente.nombre} #{c.idPaciente.apellido}" />
-                        -
-                        <h:outputText value="#{c.fecha}">
-                            <f:convertDateTime type="localDate" pattern="dd 'de' MMMM" locale="es_MX"/>
-                        </h:outputText>
-                        -
-                        <h:outputText value="#{c.hora}">
-                            <f:convertDateTime type="localTime" pattern="h:mm a" locale="es_MX"/>
-                        </h:outputText>
-                        -
-                        <h:outputText value="#{c.motivo}" />
+        <h:form id="formCitas">
 
-                        -
-                        <h:outputText value="#{c.estado}" styleClass="estado"/>
+            <p:growl id="msg" showDetail="true" life="5000"/>
 
+            <div class="cards-container">
+                <ui:repeat value="#{citaConsultaBean.listaCitas}" var="c">
+                    <div class="cita-card">
+                        <div class="cita-info">
+                            <h:outputText value="#{c.idPaciente.nombre} #{c.idPaciente.apellido}" />
+                            -
+                            <h:outputText value="#{c.fecha}">
+                                <f:convertDateTime type="localDate" pattern="dd 'de' MMMM" locale="es_MX"/>
+                            </h:outputText>
+                            -
+                            <h:outputText value="#{c.hora}">
+                                <f:convertDateTime type="localTime" pattern="h:mm a" locale="es_MX"/>
+                            </h:outputText>
+                            -
+                            <h:outputText value="#{c.motivo}" />
+                            -
+                            <h:outputText value="#{c.estado}" styleClass="estado"/>
+                        </div>
+
+                        <div class="cita-date">
+                            <h:outputText value="#{c.fecha}">
+                                <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </div>
+
+                        <div style="margin-top: 10px; display: flex; gap: 10px;">
+
+                            <p:commandButton value="Cambiar Estado"
+                                             icon="pi pi-refresh"
+                                             oncomplete="PF('dlgEstado_#{c.id}').show()"
+                                             process="@this"
+                                             update=":formCitas:dlgEstado_#{c.id}"
+                                             styleClass="ui-button-warning"
+                                             style="font-weight: bold; padding: 5px 15px; font-size: 0.95rem;"/>
+
+                            <p:commandButton value="Enviar Receta"
+                                             icon="pi pi-envelope"
+                                             actionListener="#{citaConsultaBean.enviarReceta(c)}"
+                                             process="@this"
+                                             update="@this :formCitas:msg"
+                                             styleClass="ui-button-success"
+                                             style="font-weight: bold; padding: 5px 15px; font-size: 0.95rem;"/>
+                        </div>
                     </div>
-                    <div class="cita-date">
-                        <h:outputText value="#{c.fecha}">
-                            <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
-                        </h:outputText>
-                    </div>
-                </div>
-            </ui:repeat>
 
-            <h:panelGroup rendered="#{empty citaConsultaBean.listaCitas}">
-                <div style="text-align: center; padding: 20px; color: #666;">
-                    <h3>No hay citas registradas.</h3>
-                </div>
-            </h:panelGroup>
-        </div>
+                    <!-- Diálogo para cambiar estado -->
+                    <p:dialog id="dlgEstado_#{c.id}" widgetVar="dlgEstado_#{c.id}" header="Cambiar Estado" modal="true" resizable="false" closable="true" appendTo="@(body)">
+                        <h:panelGrid columns="2" columnClasses="label,value" style="margin-top:10px;">
+                            <h:outputLabel for="estadoSelect_#{c.id}" value="Selecciona el estado:"/>
+                            <p:selectOneMenu id="estadoSelect_#{c.id}" value="#{citaConsultaBean.estadoSeleccionado}">
+                                <f:selectItem itemLabel="Pendiente" itemValue="Pendiente"/>
+                                <f:selectItem itemLabel="Programada" itemValue="Programada"/>
+                                <f:selectItem itemLabel="Completada" itemValue="Completada"/>
+                                <f:selectItem itemLabel="Cancelada" itemValue="Cancelada"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                        <p:commandButton value="Actualizar"
+                                         actionListener="#{citaConsultaBean.actualizarEstado(c)}"
+                                         update="@form"
+                                         oncomplete="PF('dlgEstado_#{c.id}').hide()"
+                                         styleClass="ui-button-success"
+                                         style="margin-top:10px;"/>
+                    </p:dialog>
+
+                </ui:repeat>
+
+                <h:panelGroup rendered="#{empty citaConsultaBean.listaCitas}">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        <h3>No hay citas registradas.</h3>
+                    </div>
+                </h:panelGroup>
+
+            </div>
+
+        </h:form>
+
     </main>
 </h:body>
 </html>

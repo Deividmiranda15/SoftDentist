@@ -28,14 +28,11 @@ public class FacadeCita {
         return ServiceLocator.getInstanceCitaDAO().obtenerPorPacienteConDetalles(idPaciente); // Usar el nuevo método
     }
 
-    // Nuevo método para actualizar cita
-    public boolean actualizarCita(Cita cita) {
+    public void updateCita(Cita cita) {
         try {
             ServiceLocator.getInstanceCitaDAO().update(cita);
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
 }

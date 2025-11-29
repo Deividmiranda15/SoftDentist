@@ -140,7 +140,7 @@ public class CitaEmpleadoBean implements Serializable {
 
     private void actualizarEstadoCita() {
         try {
-            citaSeleccionada.setEstado("Completada");
+            citaSeleccionada.setEstado(Cita.EstadoCita.valueOf("Completada"));
             ServiceLocator.getInstanceCitaDAO().update(citaSeleccionada);
         } catch (Exception e) {
             throw new RuntimeException("Error al actualizar estado de la cita: " + e.getMessage(), e);
