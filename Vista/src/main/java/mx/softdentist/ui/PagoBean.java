@@ -46,18 +46,11 @@ public class PagoBean implements Serializable {
             listaPagos = pagoDAO.obtenerTodos(); // refresca tabla
             nuevoPago = new Pago(); // limpia formulario
 
-            //mensaje de exito
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Éxito", "Pago guardado"));
-
             // mensaje de exito
             addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Pago registrado correctamente.");
         } catch (Exception e) {
             e.printStackTrace();
 
-            //menaje de error
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el pago"));
             // mensaje de fallo
             addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al pago. Intente de nuevo.");
         }
