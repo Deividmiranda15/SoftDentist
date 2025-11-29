@@ -84,15 +84,13 @@ public class ConsultaBean implements Serializable {
                         "Receta enviada a " + cita.getIdPaciente().getNombre()));
     }
 
-    public void actualizarEstado(Cita cita) {
-        if (cita != null && estadoSeleccionado != null) {
-            cita.setEstado(Cita.EstadoCita.valueOf(estadoSeleccionado));
-            delegateCita.actualizarCita(cita);
+    public void actualizarEstado() {
+        if (citaSeleccionada == null) return;
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Estado actualizado",
-                            "Cita de " + cita.getIdPaciente().getNombre() + " ahora está " + cita.getEstado()));
-        }
+        citaSeleccionada.setEstado(Cita.EstadoCita.valueOf(estadoSeleccionado));
+        delegateCita.actualizarCita(citaSeleccionada);
+
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage("Estado actualizado", "Nuevo estado: " + estadoSeleccionado));
     }
 }

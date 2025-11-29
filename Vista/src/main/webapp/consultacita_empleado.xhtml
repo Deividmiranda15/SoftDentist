@@ -141,11 +141,9 @@
 
                             <p:commandButton value="Cambiar Estado"
                                              icon="pi pi-refresh"
-                                             oncomplete="PF('dlgEstado_#{c.id}').show()"
-                                             process="@this"
-                                             update=":formCitas:dlgEstado_#{c.id}"
-                                             styleClass="ui-button-warning"
-                                             style="font-weight: bold; padding: 5px 15px; font-size: 0.95rem;"/>
+                                             actionListener="#{citaConsultaBean.seleccionarCita(c)}"
+                                             oncomplete="PF('dlgEstado').show()"
+                                             process="@this"/>
 
                             <p:commandButton value="Enviar Receta"
                                              icon="pi pi-envelope"
@@ -157,25 +155,27 @@
                         </div>
                     </div>
 
-                    <!-- Diálogo para cambiar estado -->
-                    <p:dialog id="dlgEstado_#{c.id}" widgetVar="dlgEstado_#{c.id}" header="Cambiar Estado" modal="true" resizable="false" closable="true" appendTo="@(body)">
-                        <h:panelGrid columns="2" columnClasses="label,value" style="margin-top:10px;">
-                            <h:outputLabel for="estadoSelect_#{c.id}" value="Selecciona el estado:"/>
-                            <p:selectOneMenu id="estadoSelect_#{c.id}" value="#{citaConsultaBean.estadoSeleccionado}">
-                                <f:selectItem itemLabel="Pendiente" itemValue="Pendiente"/>
-                                <f:selectItem itemLabel="Programada" itemValue="Programada"/>
-                                <f:selectItem itemLabel="Completada" itemValue="Completada"/>
-                                <f:selectItem itemLabel="Cancelada" itemValue="Cancelada"/>
+                    <p:dialog id="dlgEstado" widgetVar="dlgEstado" header="Cambiar Estado" modal="true" resizable="false">
+
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputLabel for="estadoSelect" value="Estado:"/>
+
+                            <p:selectOneMenu id="estadoSelect" value="#{citaConsultaBean.estadoSeleccionado}">
+                                <f:selectItem itemValue="Pendiente" itemLabel="Pendiente"/>
+                                <f:selectItem itemValue="Programada" itemLabel="Programada"/>
+                                <f:selectItem itemValue="Completada" itemLabel="Completada"/>
+                                <f:selectItem itemValue="Cancelada" itemLabel="Cancelada"/>
                             </p:selectOneMenu>
                         </h:panelGrid>
 
-                        <p:commandButton value="Actualizar"
-                                         actionListener="#{citaConsultaBean.actualizarEstado(c)}"
-                                         update="@form"
-                                         oncomplete="PF('dlgEstado_#{c.id}').hide()"
-                                         styleClass="ui-button-success"
-                                         style="margin-top:10px;"/>
+                        <p:separator/>
+
+                        <p:commandButton value="Guardar"
+                                         actionListener="#{citaConsultaBean.actualizarEstado}"
+                                         update=":formCitas"
+                                         oncomplete="PF('dlgEstado').hide()"/>
                     </p:dialog>
+
 
                 </ui:repeat>
 
