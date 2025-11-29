@@ -9,6 +9,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import java.io.Serializable;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class PagoBean implements Serializable {
     private List<Pago> listaPagos;
     private PagoDAO pagoDAO;
     private Pago pagoAEditar;
+    private String vistaActual = "CONSULTA";
 
     public PagoBean() {
         pagoDAO = ServiceLocator.getInstancePagoDAO();
@@ -35,31 +37,31 @@ public class PagoBean implements Serializable {
         listaPagos = pagoDAO.obtenerTodos();
     }
 
+    public void cambiarVista(String vista) {
+        this.vistaActual = vista;
+
+//        if ("ALTA".equals(vista)) {
+//            this.nuevoPago = new Pago(); // Asegúrate que 'Pago' es tu clase de entidad
+//            this.nuevoPago.setFecha(new Date()); // Opcional: pre-asignar fecha de hoy
+//        }
+    }
+
     public void guardarPago() {
         try {
-            // Si no se ingreso una fecha, usamos la fecha actual
             if (nuevoPago.getFecha() == null) {
                 nuevoPago.setFecha(LocalDate.now());
             }
 
             pagoDAO.save(nuevoPago);
-            listaPagos = pagoDAO.obtenerTodos(); // refresca tabla
-            nuevoPago = new Pago(); // limpia formulario
+            listaPagos = pagoDAO.obtenerTodos();
+            nuevoPago = new Pago();
 
-            //mensaje de exito
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Éxito", "Pago guardado"));
-
-            // mensaje de exito
+            // SOLO DEJAR ESTE MENSAJE
             addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Pago registrado correctamente.");
+
         } catch (Exception e) {
             e.printStackTrace();
-
-            //menaje de error
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el pago"));
-            // mensaje de fallo
-            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al pago. Intente de nuevo.");
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar el pago.");
         }
     }
     public void cargarDatosParaEditar() {
@@ -111,6 +113,14 @@ public class PagoBean implements Serializable {
         return listaPagos;
     }
 
+    public String getVistaActual() {
+        return vistaActual;
+    }
+
+    public void setVistaActual(String vistaActual) {
+        this.vistaActual = vistaActual;
+    }
+
     public void setListaPagos(List<Pago> listaPagos) {
         this.listaPagos = listaPagos;
     }
@@ -119,3 +129,4 @@ public class PagoBean implements Serializable {
 
     public void setPagoAEditar(Pago pagoAEditar) { this.pagoAEditar = pagoAEditar; }
 }
+

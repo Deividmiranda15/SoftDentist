@@ -19,18 +19,14 @@
 
     <header>
         <div class="top-bar">
-            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="logo-img"/>
 
-            <h:form style="margin: 0;"> <p:commandLink action="#{sessionBean.cerrarSesion}"
-                                                       styleClass="btn-logout"
-                                                       title="Cerrar Sesión">
-
-                <span style="color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem;">SALIR</span>
-
-                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
-                                style="height: 25px; width: 25px;"
-                                alt="Cerrar Sesión"/>
-            </p:commandLink>
+            <h:form styleClass="logout-form">
+                <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
+                    <span class="logout-text">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                    alt="Cerrar Sesión" styleClass="logout-icon"/>
+                </p:commandLink>
             </h:form>
         </div>
         <nav class="main-nav">
@@ -44,92 +40,132 @@
 
     <main class="main-content-backdrop">
         <div class="transparent-container">
-            <div class="cards-wrapper">
 
-                <div class="card form-card">
-                    <h2>Registro de Pago en Efectivo</h2>
-                    <h:form id="formCaja">
-                        <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
-                                <p:inputText id="concepto" value="#{pagoBean.nuevoPago.descripcion}" required="true" placeholder="Ej. Limpieza dental, Consulta..." />
-                            </h:panelGroup>
+            <div class="full-view-card">
 
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="monto" value="Monto Recibido ($):" />
-                                <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
-                                               decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"
-                                               minValue="1" decimalPlaces="2"/>
-                            </h:panelGroup>
+                <h:form id="formTabs" class="card-header-tabs">
+                    <p:commandButton value="Consulta de Pago en Efectivo"
+                                     icon="pi pi-list"
+                                     actionListener="#{pagoBean.cambiarVista('CONSULTA')}"
+                                     update=":contenedorPrincipal :formTabs"
+                                     styleClass="tab-btn #{pagoBean.vistaActual eq 'CONSULTA' or empty pagoBean.vistaActual ? 'active-tab' : ''}" />
 
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="fechaPago" value="Fecha del Pago:" />
-                                <p:datePicker id="fechaPago" value="#{pagoBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"
-                                              placeholder="(Dejar vacío para dejar el registro como hoy.)"/>
-                            </h:panelGroup>
+                    <p:commandButton value="Registrar Ingreso"
+                                     icon="pi pi-wallet"
+                                     actionListener="#{pagoBean.cambiarVista('ALTA')}"
+                                     update=":contenedorPrincipal :formTabs"
+                                     styleClass="tab-btn #{pagoBean.vistaActual eq 'ALTA' ? 'active-tab' : ''}" />
+                </h:form>
 
-                            <p:commandButton value="Registrar Ingreso"
-                                             actionListener="#{pagoBean.guardarPago}"
-                                             update="formCaja :formConsulta:consultaContainer messages"
-                                             style="width: 100%; margin-top: 10px;"
-                                             icon="pi pi-wallet"/>
-                        </p:panelGrid>
-                    </h:form>
-                </div>
+                <div class="card-content">
+                    <h:panelGroup id="contenedorPrincipal">
 
-                <div class="card table-card">
-                    <h2>Movimientos del Día</h2>
-                    <h:form id="formConsulta">
-                        <div class="search-bar">
-                            <!-- Aquí usaré la palabra concepto y descripción para referirse a lo mismo. -->
-                            <p:inputText placeholder="Buscar concepto..." />
-                            <p:commandButton value="Buscar" />
+                        <h:panelGroup rendered="#{pagoBean.vistaActual eq 'ALTA'}">
+                            <h2 class="section-title">Registro de Pago en Efectivo</h2>
+                            <h:form id="formCaja">
+                                <p:panelGrid columns="2" layout="grid"
+                                             styleClass="ui-panelgrid-blank ui-fluid grid-mt-20"
+                                             columnClasses="ui-grid-col-6, ui-grid-col-6">
 
-                            <!--                            <p:commandButton value="Cerrar Caja" styleClass="ui-button-secondary" update="consultaContainer"-->
-<!--                                             action="#{cajaBean.realizarCorte}" icon="pi pi-lock"/>-->
-                        </div>
+                                    <h:panelGroup>
+                                        <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
+                                        <p:inputText id="concepto" value="#{pagoBean.nuevoPago.descripcion}" required="true" placeholder="Ej. Limpieza dental, Consulta..." />
+                                    </h:panelGroup>
 
-                        <h:panelGroup id="consultaContainer" layout="block">
-                            <div class="custom-table">
-                                <div class="custom-table-header">
-                                    <div>ID</div>
-                                    <div>CONCEPTO</div>
-                                    <div>MONTO</div>
-                                    <div style="text-align: right;">FECHA</div>
+                                    <h:panelGroup>
+                                        <p:outputLabel for="monto" value="Monto Recibido ($):" />
+                                        <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
+                                                       decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"
+                                                       minValue="1" decimalPlaces="2"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup>
+                                        <p:outputLabel for="fechaPago" value="Fecha del Pago:" />
+                                        <p:datePicker id="fechaPago" value="#{pagoBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"
+                                                      placeholder="(Dejar vacío para hoy)"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup />
+
+                                </p:panelGrid>
+
+                                <h:panelGroup layout="block" styleClass="btn-wrapper-full">
+                                    <p:commandButton value="Registrar Ingreso"
+                                                     icon="pi pi-check"
+                                                     actionListener="#{pagoBean.guardarPago}"
+                                                     update="formCaja :contenedorPrincipal messages :formTabs"
+                                                     styleClass="ui-button-success btn-guardar-large" />
+                                </h:panelGroup>
+                            </h:form>
+                        </h:panelGroup>
+
+
+                        <h:panelGroup rendered="#{pagoBean.vistaActual eq 'CONSULTA' or empty pagoBean.vistaActual}">
+                            <h2 class="section-title">Consulta de Pago en Efectivo</h2>
+                            <h:form id="formConsulta">
+
+                                <div class="search-bar">
+                                    <p:inputText id="txtBusqueda" placeholder="Buscar concepto o monto..."
+                                                 onkeyup="filtrarTabla()"
+                                                 style="width: 100%;" />
                                 </div>
 
-                                <ui:repeat value="#{pagoBean.listaPagos}" var="m">
-                                    <div class="custom-table-row">
-                                        <div class="custom-table-cell">#{m.id}</div>
-                                        <div class="custom-table-cell">#{m.descripcion}</div>
-                                        <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">
-                                            $#{m.monto}
+                                <h:panelGroup id="consultaContainer" layout="block">
+                                    <div class="custom-table">
+                                        <div class="custom-table-header">
+                                            <div>ID</div>
+                                            <div>CONCEPTO</div>
+                                            <div>MONTO</div>
+                                            <div class="text-right">FECHA</div>
                                         </div>
-                                        <div class="custom-table-actions">
-                                            <h:outputText value="#{m.fecha}">
-                                                <!-- no le averiguo como formatearlo se vera feo -->
-<!--                                                <f:convertDateTime pattern="dd/mm/yyyy" />-->
-                                            </h:outputText>
-                                        </div>
+
+                                        <ui:repeat value="#{pagoBean.listaPagos}" var="m">
+                                            <div class="custom-table-row">
+                                                <div class="custom-table-cell">#{m.id}</div>
+                                                <div class="custom-table-cell">#{m.descripcion}</div>
+                                                <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">
+                                                    $#{m.monto}
+                                                </div>
+                                                <div class="custom-table-actions">
+                                                    <h:outputText value="#{m.fecha}">
+                                                        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+
+                                        <h:panelGroup rendered="#{empty pagoBean.listaPagos}">
+                                            <div class="empty-message">No hay movimientos registrados hoy.</div>
+                                        </h:panelGroup>
                                     </div>
-                                </ui:repeat>
-
-                                <h:panelGroup rendered="#{empty cajaBean.listaMovimientos}">
-                                    <div class="empty-message">No hay movimientos registrados hoy.</div>
                                 </h:panelGroup>
-
-<!--                                <div class="custom-table-row" style="background-color: #f8f9fa; font-weight: bold; border-top: 2px solid #ddd;">-->
-<!--                                    <div class="custom-table-cell">TOTAL</div>-->
-<!--                                    <div class="custom-table-cell"></div>-->
-<!--                                    <div class="custom-table-cell">$#{cajaBean.totalDia}</div>-->
-<!--                                    <div class="custom-table-cell"></div>-->
-<!--                                </div>-->
-                            </div>
+                            </h:form>
                         </h:panelGroup>
-                    </h:form>
+
+                    </h:panelGroup>
                 </div>
             </div>
         </div>
     </main>
+
+    <script>
+        function filtrarTabla() {
+            var input = document.getElementById('formConsulta:txtBusqueda');
+            var filtro = input ? input.value.toUpperCase() : '';
+            var filas = document.getElementsByClassName('custom-table-row');
+
+            for (var i = 0; i &lt; filas.length; i++) {
+                var fila = filas[i];
+                var textoFila = fila.innerText || fila.textContent;
+
+                if (textoFila.toUpperCase().indexOf(filtro) > -1) {
+                    fila.style.display = "";
+                } else {
+                    fila.style.display = "none";
+                }
+            }
+        }
+    </script>
+
 </h:body>
 </html>
