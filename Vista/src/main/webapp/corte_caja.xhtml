@@ -104,10 +104,26 @@
                             <h2 class="section-title">Consulta de Pago en Efectivo</h2>
                             <h:form id="formConsulta">
 
-                                <div class="search-bar">
-                                    <p:inputText id="txtBusqueda" placeholder="Buscar concepto o monto..."
-                                                 onkeyup="filtrarTabla()"
-                                                 style="width: 100%;" />
+                                <div class="filter-container" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
+                                    <div style="flex-grow: 1;">
+                                        <p:inputText id="txtBusqueda" placeholder="Buscar concepto o monto..."
+                                                     onkeyup="filtrarTabla()"
+                                                     style="width: 100%;" />
+                                    </div>
+                                    <h:panelGroup>
+                                        <p:selectOneMenu id="selectOrden"
+                                                         value="#{pagoBean.ordenacionActual}">
+                                            <f:selectItem itemLabel="ID (Reg. más nuevo)" itemValue="ID_DESC" />
+                                            <f:selectItem itemLabel="ID (Reg. más antiguo)" itemValue="ID_ASC" />
+                                            <f:selectItem itemLabel="Fecha (más reciente)" itemValue="FECHA_MAS_RECIENTE" />
+                                            <f:selectItem itemLabel="Fecha (más antigua)" itemValue="FECHA_MAS_ANTIGUA" />
+                                            <f:selectItem itemLabel="Monto (más alto)" itemValue="MONTO_MAS_ALTO" />
+                                            <f:selectItem itemLabel="Monto (más bajo)" itemValue="MONTO_MAS_BAJO" />
+                                            <p:ajax listener="#{pagoBean.onSortChange}"
+                                                    update="consultaContainer"
+                                                    process="@this" />
+                                        </p:selectOneMenu>
+                                    </h:panelGroup>
                                 </div>
 
                                 <h:panelGroup id="consultaContainer" layout="block">
