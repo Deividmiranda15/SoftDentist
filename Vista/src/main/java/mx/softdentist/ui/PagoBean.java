@@ -1,59 +1,113 @@
 package mx.softdentist.ui;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.inject.Named;
+import mx.softdentist.dao.PagoDAO;
+import mx.softdentist.entidad.Pago;
+import mx.softdentist.integration.ServiceLocator;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Named;
-import mx.softdentist.delegate.DelegatePago;
-import mx.softdentist.entidad.Pago;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Named("pagoBean")
 @ViewScoped
 public class PagoBean implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    // Lista para almacenar los resultados de la consulta
+    private Pago nuevoPago;
     private List<Pago> listaPagos;
+    private PagoDAO pagoDAO;
+    private Pago pagoAEditar;
 
-    // Objeto para manejar la selección en la tabla (preparando para el futuro)
-    private Pago pagoSeleccionado;
-
-    // Delegado de negocio
-    private final DelegatePago delegatePago = new DelegatePago();
+    public PagoBean() {
+        pagoDAO = ServiceLocator.getInstancePagoDAO();
+        nuevoPago = new Pago();
+        listaPagos = new ArrayList<>();
+        pagoAEditar = new Pago();
+    }
 
     @PostConstruct
     public void init() {
-        // Inicializamos la lista vacía por seguridad
-        listaPagos = new ArrayList<>();
-        // Cargamos los datos inmediatamente al entrar a la página
-        consultarPagos();
+        listaPagos = pagoDAO.obtenerTodos();
     }
 
-    //Método para consultar datos
-
-    public void consultarPagos() {
+    public void guardarPago() {
         try {
-            // Llama a la capa de negocio que a su vez llama al DAO
-            this.listaPagos = delegatePago.obtenerTodos();
-
-            if (this.listaPagos == null) {
-                this.listaPagos = new ArrayList<>();
+            // Si no se ingreso una fecha, usamos la fecha actual
+            if (nuevoPago.getFecha() == null) {
+                nuevoPago.setFecha(LocalDate.now());
             }
-        } catch (Exception e) {
+
+            pagoDAO.save(nuevoPago);
+            listaPagos = pagoDAO.obtenerTodos(); // refresca tabla
+            nuevoPago = new Pago(); // limpia formulario
+
+            //mensaje de exito
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Consulta", "No se pudo cargar la lista de pagos."));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Éxito", "Pago guardado"));
+
+            // mensaje de exito
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Pago registrado correctamente.");
+        } catch (Exception e) {
             e.printStackTrace();
+
+            //menaje de error
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el pago"));
+            // mensaje de fallo
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al pago. Intente de nuevo.");
+        }
+    }
+    public void cargarDatosParaEditar() {
+        Map<String, String> params = FacesContext.getCurrentInstance()
+                .getExternalContext().getRequestParameterMap();
+        String idParam = params.get("id");
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                // Usamos el DAO para buscar el pago
+                this.pagoAEditar = pagoDAO.find(id).orElse(new Pago());
+            } catch (NumberFormatException e) {
+                addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "ID de pago inválido.");
+            }
+        }
+    }
+    public void actualizarPago() {
+        try {
+            pagoDAO.update(pagoAEditar);
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Pago actualizado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar.");
         }
     }
 
-    // --- Getters y Setters ---
+    private void addGlobalMessage(FacesMessage.Severity severity, String summary, String detail) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(severity, summary, detail));
+    }
+
+    public String irAEditar(Pago p) {
+        // Este es para luego hacer la modificacion con un editarPago.xhtml
+        return "editarPago.xhtml?faces-redirect=true&id=" + p.getId();
+    }
+
+    // Getters y setters
+    public Pago getNuevoPago() {
+        return nuevoPago;
+    }
+
+    public void setNuevoPago(Pago nuevoPago) {
+        this.nuevoPago = nuevoPago;
+    }
 
     public List<Pago> getListaPagos() {
+        listaPagos = pagoDAO.obtenerTodos();    // Para no accidentalmente enviar resultados de busqueda
         return listaPagos;
     }
 
@@ -61,11 +115,7 @@ public class PagoBean implements Serializable {
         this.listaPagos = listaPagos;
     }
 
-    public Pago getPagoSeleccionado() {
-        return pagoSeleccionado;
-    }
+    public Pago getPagoAEditar() { return pagoAEditar; }
 
-    public void setPagoSeleccionado(Pago pagoSeleccionado) {
-        this.pagoSeleccionado = pagoSeleccionado;
-    }
+    public void setPagoAEditar(Pago pagoAEditar) { this.pagoAEditar = pagoAEditar; }
 }

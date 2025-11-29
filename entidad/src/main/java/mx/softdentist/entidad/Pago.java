@@ -1,51 +1,54 @@
 package mx.softdentist.entidad;
 
-import java.io.Serializable;
-import java.util.Date;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "pago")
-public class Pago implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@Table(name = "pago", schema = "softdentist")
+public class Pago {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_pago")
-    private Integer idPago;
+    @Column(name = "id_pago", nullable = false)
+    private Integer id;
 
+    @Size(max = 200)
+    @Column(name = "descripcion", length = 200)
+    private String descripcion;
+
+    @NotNull
     @Column(name = "monto", nullable = false)
     private Double monto;
 
+    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "fecha")
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
+    private LocalDate fecha;
 
-    @Column(name = "descripcion", length = 255)
-    private String descripcion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "id_cita")
+    private Cita idCita;
 
-    // Relación Muchos a Uno con Cita
-    // Un pago pertenece a una cita, pero una cita podría tener varios pagos (o uno solo)
-    @ManyToOne
-    @JoinColumn(name = "id_cita", referencedColumnName = "id_cita")
-    private Cita cita;
-
-    public Pago() {
+    public Cita getIdCita() {
+        return idCita;
     }
 
-    public Pago(Integer idPago) {
-        this.idPago = idPago;
+    public void setIdCita(Cita idCita) {
+        this.idCita = idCita;
     }
 
-    // --- Getters y Setters ---
-
-    public Integer getIdPago() {
-        return idPago;
+    public LocalDate getFecha() {
+        return fecha;
     }
 
-    public void setIdPago(Integer idPago) {
-        this.idPago = idPago;
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public Double getMonto() {
@@ -56,14 +59,6 @@ public class Pago implements Serializable {
         this.monto = monto;
     }
 
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
     public String getDescripcion() {
         return descripcion;
     }
@@ -72,35 +67,11 @@ public class Pago implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Cita getCita() {
-        return cita;
+    public Integer getId() {
+        return id;
     }
 
-    public void setCita(Cita cita) {
-        this.cita = cita;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (idPago != null ? idPago.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Pago)) {
-            return false;
-        }
-        Pago other = (Pago) object;
-        if ((this.idPago == null && other.idPago != null) || (this.idPago != null && !this.idPago.equals(other.idPago))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "mx.softdentist.entidad.Pago[ idPago=" + idPago + " ]";
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

@@ -1,19 +1,27 @@
 package mx.softdentist.facade;
 
-import mx.softdentist.dao.PagoDAO;
 import mx.softdentist.entidad.Pago;
+import mx.softdentist.integration.ServiceLocator;
+
 import java.util.List;
 
 public class FacadePago {
 
-    private final PagoDAO pagoDAO = new PagoDAO();
-
-    public List<Pago> obtenerTodos() {
-        return pagoDAO.obtenerTodos();
+    public boolean savePago(Pago pago) {
+        try {
+            ServiceLocator.getInstancePagoDAO().save(pago);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    // Dejamos el método guardar comentado o presente pero sin uso en la vista US2
-    public void guardar(Pago pago) {
-        pagoDAO.save(pago);
+    public Pago findPagoById(Integer id) {
+        return ServiceLocator.getInstancePagoDAO().find(id).orElse(null);
+    }
+
+    public List<Pago> obtenerTodosLosPagos() {
+        return ServiceLocator.getInstancePagoDAO().obtenerTodos();
     }
 }

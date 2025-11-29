@@ -12,6 +12,7 @@
         <class>mx.softdentist.entidad.Cita</class>
         <class>mx.softdentist.entidad.Empleado</class>
         <class>mx.softdentist.entidad.Mensaje</class>
+        <class>mx.softdentist.entidad.Pago</class>
 
         <properties>
             <!-- Configuración JDBC -->

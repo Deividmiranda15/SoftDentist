@@ -1,24 +1,20 @@
 package mx.softdentist.delegate;
 
 import mx.softdentist.entidad.Pago;
-import mx.softdentist.facade.FacadePago;
 import mx.softdentist.integration.ServiceFacadeLocator;
+
 import java.util.List;
 
 public class DelegatePago {
-
-    private final FacadePago facadePago;
-
-    public DelegatePago() {
-        // Obtenemos la instancia a través del Locator
-        this.facadePago = ServiceFacadeLocator.getInstance().getFacadePago();
+    public void savePago(Pago pago) {
+        ServiceFacadeLocator.getInstanceFacadePago().savePago(pago);
     }
 
-    public List<Pago> obtenerTodos() {
-        return facadePago.obtenerTodos();
+    public Pago findPagoById(int idPago) {
+        return ServiceFacadeLocator.getInstanceFacadePago().findPagoById(idPago);
     }
 
-    public void registrarPago(Pago pago) {
-        facadePago.guardar(pago);
+    public List<Pago> obtenerTodosLosPagos() {
+        return ServiceFacadeLocator.getInstanceFacadePago().obtenerTodosLosPagos();
     }
 }

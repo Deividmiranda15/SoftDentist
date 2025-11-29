@@ -50,30 +50,26 @@
                     <h2>Registro de Pago en Efectivo</h2>
                     <h:form id="formCaja">
                         <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
-
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
-                                <p:inputText id="concepto" value="#{cajaBean.nuevoPago.concepto}" required="true" placeholder="Ej. Limpieza dental, Consulta..." />
+                                <p:inputText id="concepto" value="#{pagoBean.nuevoPago.descripcion}" required="true" placeholder="Ej. Limpieza dental, Consulta..." />
                             </h:panelGroup>
 
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="monto" value="Monto Recibido ($):" />
-                                <p:inputNumber id="monto" value="#{cajaBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
-                                               decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"/>
-                            </h:panelGroup>
-
-                            <h:panelGroup styleClass="ui-grid-col-12">
-                                <p:outputLabel for="paciente" value="Paciente:" />
-                                <p:inputText id="paciente" value="#{cajaBean.nuevoPago.nombrePaciente}" required="true" placeholder="Nombre del paciente" />
+                                <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
+                                               decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"
+                                               minValue="1" decimalPlaces="2"/>
                             </h:panelGroup>
 
                             <h:panelGroup styleClass="ui-grid-col-12">
                                 <p:outputLabel for="fechaPago" value="Fecha del Pago:" />
-                                <p:datePicker id="fechaPago" value="#{cajaBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"/>
+                                <p:datePicker id="fechaPago" value="#{pagoBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"
+                                              placeholder="(Dejar vacío para dejar el registro como hoy.)"/>
                             </h:panelGroup>
 
                             <p:commandButton value="Registrar Ingreso"
-                                             actionListener="#{cajaBean.guardarPago}"
+                                             actionListener="#{pagoBean.guardarPago}"
                                              update="formCaja :formConsulta:consultaContainer messages"
                                              style="width: 100%; margin-top: 10px;"
                                              icon="pi pi-wallet"/>
@@ -85,32 +81,34 @@
                     <h2>Movimientos del Día</h2>
                     <h:form id="formConsulta">
                         <div class="search-bar">
+                            <!-- Aquí usaré la palabra concepto y descripción para referirse a lo mismo. -->
                             <p:inputText placeholder="Buscar concepto..." />
                             <p:commandButton value="Buscar" />
 
-                            <p:commandButton value="Cerrar Caja" styleClass="ui-button-secondary" update="consultaContainer"
-                                             action="#{cajaBean.realizarCorte}" icon="pi pi-lock"/>
+                            <!--                            <p:commandButton value="Cerrar Caja" styleClass="ui-button-secondary" update="consultaContainer"-->
+<!--                                             action="#{cajaBean.realizarCorte}" icon="pi pi-lock"/>-->
                         </div>
 
                         <h:panelGroup id="consultaContainer" layout="block">
                             <div class="custom-table">
                                 <div class="custom-table-header">
+                                    <div>ID</div>
                                     <div>CONCEPTO</div>
-                                    <div>PACIENTE</div>
                                     <div>MONTO</div>
-                                    <div style="text-align: right;">HORA</div>
+                                    <div style="text-align: right;">FECHA</div>
                                 </div>
 
-                                <ui:repeat value="#{cajaBean.listaMovimientos}" var="m">
+                                <ui:repeat value="#{pagoBean.listaPagos}" var="m">
                                     <div class="custom-table-row">
-                                        <div class="custom-table-cell">#{m.concepto}</div>
-                                        <div class="custom-table-cell">#{m.nombrePaciente}</div>
+                                        <div class="custom-table-cell">#{m.id}</div>
+                                        <div class="custom-table-cell">#{m.descripcion}</div>
                                         <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">
                                             $#{m.monto}
                                         </div>
                                         <div class="custom-table-actions">
                                             <h:outputText value="#{m.fecha}">
-                                                <f:convertDateTime pattern="HH:mm" />
+                                                <!-- no le averiguo como formatearlo se vera feo -->
+<!--                                                <f:convertDateTime pattern="dd/mm/yyyy" />-->
                                             </h:outputText>
                                         </div>
                                     </div>
@@ -120,12 +118,12 @@
                                     <div class="empty-message">No hay movimientos registrados hoy.</div>
                                 </h:panelGroup>
 
-                                <div class="custom-table-row" style="background-color: #f8f9fa; font-weight: bold; border-top: 2px solid #ddd;">
-                                    <div class="custom-table-cell">TOTAL</div>
-                                    <div class="custom-table-cell"></div>
-                                    <div class="custom-table-cell">$#{cajaBean.totalDia}</div>
-                                    <div class="custom-table-cell"></div>
-                                </div>
+<!--                                <div class="custom-table-row" style="background-color: #f8f9fa; font-weight: bold; border-top: 2px solid #ddd;">-->
+<!--                                    <div class="custom-table-cell">TOTAL</div>-->
+<!--                                    <div class="custom-table-cell"></div>-->
+<!--                                    <div class="custom-table-cell">$#{cajaBean.totalDia}</div>-->
+<!--                                    <div class="custom-table-cell"></div>-->
+<!--                                </div>-->
                             </div>
                         </h:panelGroup>
                     </h:form>
