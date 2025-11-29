@@ -5,6 +5,8 @@ import mx.softdentist.facade.FacadeCita;
 import mx.softdentist.facade.FacadeEmpleado;
 import mx.softdentist.facade.FacadePaciente;
 import mx.softdentist.facade.FacadeMensaje;
+import mx.softdentist.facade.FacadePago;
+
 
 public class ServiceFacadeLocator {
     private static FacadeEmpleado facadeEmpleado;
@@ -12,6 +14,7 @@ public class ServiceFacadeLocator {
     private static FacadePaciente facadePaciente;
     private static FacadeCita facadeCita;
     private static FacadeMensaje facadeMensaje;
+    private static ServiceFacadeLocator instance;
 
     public static FacadeEmpleado getInstanceFacadeEmpleado() {
         if (facadeEmpleado == null) {
@@ -40,6 +43,14 @@ public class ServiceFacadeLocator {
         }
     }
 
+    public static ServiceFacadeLocator getInstance() {
+        if (instance == null) {
+            instance = new ServiceFacadeLocator();
+        }
+        return instance;
+    }
+
+
     public static FacadeCita getInstanceFacadeCita() {
         if (facadeCita == null) {
             facadeCita = new FacadeCita();
@@ -58,7 +69,9 @@ public class ServiceFacadeLocator {
             return facadeMensaje;
         }
     }
-
+    public FacadePago getFacadePago() {
+        return new FacadePago();
+    }
 
 }
 
