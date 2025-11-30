@@ -19,12 +19,14 @@
 
     <header>
         <div class="top-bar">
+
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="logo-img"/>
 
             <h:form styleClass="logout-form">
                 <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
                     <span class="logout-text">SALIR</span>
                     <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+
                                     alt="Cerrar Sesión" styleClass="logout-icon"/>
                 </p:commandLink>
             </h:form>
@@ -32,6 +34,7 @@
         <nav class="main-nav">
             <p:link outcome="inicio_emp" value="INICIO"  />
             <p:link outcome="pacientes" value="GESTIONAR PACIENTES" />
+
             <p:link outcome="consultacita_empleado.xhtml" value="CONSULTA DE CITAS"/>
             <p:link outcome="corte_caja" value="CAJA" styleClass="active"/>
             <p:link outcome="chat.xhtml" value="CHAT"/>
@@ -44,119 +47,159 @@
             <div class="full-view-card">
 
                 <h:form id="formTabs" class="card-header-tabs">
-                    <p:commandButton value="Consulta de Pago en Efectivo"
-                                     icon="pi pi-list"
-                                     actionListener="#{pagoBean.cambiarVista('CONSULTA')}"
-                                     update=":contenedorPrincipal :formTabs"
-                                     styleClass="tab-btn #{pagoBean.vistaActual eq 'CONSULTA' or empty pagoBean.vistaActual ? 'active-tab' : ''}" />
 
                     <p:commandButton value="Registrar Ingreso"
                                      icon="pi pi-wallet"
                                      actionListener="#{pagoBean.cambiarVista('ALTA')}"
                                      update=":contenedorPrincipal :formTabs"
-                                     styleClass="tab-btn #{pagoBean.vistaActual eq 'ALTA' ? 'active-tab' : ''}" />
+                                     styleClass="tab-btn #{pagoBean.vistaActual eq 'ALTA' or empty pagoBean.vistaActual ?
+'active-tab' : ''}" />
+
+                    <p:commandButton value="Consulta de Pago en Efectivo"
+                                     icon="pi pi-list"
+                                     actionListener="#{pagoBean.cambiarVista('CONSULTA')}"
+                                     update=":contenedorPrincipal :formTabs"
+                                     styleClass="tab-btn #{pagoBean.vistaActual eq 'CONSULTA' ?
+'active-tab' : ''}" />
                 </h:form>
 
                 <div class="card-content">
                     <h:panelGroup id="contenedorPrincipal">
 
-                        <h:panelGroup rendered="#{pagoBean.vistaActual eq 'ALTA'}">
+                        <h:panelGroup rendered="#{pagoBean.vistaActual eq 'ALTA' or empty pagoBean.vistaActual}">
+
                             <h2 class="section-title">Registro de Pago en Efectivo</h2>
                             <h:form id="formCaja">
                                 <p:panelGrid columns="2" layout="grid"
+
                                              styleClass="ui-panelgrid-blank ui-fluid grid-mt-20"
                                              columnClasses="ui-grid-col-6, ui-grid-col-6">
 
+
                                     <h:panelGroup>
                                         <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
-                                        <p:inputText id="concepto" value="#{pagoBean.nuevoPago.descripcion}" required="true" placeholder="Ej. Limpieza dental, Consulta..." />
+                                        <p:inputText id="concepto" value="#{pagoBean.nuevoPago.descripcion}" required="true" placeholder="Ej.
+Limpieza dental, Consulta..." />
                                     </h:panelGroup>
 
                                     <h:panelGroup>
+
                                         <p:outputLabel for="monto" value="Monto Recibido ($):" />
                                         <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
+
                                                        decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"
                                                        minValue="1" decimalPlaces="2"/>
+
                                     </h:panelGroup>
 
                                     <h:panelGroup>
                                         <p:outputLabel for="fechaPago" value="Fecha del Pago:" />
+
                                         <p:datePicker id="fechaPago" value="#{pagoBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"
                                                       placeholder="(Dejar vacío para hoy)"/>
+
                                     </h:panelGroup>
 
                                     <h:panelGroup />
+
 
                                 </p:panelGrid>
 
                                 <h:panelGroup layout="block" styleClass="btn-wrapper-full">
                                     <p:commandButton value="Registrar Ingreso"
+
                                                      icon="pi pi-check"
                                                      actionListener="#{pagoBean.guardarPago}"
+
                                                      update="formCaja :contenedorPrincipal messages :formTabs"
                                                      styleClass="ui-button-success btn-guardar-large" />
+
                                 </h:panelGroup>
                             </h:form>
                         </h:panelGroup>
 
 
-                        <h:panelGroup rendered="#{pagoBean.vistaActual eq 'CONSULTA' or empty pagoBean.vistaActual}">
+                        <h:panelGroup
+                                rendered="#{pagoBean.vistaActual eq 'CONSULTA'}">
                             <h2 class="section-title">Consulta de Pago en Efectivo</h2>
                             <h:form id="formConsulta">
 
-                                <div class="filter-container" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
+                                <div
+                                        class="filter-container" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
                                     <div style="flex-grow: 1;">
                                         <p:inputText id="txtBusqueda" placeholder="Buscar concepto o monto..."
+
                                                      onkeyup="filtrarTabla()"
                                                      style="width: 100%;" />
+
                                     </div>
                                     <h:panelGroup>
+
                                         <p:selectOneMenu id="selectOrden"
                                                          value="#{pagoBean.ordenacionActual}">
-                                            <f:selectItem itemLabel="ID (Reg. más nuevo)" itemValue="ID_DESC" />
-                                            <f:selectItem itemLabel="ID (Reg. más antiguo)" itemValue="ID_ASC" />
-                                            <f:selectItem itemLabel="Fecha (más reciente)" itemValue="FECHA_MAS_RECIENTE" />
-                                            <f:selectItem itemLabel="Fecha (más antigua)" itemValue="FECHA_MAS_ANTIGUA" />
-                                            <f:selectItem itemLabel="Monto (más alto)" itemValue="MONTO_MAS_ALTO" />
-                                            <f:selectItem itemLabel="Monto (más bajo)" itemValue="MONTO_MAS_BAJO" />
+
+                                            <f:selectItem itemLabel="Ultimo agregado" itemValue="ID_DESC" />
+<!--                                            <f:selectItem itemLabel="ID (Reg. más antiguo)" itemValue="ID_ASC" />-->
+
+                                            <f:selectItem itemLabel="Fecha más reciente" itemValue="FECHA_MAS_RECIENTE" />
+                                            <f:selectItem itemLabel="Fecha más antigua" itemValue="FECHA_MAS_ANTIGUA" />
+
+                                            <f:selectItem itemLabel="Monto más alto" itemValue="MONTO_MAS_ALTO" />
+                                            <f:selectItem itemLabel="Monto más bajo" itemValue="MONTO_MAS_BAJO" />
+
                                             <p:ajax listener="#{pagoBean.onSortChange}"
                                                     update="consultaContainer"
+
                                                     process="@this" />
                                         </p:selectOneMenu>
                                     </h:panelGroup>
+
                                 </div>
 
                                 <h:panelGroup id="consultaContainer" layout="block">
                                     <div class="custom-table">
+
                                         <div class="custom-table-header">
                                             <div>ID</div>
+
                                             <div>CONCEPTO</div>
                                             <div>MONTO</div>
+
                                             <div class="text-right">FECHA</div>
                                         </div>
 
                                         <ui:repeat value="#{pagoBean.listaPagos}" var="m">
+
                                             <div class="custom-table-row">
                                                 <div class="custom-table-cell">#{m.id}</div>
+
                                                 <div class="custom-table-cell">#{m.descripcion}</div>
-                                                <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">
+                                                <div class="custom-table-cell" style="font-weight: bold;
+color: #2e7d32;">
                                                     $#{m.monto}
+
                                                 </div>
                                                 <div class="custom-table-actions">
+
                                                     <h:outputText value="#{m.fecha}">
                                                         <f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+
                                                     </h:outputText>
                                                 </div>
+
                                             </div>
                                         </ui:repeat>
 
                                         <h:panelGroup rendered="#{empty pagoBean.listaPagos}">
+
                                             <div class="empty-message">No hay movimientos registrados hoy.</div>
                                         </h:panelGroup>
+
                                     </div>
                                 </h:panelGroup>
                             </h:form>
                         </h:panelGroup>
+
 
                     </h:panelGroup>
                 </div>
@@ -169,7 +212,6 @@
             var input = document.getElementById('formConsulta:txtBusqueda');
             var filtro = input ? input.value.toUpperCase() : '';
             var filas = document.getElementsByClassName('custom-table-row');
-
             for (var i = 0; i &lt; filas.length; i++) {
                 var fila = filas[i];
                 var textoFila = fila.innerText || fila.textContent;

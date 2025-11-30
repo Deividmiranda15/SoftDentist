@@ -23,7 +23,7 @@ public class PagoBean implements Serializable {
     private List<Pago> listaPagos;
     private PagoDAO pagoDAO;
     private Pago pagoAEditar;
-    private String vistaActual = "CONSULTA";
+    private String vistaActual = "ALTA";
     // PROPIEDAD REQUERIDA QUE FALTABA (O NO SE COMPILÓ)
     private String ordenacionActual = "ID_DESC"; // Por defecto ID descendente (más nuevo)
 
