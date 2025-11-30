@@ -436,3 +436,18 @@ body .tab-btn.ui-button:hover {
         text-align: center;
     }
 }
+
+.info-destinatarios {
+    background-color: #beeae9;
+    color: #084D4A;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #78d1cc;
+}
+.info-destinatarios i {
+    font-size: 1.8rem;
+    margin-right: 15px;
+}
