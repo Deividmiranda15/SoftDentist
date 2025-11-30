@@ -9,7 +9,7 @@
 <h:head>
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Corte de Caja - Dental Patron</title>
+    <title>Caja - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
     <h:outputStylesheet name="css/patrondental.css" />
 </h:head>
@@ -135,20 +135,18 @@ Limpieza dental, Consulta..." />
                                     <h:panelGroup>
 
                                         <p:selectOneMenu id="selectOrden"
-                                                         value="#{pagoBean.ordenacionActual}">
+                                                         value="#{pagoBean.ordenacionActual}"
+                                                         styleClass="custom-filter-dropdown"
+                                                         panelStyleClass="custom-filter-panel">
 
                                             <f:selectItem itemLabel="Ultimo agregado" itemValue="ID_DESC" />
-<!--                                            <f:selectItem itemLabel="ID (Reg. más antiguo)" itemValue="ID_ASC" />-->
-
                                             <f:selectItem itemLabel="Fecha más reciente" itemValue="FECHA_MAS_RECIENTE" />
                                             <f:selectItem itemLabel="Fecha más antigua" itemValue="FECHA_MAS_ANTIGUA" />
-
                                             <f:selectItem itemLabel="Monto más alto" itemValue="MONTO_MAS_ALTO" />
                                             <f:selectItem itemLabel="Monto más bajo" itemValue="MONTO_MAS_BAJO" />
 
                                             <p:ajax listener="#{pagoBean.onSortChange}"
                                                     update="consultaContainer"
-
                                                     process="@this" />
                                         </p:selectOneMenu>
                                     </h:panelGroup>

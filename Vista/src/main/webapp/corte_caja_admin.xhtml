@@ -66,7 +66,9 @@
                                 <h:panelGroup>
                                     <!-- Menú para ordenar los resultados -->
                                     <p:selectOneMenu id="selectOrden"
-                                                     value="#{pagoBean.ordenacionActual}">
+                                                     value="#{pagoBean.ordenacionActual}"
+                                                     styleClass="custom-filter-dropdown"
+                                                     panelStyleClass="custom-filter-panel">
 
                                         <f:selectItem itemLabel="Ultimo agregado" itemValue="ID_DESC" />
                                         <f:selectItem itemLabel="Fecha más reciente" itemValue="FECHA_MAS_RECIENTE" />
@@ -74,7 +76,6 @@
                                         <f:selectItem itemLabel="Monto más alto" itemValue="MONTO_MAS_ALTO" />
                                         <f:selectItem itemLabel="Monto más bajo" itemValue="MONTO_MAS_BAJO" />
 
-                                        <!-- El listener de AJAX para aplicar la ordenación -->
                                         <p:ajax listener="#{pagoBean.onSortChange}"
                                                 update="consultaContainer"
                                                 process="@this" />
