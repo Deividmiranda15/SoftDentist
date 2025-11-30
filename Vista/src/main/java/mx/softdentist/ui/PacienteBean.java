@@ -22,8 +22,6 @@ public class PacienteBean implements Serializable {
     private List<Paciente> listaPacientes;
     private PacienteDAO pacienteDAO;
     private Paciente pacienteAEditar;
-
-    // --- NUEVA VARIABLE DE ESTADO ---
     // Esta variable le dice al XHTML qué mostrar: "CONSULTA" o "ALTA"
     private String vistaActual = "CONSULTA";
 
