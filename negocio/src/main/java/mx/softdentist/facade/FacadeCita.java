@@ -21,10 +21,18 @@ public class FacadeCita {
     }
 
     public List<Cita> obtenerTodasLasCitas() {
-        return ServiceLocator.getInstanceCitaDAO().obtenerTodos();
+        return ServiceLocator.getInstanceCitaDAO().obtenerTodasConPacientes(); // Usar el nuevo método
     }
 
     public List<Cita> consultarCitasPorPaciente(int idPaciente) {
-        return ServiceLocator.getInstanceCitaDAO().findCitasByPacienteId(idPaciente);
+        return ServiceLocator.getInstanceCitaDAO().obtenerPorPacienteConDetalles(idPaciente); // Usar el nuevo método
+    }
+
+    public void updateCita(Cita cita) {
+        try {
+            ServiceLocator.getInstanceCitaDAO().update(cita);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

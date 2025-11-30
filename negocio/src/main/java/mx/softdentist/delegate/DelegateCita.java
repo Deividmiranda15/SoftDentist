@@ -1,5 +1,6 @@
 package mx.softdentist.delegate;
 
+import mx.softdentist.dao.CitaDAO;
 import mx.softdentist.entidad.Cita;
 import mx.softdentist.integration.ServiceFacadeLocator;
 
@@ -19,6 +20,9 @@ public class DelegateCita {
     public List<Cita> obtenerTodasCitas() {
         List<Cita> todasLasCitas = ServiceFacadeLocator.getInstanceFacadeCita().obtenerTodasLasCitas();
         return todasLasCitas;
+    }
+    public void actualizarCita(Cita cita) {
+        ServiceFacadeLocator.getInstanceFacadeCita().updateCita(cita);
     }
 }
 

@@ -14,7 +14,6 @@
     <h:outputStylesheet name="css/patrondental.css" />
 
     <style>
-        /* Centrar el contenedor principal */
         .main-content-backdrop {
             display: flex;
             justify-content: center;
@@ -23,35 +22,31 @@
             padding-top: 40px;
         }
 
-        /* Tarjeta contenedora */
         .form-card {
-            width: 80%;
+            width: 85%;
             max-width: 900px;
             margin: 0 auto;
             text-align: center;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.97);
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        /* Título */
         .form-card h2 {
             font-family: 'Poppins', sans-serif;
-            color: #666;
+            color: #0e5c8e;
             font-size: 26px;
             font-weight: 600;
             margin-bottom: 25px;
         }
 
-        /* Tabla centrada y más grande */
         #formCitas\\:tablaCitas {
             width: 90% !important;
             margin: 0 auto;
             font-size: 16px;
         }
 
-        /* Cabecera de la tabla */
         .ui-datatable thead th {
             background-color: #0e5c8e !important;
             color: white !important;
@@ -59,31 +54,35 @@
             font-weight: 600;
         }
 
-        /* Celdas */
         .ui-datatable tbody td {
             text-align: center;
             padding: 12px 10px;
         }
 
-        /* Paginador */
         .ui-paginator {
             justify-content: center;
         }
 
-        /* Botón de cancelar */
         .ui-button-danger {
             font-size: 16px !important;
             padding: 10px 20px !important;
             border-radius: 8px !important;
         }
+
+        .btn-pdf {
+            background-color: #00796b !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 600;
+        }
     </style>
 </h:head>
 
 <h:body>
-    <!-- Mensajes -->
     <p:growl id="messages" showDetail="true" life="4000" />
 
-    <!-- ENCABEZADO -->
     <header>
         <div class="top-bar">
             <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;" />
@@ -95,7 +94,6 @@
         </nav>
     </header>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content-backdrop">
         <div class="form-card">
             <h2>Mis Citas</h2>
@@ -104,9 +102,6 @@
                 <p:dataTable id="tablaCitas"
                              value="#{citaBean.citasRegistradas}"
                              var="c"
-                             selection="#{citaBean.citaSeleccionada}"
-                             selectionMode="single"
-                             rowKey="#{c.id}"
                              paginator="true" rows="5"
                              emptyMessage="No hay citas registradas.">
 
@@ -125,9 +120,26 @@
                     <p:column headerText="Estado">
                         <h:outputText value="#{c.estado}" />
                     </p:column>
+
+                    <p:column headerText="Receta">
+                        <!-- SOLUCIÓN MÁS SIMPLE Y CONFIABLE -->
+                        <h:outputLink value="/resources/recetas/receta_cita#{c.id}.pdf"
+                                      target="_blank"
+                                      rendered="#{c.estado eq 'Completada'}"
+                                      styleClass="btn-pdf">
+                            <i class="pi pi-file-pdf" style="margin-right:5px"></i>
+                            Ver Receta
+                        </h:outputLink>
+
+                        <h:outputText value="No disponible"
+                                      rendered="#{c.estado eq 'Completada'}"
+                                      style="color: #999; font-style: italic;"/>
+
+                        <h:outputText value="-"
+                                      rendered="#{c.estado ne 'Completada'}"/>
+                    </p:column>
                 </p:dataTable>
 
-                <!-- Botón de cancelar -->
                 <div style="text-align:center; margin-top:25px;">
                     <p:commandButton value="Cancelar Cita"
                                      icon="pi pi-times"

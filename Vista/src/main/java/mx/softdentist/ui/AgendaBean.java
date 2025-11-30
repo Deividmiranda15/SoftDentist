@@ -55,14 +55,14 @@ public class AgendaBean implements Serializable {
                     }
                     String titulo = nombrePaciente + " - " + (c.getMotivo() != null ? c.getMotivo() : "");
 
-                    String color = obtenerColorPorEstado(c.getEstado());
-
+                    Cita.EstadoCita estado = c.getEstado();
+                    String color = obtenerColorPorEstado(estado);
 
                     DefaultScheduleEvent<?> nuevoEvento = DefaultScheduleEvent.builder()
                             .title(titulo)
                             .startDate(inicio)
                             .endDate(fin)
-                            .description(c.getEstado())
+                            .description(estado.name())
                             .borderColor(color)
                             .backgroundColor(color)
                             .data(c)
@@ -78,23 +78,23 @@ public class AgendaBean implements Serializable {
         }
     }
 
-    private String obtenerColorPorEstado(String estado) {
+    private String obtenerColorPorEstado(Cita.EstadoCita estado) {
         if (estado == null) return "#3788d8";
 
-        switch (estado.toLowerCase()) {
-            case "pendiente":
+        switch (estado) {
+            case Pendiente:
                 return "#f39c12";
-            case "confirmada":
-            case "asistió":
+            case Completada:
                 return "#27ae60";
-            case "cancelada":
+            case Cancelada:
                 return "#c0392b";
-            case "reprogramada":
+            case Programada:
                 return "#8e44ad";
             default:
                 return "#3788d8";
         }
     }
+
 
     public void onEventSelect(SelectEvent<ScheduleEvent<?>> selectEvent) {
         this.event = selectEvent.getObject();

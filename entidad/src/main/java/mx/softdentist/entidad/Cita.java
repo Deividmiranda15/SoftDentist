@@ -3,7 +3,6 @@ package mx.softdentist.entidad;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -30,9 +29,10 @@ public class Cita {
     @Column(name = "motivo", length = 200)
     private String motivo;
 
-    @ColumnDefault("'Pendiente'")
-    @Column(name = "estado")
-    private String estado;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false)
+    private EstadoCita estado = EstadoCita.Pendiente;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -49,6 +49,13 @@ public class Cita {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "id_admin")
     private Administrador idAdmin;
+
+    public enum EstadoCita {
+        Pendiente,
+        Programada,
+        Completada,
+        Cancelada
+    }
 
     public Integer getId() {
         return id;
@@ -82,11 +89,11 @@ public class Cita {
         this.motivo = motivo;
     }
 
-    public String getEstado() {
+    public EstadoCita getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(@NotNull EstadoCita estado) {
         this.estado = estado;
     }
 
