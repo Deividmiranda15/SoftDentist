@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consulta de Pagos - Dental Patron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <!-- Asumiendo que el archivo CSS sigue siendo necesario para el estilo general -->
+    <h:outputStylesheet name="css/patrondental.css" />
+</h:head>
+
+<h:body>
+    <p:growl id="messages" showDetail="true" life="4000" />
+
+    <header>
+        <div class="top-bar">
+            <!--  -->
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="logo-img"/>
+
+            <h:form styleClass="logout-form">
+                <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
+                    <span class="logout-text">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                    alt="Cerrar Sesión" styleClass="logout-icon"/>
+                </p:commandLink>
+            </h:form>
+        </div>
+        <nav class="main-nav">
+            <p:link outcome="inicio_admin" value="INICIO"  />
+            <p:link outcome="pacientesad" value="GESTIONAR PACIENTES" />
+            <p:link outcome="empleados" value="GESTIONAR EMPLEADOS" />
+            <p:link outcome="corte_caja_admin" value="CAJA" styleClass="active" />
+        </nav>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+
+            <div class="full-view-card">
+
+                <!-- Eliminamos el formulario de pestañas ya que solo hay una vista -->
+                <!-- <h:form id="formTabs" class="card-header-tabs"> ... </h:form> -->
+
+                <div class="card-content">
+                    <h:panelGroup id="contenedorPrincipal">
+
+                        <!-- El contenido de consulta se muestra directamente -->
+                        <h2 class="section-title">Consulta de Pagos en Efectivo</h2>
+                        <h:form id="formConsulta">
+
+                            <div
+                                    class="filter-container" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
+                                <div style="flex-grow: 1;">
+                                    <!-- Campo para la búsqueda/filtro -->
+                                    <p:inputText id="txtBusqueda" placeholder="Buscar concepto o monto..."
+                                                 onkeyup="filtrarTabla()"
+                                                 style="width: 100%;" />
+                                </div>
+                                <h:panelGroup>
+                                    <!-- Menú para ordenar los resultados -->
+                                    <p:selectOneMenu id="selectOrden"
+                                                     value="#{pagoBean.ordenacionActual}">
+
+                                        <f:selectItem itemLabel="Ultimo agregado" itemValue="ID_DESC" />
+                                        <f:selectItem itemLabel="Fecha más reciente" itemValue="FECHA_MAS_RECIENTE" />
+                                        <f:selectItem itemLabel="Fecha más antigua" itemValue="FECHA_MAS_ANTIGUA" />
+                                        <f:selectItem itemLabel="Monto más alto" itemValue="MONTO_MAS_ALTO" />
+                                        <f:selectItem itemLabel="Monto más bajo" itemValue="MONTO_MAS_BAJO" />
+
+                                        <!-- El listener de AJAX para aplicar la ordenación -->
+                                        <p:ajax listener="#{pagoBean.onSortChange}"
+                                                update="consultaContainer"
+                                                process="@this" />
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                            </div>
+
+                            <h:panelGroup id="consultaContainer" layout="block">
+                                <div class="custom-table">
+
+                                    <div class="custom-table-header">
+                                        <div>ID</div>
+                                        <div>CONCEPTO</div>
+                                        <div>MONTO</div>
+                                        <div class="text-right">FECHA</div>
+                                    </div>
+
+                                    <!-- Iteración sobre la lista de pagos para mostrar los datos -->
+                                    <ui:repeat value="#{pagoBean.listaPagos}" var="m">
+                                        <div class="custom-table-row">
+                                            <div class="custom-table-cell">#{m.id}</div>
+                                            <div class="custom-table-cell">#{m.descripcion}</div>
+                                            <div class="custom-table-cell" style="font-weight: bold;
+color: #2e7d32;">
+                                                $#{m.monto}
+                                            </div>
+                                            <div class="custom-table-actions">
+                                                <h:outputText value="#{m.fecha}">
+                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+
+                                    <!-- Mensaje si no hay pagos -->
+                                    <h:panelGroup rendered="#{empty pagoBean.listaPagos}">
+                                        <div class="empty-message">No hay movimientos registrados hoy.</div>
+                                    </h:panelGroup>
+
+                                </div>
+                            </h:panelGroup>
+                        </h:form>
+
+                    </h:panelGroup>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function filtrarTabla() {
+            var input = document.getElementById('formConsulta:txtBusqueda');
+            var filtro = input ? input.value.toUpperCase() : '';
+            var filas = document.getElementsByClassName('custom-table-row');
+            for (var i = 0; i &lt; filas.length; i++) {
+                var fila = filas[i];
+                var textoFila = fila.innerText || fila.textContent;
+
+                if (textoFila.toUpperCase().indexOf(filtro) > -1) {
+                    fila.style.display = "";
+                } else {
+                    fila.style.display = "none";
+                }
+            }
+        }
+    </script>
+
+</h:body>
+</html>
