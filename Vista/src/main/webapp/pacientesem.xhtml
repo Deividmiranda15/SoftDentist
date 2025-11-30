@@ -198,14 +198,14 @@
 
             <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
                 <h:panelGroup styleClass="grid-col-span-2">
-                    <p:outputLabel for="dentista" value="Especialista:" />
-                    <p:selectOneMenu id="dentista" value="#{citaBean.dentistaSeleccionado}" converter="#{empleadoConverter}" required="true">
-                        <f:selectItem itemLabel="Seleccione un dentista..." itemValue="#{null}" noSelectionOption="true"/>
-                        <f:selectItems value="#{citaBean.listaDentistas}" var="d" itemLabel="#{d.nombre} #{d.apellido}" itemValue="#{d}"/>
-                    </p:selectOneMenu>
-                </h:panelGroup>
+<!--                    <p:outputLabel for="dentista" value="Especialista:" />-->
+<!--                    <p:selectOneMenu id="dentista" value="#{citaBean.dentistaSeleccionado}" converter="#{empleadoConverter}" required="true">-->
+<!--                        <f:selectItem itemLabel="Seleccione un dentista..." itemValue="#{null}" noSelectionOption="true"/>-->
+<!--                        <f:selectItems value="#{citaBean.listaDentistas}" var="d" itemLabel="#{d.nombre} #{d.apellido}" itemValue="#{d}"/>-->
+<!--                    </p:selectOneMenu>-->
+<!--                </h:panelGroup>-->
 
-                <h:panelGroup>
+<!--                <h:panelGroup>-->
                     <p:outputLabel for="fecha" value="Fecha:" />
                     <p:datePicker id="fecha" value="#{citaBean.fecha}" locale="es" minDate="#{citaBean.manana}" showIcon="true" pattern="dd/MM/yyyy">
                         <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="horas"/>
@@ -220,7 +220,7 @@
                     </p:selectOneMenu>
                 </h:panelGroup>
 
-                <h:panelGroup styleClass="grid-col-span-2">
+                <h:panelGroup styleClass="grid-col-span-2 ui-grid-col-12">
                     <p:outputLabel for="motivo" value="Motivo:" />
                     <div class="grid-motivos">
                         <p:selectOneButton id="motivo" value="#{citaBean.motivo}" required="true" unselectable="false">
