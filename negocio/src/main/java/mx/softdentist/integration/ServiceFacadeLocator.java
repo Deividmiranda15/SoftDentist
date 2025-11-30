@@ -1,10 +1,6 @@
 package mx.softdentist.integration;
 
-import mx.softdentist.facade.FacadeAdministrador;
-import mx.softdentist.facade.FacadeCita;
-import mx.softdentist.facade.FacadeEmpleado;
-import mx.softdentist.facade.FacadePaciente;
-import mx.softdentist.facade.FacadeMensaje;
+import mx.softdentist.facade.*;
 
 public class ServiceFacadeLocator {
     private static FacadeEmpleado facadeEmpleado;
@@ -12,6 +8,7 @@ public class ServiceFacadeLocator {
     private static FacadePaciente facadePaciente;
     private static FacadeCita facadeCita;
     private static FacadeMensaje facadeMensaje;
+    private static FacadePago facadePago;
 
     public static FacadeEmpleado getInstanceFacadeEmpleado() {
         if (facadeEmpleado == null) {
@@ -56,6 +53,15 @@ public class ServiceFacadeLocator {
             return facadeMensaje;
         } else {
             return facadeMensaje;
+        }
+    }
+
+    public static FacadePago getInstanceFacadePago() {
+        if (facadePago == null) {
+            facadePago = new FacadePago();
+            return facadePago;
+        } else {
+            return facadePago;
         }
     }
 

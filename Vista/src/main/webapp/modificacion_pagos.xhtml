@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Modificar Paciente</title>
+    <h:outputStylesheet name="css/patrondental.css" />
+</h:head>
+
+<h:body>
+    <f:metadata>
+        <f:viewAction action="#{pagoBean.cargarDatosParaEditar}" />
+    </f:metadata>
+
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" style="height: 60px;"/>
+        </div>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="card form-card" style="margin: 20px auto; max-width: 600px;">
+                <h2>Modificar Paciente</h2>
+                <h:form id="formEditar">
+                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                        <!--                            LOOKHERE, SI agregar id PERO agarrarlo de las citas registradas
+                                                        https://showcase.primefaces.org/ui/input/oneMenu.xhtml -->
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="cita" value="Cita:" />
+                            <p:selectOneMenu id="cita" value="#{pagoBean.nuevoPago.cita}"
+                                             placeholder="Selecciona una cita...">
+                                <f:selectItem itemLabel="Seleciona Uno" itemValue=""/>
+                                <!--                                    LOOKHERE CITAS: Revisa si esto de agarrar varias citas muestra correctamente
+                                                                        un texto-->
+                                <f:selectItems value="#{CitaBean.citasRegistradas}"/>
+                            </p:selectOneMenu >
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="descripcion" value="Descripción:" />
+                            <p:inputText id="descripcion" value="#{pagoBean.nuevoPago.descripcion}"
+                                         required="false"
+                                         placeholder="Describa el motivo del pago..." />
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="monto" value="Monto: $" />
+                            <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}"
+                                           required="true"
+                                           placeholder="Monto del pago en pesos"
+                                           decimalPlaces="2"/>
+                        </h:panelGroup>
+                        <!--                            LOOKHERE FECHA: la fecha es en forma de LocalDate en la clase, pero
+                                                        el tag datePicker trabaja con Date, revisa por si esta mal-->
+                        <h:panelGroup styleClass="ui-grid-col-12">
+                            <p:outputLabel for="fecha" value="Fecha del pago:" />
+                            <p:datePicker id="fecha" value="#{pagoBean.nuevoPago.fecha}"
+                                          inline="true" />
+                        </h:panelGroup>
+
+                        <p:commandButton value="Guardar Cambios"
+                                         action="#{pagoBean.actualizarPago}"
+                                         update="@form"
+                                         oncomplete="if (args &amp;&amp; !args.validationFailed) { if(window.opener){window.opener.location.reload();} window.close(); }"
+                                         style="width: 100%; margin-top: 10px;" />
+                    </p:panelGrid>
+                </h:form>
+            </div>
+        </div>
+    </main>
+</h:body>
+</html>

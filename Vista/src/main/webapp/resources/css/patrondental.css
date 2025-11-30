@@ -1,4 +1,6 @@
-/* === RESETEO Y BASE === */
+/* =========================================
+   RESETEO Y BASE
+   ========================================= */
 body {
     margin: 0;
     font-family: 'Poppins', 'Segoe UI', sans-serif;
@@ -7,7 +9,9 @@ body {
     background-size: cover;
 }
 
-/* === ENCABEZADO (Estilo de pt_inicio_admin) === */
+/* =========================================
+   HEADER Y NAVEGACIÓN
+   ========================================= */
 .top-bar {
     background-color: #ffffff;
     height: 80px;
@@ -18,7 +22,9 @@ body {
     box-sizing: border-box;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
+.logo-img { height: 60px; }
 
+/* Botón Salir */
 .btn-logout {
     color:#084D4A;
     opacity: 0.6;
@@ -27,14 +33,19 @@ body {
     align-items: center;
     gap: 10px;
     text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
 }
-
 .btn-logout:hover {
     color:black;
     opacity: 1.0;
-    transform: scale(1.05); /* Un pequeño efecto de zoom */
+    transform: scale(1.05);
 }
+.logout-text { color: #333; font-weight: 600; margin-right: 8px; font-size: 0.9rem; }
+.logout-icon { height: 25px; width: 25px; }
 
+/* Menú Principal */
 .main-nav {
     background-color: #084D4A;
     height: 60px;
@@ -57,72 +68,197 @@ body {
     color: #ffffff;
 }
 
-/* === CONTENEDOR PRINCIPAL TRANSLÚCIDO === */
+/* =========================================
+   LAYOUT PRINCIPAL
+   ========================================= */
 .main-content-backdrop {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 140px); /* Resta la altura del header */
+    min-height: calc(100vh - 140px);
     padding: 40px;
     box-sizing: border-box;
 }
 .transparent-container {
-    background-color: rgba(8, 77, 74, 0.75); /* El turquesa translúcido */
+    background-color: rgba(8, 77, 74, 0.75);
     border-radius: 25px;
     padding: 40px;
     width: 100%;
-    max-width: 1400px; /* Ancho máximo para el contenedor */
-}
-.cards-wrapper {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
+    max-width: 1400px;
 }
 
-/* === TARJETAS DE CONTENIDO (Mockup) === */
-.card {
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    padding: 30px;
-}
-.form-card { width: 380px; flex-shrink: 0; }
-.table-card { width: 100%; }
-.card h2 { font-size: 1.5rem; color: #2D3748; margin-top: 0; margin-bottom: 25px; border-bottom: 2px solid #084D4A; padding-bottom: 10px; }
+/* =========================================
+   COMPONENTES GLOBALES (Inputs, Botones)
+   ========================================= */
 
-/* === ESTILOS PARA FORMULARIOS Y TABLA === */
-.ui-panelgrid .ui-grid-col-12 { padding: 0 0 20px 0 !important; }
+/* Inputs */
+.ui-inputfield, .ui-datepicker-input {
+    width: 100% !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    border: 1px solid #CBD5E0 !important;
+    box-sizing: border-box !important;
+}
 .ui-outputlabel { font-weight: 500 !important; margin-bottom: 8px !important; display: block; }
-.ui-inputfield, .ui-datepicker-input { width: 100% !important; padding: 10px !important; border-radius: 8px !important; border: 1px solid #CBD5E0 !important; }
-.ui-button { background: #084D4A !important; color: #ffffff !important; border: none !important; font-weight: 600 !important; padding: 12px 20px !important; border-radius: 8px !important; transition: background-color 0.3s ease !important; }
+
+/* Botones Generales (Verdes con fondo) */
+.ui-button {
+    background: #084D4A !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    transition: background-color 0.3s ease !important;
+}
 .ui-button:hover { background: #063a38 !important; }
+
+/* Corrección de altura para botón calendario */
+body .ui-datepicker-trigger.ui-button {
+    padding: 10px 15px !important;
+    height: auto !important;
+    vertical-align: middle !important;
+}
+
+/* Barra de búsqueda */
 .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
 .search-bar .ui-inputfield { flex-grow: 1; }
+
+/* =========================================
+   5. TARJETA ESTÁNDAR Y TABS (Corrección Aquí)
+   ========================================= */
+.full-view-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    min-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header-tabs {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    height: 60px;
+}
+
+/* --- ESTILO DE LOS TABS CORREGIDO --- */
+
+body .tab-btn.ui-button {
+    background: transparent !important;   /* Fondo transparente obligatoriamente */
+    border: none !important;
+    box-shadow: none !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: #6c757d !important;            /* Color gris inactivo por defecto */
+    padding: 0 10px !important;
+    height: 100%;
+    border-radius: 0 !important;
+    border-bottom: 3px solid transparent !important; /* Borde invisible para mantener altura */
+}
+
+/* Estado Activo*/
+body .tab-btn.ui-button.active-tab {
+    color: #084D4A !important;            /* Color corporativo en el TEXTO */
+    border-bottom: 3px solid #084D4A !important;
+    background: transparent !important;
+}
+
+/* Hover */
+body .tab-btn.ui-button:hover {
+    color: #063a38 !important;
+    background-color: rgba(0,0,0,0.05) !important;
+}
+
+/* Contenido de la tarjeta */
+.card-content {
+    padding: 30px;
+    flex-grow: 1;
+}
+.section-title { margin-top: 0; color: #333; }
+
+/* =========================================
+   TABLAS Y UTILIDADES
+   ========================================= */
 .custom-table { display: flex; flex-direction: column; }
-.custom-table-header, .custom-table-row { display: grid; grid-template-columns: 2fr 1.5fr 2fr 1fr; gap: 15px; align-items: center; padding: 12px 15px; }
-.custom-table-header { background-color: #084D4A; color: #ffffff; font-weight: 600; border-radius: 8px; margin-bottom: 10px; }
+.custom-table-header, .custom-table-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 2fr 1fr;
+    gap: 15px;
+    align-items: center;
+    padding: 12px 15px;
+}
+.custom-table-header {
+    background-color: #084D4A;
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
 .custom-table-row {
     background-color: #F7FAFC;
     border-radius: 8px;
     margin-bottom: 8px;
     transition: background-color 0.2s ease;
-
-    /* AGREGA ESTA LÍNEA: */
-    color: #2D3748; /* O usa #000000 para negro total */
-}.custom-table-row:hover { background-color: #EDF2F7; }
+    color: #2D3748;
+}
+.custom-table-row:hover { background-color: #EDF2F7; }
 .custom-table-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .custom-table-actions { display: flex; justify-content: flex-end; gap: 8px; }
+/* Botones pequeños de acciones dentro de la tabla */
 .custom-table-actions .ui-button { padding: 8px !important; width: 36px; height: 36px; }
+
 .empty-message { text-align: center; padding: 40px; background-color: #F7FAFC; border-radius: 8px; color: #718096; }
 
-/*CSS para login*/
+/* Dialogs y Grids */
+.ui-dialog { max-width: 90vw; }
+.ui-panelgrid .ui-grid-col-12 { padding: 0 0 20px 0 !important; }
+.grid-mt-20 { margin-top: 20px; }
+.grid-col-span-2 { grid-column: span 2; }
+.text-right { text-align: right; }
+
+.btn-wrapper-full { margin-top: 25px; width: 100%; }
+.btn-guardar-large { width: 100% !important; height: 3.5rem !important; font-size: 1.1em !important; }
+.btn-full-width-mt { width: 100%; margin-top: 15px; }
+
+.dialog-header-centered { display: block; text-align: center; margin-bottom: 15px; }
+.paciente-highlight { font-weight: bold; font-size: 1.1em; color: #444; }
+
+/* SelectOneButton estilizado (Motivos, etc.) */
+.grid-motivos .ui-selectonebutton {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    width: 100% !important;
+}
+.grid-motivos .ui-selectonebutton .ui-button {
+    flex: 1 1 45% !important;
+    margin: 0 !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.grid-motivos .ui-selectonebutton .ui-button.ui-state-active {
+    background: #063a38 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+}
+
+/* =========================================
+   LOGIN (MANTENIDO)
+   ========================================= */
 .login-body {
     display: flex;
     height: 100vh;
     margin: 0;
     font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
-
 .login-left {
     width: 50%;
     background-color: #ffffff;
@@ -130,12 +266,7 @@ body {
     justify-content: center;
     align-items: center;
 }
-
-.login-logo {
-    width: 60%;
-    max-width: 400px;
-}
-
+.login-logo { width: 60%; max-width: 400px; }
 .login-right {
     width: 50%;
     background-color: #bdf3f4;
@@ -143,254 +274,165 @@ body {
     justify-content: center;
     align-items: center;
 }
-
-.login-form-container {
-    width: 80%;
-    max-width: 350px;
-    text-align: left;
-}
-
-.login-form-container h2 {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #2D3748;
-}
-
-/* --- Sobrescribir estilos de PrimeFaces para que se vean como el mockup --- */
-.login-form-container .ui-inputfield, .login-form-container .ui-password {
-    width: 100% !important;
-    padding: 12px !important;
-    border: none !important;
+.login-form-container { width: 80%; max-width: 350px; text-align: left; }
+.login-form-container h2 { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; color: #2D3748; }
+.login-form-container .ui-inputfield {
     border-radius: 25px !important;
-    margin-bottom: 20px !important;
-    background-color: white !important;
+    border: none !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-    font-size: 1rem !important;
+    padding: 12px !important;
+    margin-bottom: 20px !important;
 }
-
-.login-forgot {
-    font-size: 0.8rem;
-    color: black;
-    text-decoration: none;
-    display: block;
-    margin-top: -15px;
-    margin-bottom: 15px;
-}
-
 .login-button {
     width: 100% !important;
     background-color: black !important;
     color: white !important;
     padding: 12px !important;
-    border: none !important;
     border-radius: 25px !important;
     margin-top: 10px !important;
-    font-size: 1rem !important;
-    transition: background-color 0.3s !important;
 }
+.login-button:hover { background-color: #333 !important; }
 
-.login-button:hover {
-    background-color: #333 !important;
-}
-/* === ESTILOS PARA LA PÁGINA DE SOLICITAR CITA === */
-
-/* Layout de 2 columnas para el formulario */
-.cita-grid {
-    width: 100%;
-    border: none;
-    background: none;
-}
-.cita-col-fecha {
-    width: 40%; /* Columna del calendario */
-    vertical-align: top;
-}
-.cita-col-opciones {
-    width: 60%; /* Columna de hora y motivo */
-    vertical-align: top;
-    padding-left: 20px;
-}
-
-/* --- Estilos para Calendario Inline (p:calendar) --- */
-/* VERSIÓN 2: Con !important para forzar la sobreescritura del tema de PrimeFaces */
-
-.ui-calendar.ui-calendar-inline {
-    width: 100% !important;
+/* =========================================
+   FILTRO TIPO BOTÓN (Dropdown estilizado)
+   ========================================= */
+/* El contenedor principal del SelectOneMenu se disfraza de botón */
+.custom-filter-dropdown.ui-selectonemenu {
+    background: #084D4A !important;
     border: none !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
-    border-radius: 12px !important;
-    padding: 10px !important;
-}
-
-/* Encabezado del calendario (Mes/Año) */
-.ui-calendar.ui-calendar-inline .ui-datepicker-header {
-    background: #084D4A !important;      /* Color oscuro (Mockup) */
-    color: white !important;
-    border-radius: 8px 8px 0 0 !important;
-    border: none !important;
-}
-
-/* Flechas del encabezado */
-.ui-calendar.ui-calendar-inline .ui-datepicker-prev,
-.ui-calendar.ui-calendar-inline .ui-datepicker-next {
-    border: none !important;
-}
-.ui-calendar.ui-calendar-inline .ui-datepicker-prev .ui-icon,
-.ui-calendar.ui-calendar-inline .ui-datepicker-next .ui-icon {
-    color: white !important; /* Color de las flechas */
-    margin-top: 5px !important;
-}
-
-/* Para los selects de Mes y Año */
-.ui-calendar.ui-calendar-inline .ui-datepicker-title select {
-    color: #4A5568 !important;
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    padding: 2px !important;
-}
-
-/* Días de la semana (Lu, Ma, Mi...) */
-.ui-calendar.ui-calendar-inline .ui-datepicker-calendar th {
-    color: #084D4A !important; /* Texto oscuro */
-}
-
-/* --- ESTILOS DE LOS DÍAS (NÚMEROS) --- */
-
-/* Día normal (disponible) */
-.ui-calendar.ui-calendar-inline .ui-state-default {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    color: #2D3748 !important;
-    border-radius: 6px !important;
-    text-align: center !important;
-}
-
-/* Día al pasar el mouse (hover) */
-.ui-calendar.ui-calendar-inline .ui-state-hover {
-    background: #B5F1EF !important; /* Color disponible (Mockup) */
-    border-color: #084D4A !important;
-    color: #084D4A !important;
-}
-
-/* Día SELECCIONADO */
-.ui-calendar.ui-calendar-inline .ui-state-active {
-    background: #084D4A !important; /* Color seleccionado (Mockup) */
-    color: white !important;
-}
-
-/* Estilo para el día de HOY */
-.ui-calendar.ui-calendar-inline .ui-datepicker-today .ui-state-highlight {
-    background: #FFF !important; /* Quitar fondo especial de "hoy" */
-    border: 1px solid #084D4A !important; /* Marcar "hoy" con un borde */
-    color: #084D4A !important;
-}
-.ui-calendar.ui-calendar-inline .ui-datepicker-today .ui-state-highlight.ui-state-hover {
-    background: #B5F1EF !important; /* Asegurar que el hover funcione en "hoy" */
-}
-
-
-/* --- Estilos para Botones de Selección (p:selectOneButton) --- */
-/* (Usado para Hora y Motivo) */
-
-.ui-selectonebutton .ui-button.ui-state-default {
-    background: #B5F1EF;      /* Color DISPONIBLE (Mockup) */
-    border: 1px solid #B5F1EF;
-    color: #084D4A;           /* Texto oscuro */
-    font-weight: 600;
-    border-radius: 8px;
-    margin: 4px;
-    transition: all 0.2s ease-in-out;
-    padding: 10px 15px;
-}
-
-.ui-selectonebutton .ui-button.ui-state-hover {
-    background: #a0e0de;      /* Un poco más oscuro al pasar el mouse */
-    border-color: #a0e0de;
-    color: #084D4A;
-}
-
-.ui-selectonebutton .ui-button.ui-state-active {
-    background: #084D4A;      /* Color SELECCIONADO (Mockup) */
-    border-color: #084D4A;
-    color: #FFFFFF;           /* Texto blanco */
-}
-
-/* Estado DESHABILITADO (Mockup) */
-.ui-selectonebutton .ui-button.ui-state-disabled,
-.ui-selectonebutton .ui-button.ui-state-disabled:hover {
-    background: #E2E8F0;      /* Color Deshabilitado (Mockup) */
-    border-color: #E2E8F0;
-    color: #A0AEC0;           /* Texto gris claro */
-    opacity: 0.8;
-}
-
-/* --- Layout de Grid para los botones de Hora --- */
-/* (Usamos la clase 'time-grid' que pusimos en el p:selectOneButton) */
-.time-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas */
-    gap: 8px; /* Espacio entre botones */
-}
-
-.time-grid .ui-button {
-    width: 100%; /* Asegurar que llenen la celda del grid */
-    box-sizing: border-box; /* Para que el padding no rompa el layout */
-    margin: 0 !important; /* Quitar margen por defecto */
-}
-
-/* --- Botón de Solicitar Cita --- */
-.btn-solicitar.ui-button {
-    background: #084D4A;
-    color: #FFFFFF;
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 25px;
-    transition: background-color 0.3s ease;
-}
-.btn-solicitar.ui-button:hover {
-    background: #063a38;
-}
-
-/* Estilo para grid 2x2 en selección de motivos */
-.grid-motivos .ui-selectonebutton {
+    border-radius: 8px !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+    height: auto !important;
+    min-width: 200px !important;
     display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 10px !important; /* Espacio exacto entre botones */
-    width: 100% !important;
-    box-sizing: border-box !important;
+    align-items: center !important;
+    transition: background-color 0.3s ease !important;
 }
 
-.grid-motivos .ui-selectonebutton .ui-button {
-    width: calc(50% - 5px) !important;
-    flex: 0 0 calc(50% - 5px) !important;
+/* Efecto Hover */
+.custom-filter-dropdown.ui-selectonemenu:hover {
+    background: #063a38 !important;
+}
 
-    margin: 0 !important; /* Eliminamos obligatoriamente los márgenes de PrimeFaces */
-    height: 50px !important; /* Altura uniforme */
+/* El texto seleccionado (Label) */
+.custom-filter-dropdown .ui-selectonemenu-label {
+    color: #FFFFFF !important;           /* Texto blanco */
+    font-weight: 600 !important;
+    padding: 12px 15px !important;       /* Padding generoso como botón */
+    margin: 0 !important;
+    flex-grow: 1 !important;             /* Ocupa el espacio disponible */
+}
 
-    /* Centrado del texto */
+/* La zona del icono de flecha (Trigger) */
+.custom-filter-dropdown .ui-selectonemenu-trigger {
+    background: transparent !important;  /* Transparente para unirse al "botón" */
+    border: none !important;
+    width: 40px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    text-align: center !important;
-    box-shadow: none !important;
-}
-.grid-motivos .ui-selectonebutton .ui-button.ui-state-active {
-    background: #063a38 !important;
-    border-color: #063a38 !important;
-    color: #ffffff !important;       /* Texto blanco */
-    font-weight: bold !important;
-    box-shadow: inset 0 3px 5px rgba(0,0,0,0.2) !important; /* Efecto de "hundido" */
-    transform: translateY(1px); /* Pequeño movimiento físico */
-}
-/*
-.grid-motivos .ui-selectonebutton > div {
-    flex: 1 0 45%; /
-    text-align: center;
-    margin: 0 !important;
+    border-radius: 0 8px 8px 0 !important;
+    border-left: 1px solid rgba(255,255,255,0.2) !important; /* Separador sutil */
 }
 
-.grid-motivos .ui-button {
-    width: 100%;
+/* El icono de la flecha en sí */
+.custom-filter-dropdown .ui-selectonemenu-trigger .ui-icon {
+    /* Forzamos el color blanco. */
+    /* Nota: PrimeFaces a veces usa imágenes, esto invierte el color a blanco si es negro */
+    filter: brightness(0) invert(1) !important;
+    margin-top: 0 !important; /* Centrado */
+}
+.custom-filter-dropdown .ui-selectonemenu-trigger .ui-icon:before {
+    color: #FFFFFF !important;
+}
+
+/* ESTILOS DEL PANEL DESPLEGABLE (La lista que se abre) */
+.custom-filter-panel {
+    border-radius: 8px !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15) !important;
+    border: none !important;
+    margin-top: 5px !important;
+}
+.custom-filter-panel .ui-selectonemenu-items .ui-selectonemenu-item {
+    padding: 10px 15px !important;
+    font-size: 0.95rem !important;
+    color: #444 !important;
+    border-radius: 4px !important;
+    margin: 2px 5px !important;
+}
+.custom-filter-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-highlight,
+.custom-filter-panel .ui-selectonemenu-items .ui-selectonemenu-item:hover {
+    background-color: #e6fffa !important; /* Fondo verde muy claro */
+    color: #084D4A !important;            /* Texto verde oscuro */
+}
+
+/* =========================================
+   INICIO
+   ========================================= */
+
+/* Centrado vertical y horizontal en la tarjeta */
+.dashboard-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 60vh;
+}
+
+/* Contenedor Flex: Logo Izquierda | Texto Derecha */
+.dashboard-welcome-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px; /* Espacio entre logo y texto */
+    padding: 0 40px;
+}
+
+/* Columna Logo */
+.welcome-logo-wrapper {
+    flex-shrink: 0; /* Evita que el logo se aplaste */
+}
+
+/* Logo con tamaño controlado */
+.dashboard-logo-img {
+    width: 180px; /* Tamaño moderado, no gigante */
+    height: auto;
+    display: block;
+}
+
+/* Columna Texto */
+.welcome-text-wrapper {
+    text-align: left;
+    color: #333333; /* Texto oscuro para fondo blanco */
+}
+
+.welcome-text-wrapper h1 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #555;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.welcome-text-wrapper h2.highlight-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #084D4A; /* Verde corporativo */
+    margin: 5px 0 10px 0;
+}
+
+.welcome-text-wrapper p {
+    font-size: 1.1rem;
+    color: #777;
+    margin: 0;
+}
+
+/* Responsive: En celular se pone uno abajo del otro */
+@media (max-width: 768px) {
+    .dashboard-welcome-row {
+        flex-direction: column;
+        text-align: center;
+    }
+    .welcome-text-wrapper {
+        text-align: center;
+    }
 }

@@ -1,11 +1,7 @@
 package mx.softdentist.integration;
 
 import jakarta.persistence.EntityManager;
-import mx.softdentist.dao.AdministradorDAO;
-import mx.softdentist.dao.CitaDAO;
-import mx.softdentist.dao.EmpleadoDAO;
-import mx.softdentist.dao.MensajeDAO;
-import mx.softdentist.dao.PacienteDAO;
+import mx.softdentist.dao.*;
 import mx.softdentist.persistence.HibernateUtil;
 
 /**
@@ -20,6 +16,7 @@ public class ServiceLocator {
     private static EmpleadoDAO empleadoDAO;
     private static CitaDAO citaDAO;
     private static MensajeDAO mensajeDAO;
+    private static PagoDAO pagoDAO;
 
     private ServiceLocator() {
     }
@@ -80,6 +77,15 @@ public class ServiceLocator {
             return mensajeDAO;
         } else {
             return mensajeDAO;
+        }
+    }
+
+    public static PagoDAO getInstancePagoDAO() {
+        if (pagoDAO == null) {
+            pagoDAO = new PagoDAO(getEntityManager());
+            return pagoDAO;
+        } else {
+            return pagoDAO;
         }
     }
 }
