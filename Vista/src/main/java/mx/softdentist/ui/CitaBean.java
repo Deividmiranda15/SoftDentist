@@ -74,10 +74,6 @@ public class CitaBean implements Serializable {
                 showToastMessage("error", "Error", "No hay paciente seleccionado.");
                 return;
             }
-            if (dentistaSeleccionado == null) {
-                showToastMessage("error", "Error", "Debe asignar un dentista.");
-                return;
-            }
             if (fecha == null) {
                 showToastMessage("error", "Error", "Seleccione una fecha.");
                 return;
