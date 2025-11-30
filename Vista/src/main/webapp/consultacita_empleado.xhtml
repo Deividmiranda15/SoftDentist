@@ -229,11 +229,12 @@
 
                             <p:commandButton value="Enviar Receta"
                                              icon="pi pi-envelope"
-                                             actionListener="#{citaConsultaBean.enviarReceta(c)}"
+                                             actionListener="#{citaConsultaBean.seleccionarCita(c)}"
                                              process="@this"
-                                             update="@this :formCitas:msg"
+                                             oncomplete="PF('dlgReceta').show()"
                                              styleClass="ui-button-success"
                                              style="font-weight: bold; padding: 5px 15px; font-size: 0.95rem;"/>
+
                         </div>
                     </div>
 
@@ -256,6 +257,29 @@
                                          actionListener="#{citaConsultaBean.actualizarEstado}"
                                          update=":formCitas"
                                          oncomplete="PF('dlgEstado').hide()"/>
+                    </p:dialog>
+
+                    <p:dialog id="dlgReceta" widgetVar="dlgReceta"
+                              header="Enviar Receta"
+                              modal="true" resizable="false" width="450">
+
+                        <h:panelGrid columns="1" style="width:100%;" cellpadding="5">
+
+                            <h:outputLabel value="Observaciones de la receta:"/>
+                            <p:inputTextarea value="#{citaConsultaBean.observacionesReceta}"
+                                             rows="6" cols="50"
+                                             placeholder="Escribe instrucciones, recomendaciones o notas."/>
+
+                            <p:separator/>
+
+                            <p:commandButton value="Enviar"
+                                             actionListener="#{citaConsultaBean.enviarReceta}"
+                                             update=":formCitas:msg"
+                                             oncomplete="PF('dlgReceta').hide()"
+                                             styleClass="ui-button-success"
+                                             style="font-weight:bold;"/>
+                        </h:panelGrid>
+
                     </p:dialog>
 
 

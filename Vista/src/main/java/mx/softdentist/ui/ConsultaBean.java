@@ -22,7 +22,7 @@ public class ConsultaBean implements Serializable {
     private EmailService emailService;
     private String estadoSeleccionado;
     private Cita citaSeleccionada;
-
+    private String observacionesReceta;
 
 
     @PostConstruct
@@ -47,42 +47,29 @@ public class ConsultaBean implements Serializable {
     public void seleccionarCita(Cita c) {
         this.citaSeleccionada = c;
         this.estadoSeleccionado = c.getEstado().name();
+        this.observacionesReceta = "";
     }
 
-    public void cambiarEstado(Cita cita) {
-        if (cita == null) return;
+    public void enviarReceta() {
+        if (citaSeleccionada == null || citaSeleccionada.getIdPaciente() == null)
+            return;
 
-        switch (cita.getEstado()) {
-            case Pendiente-> cita.setEstado(Cita.EstadoCita.Programada);
-            case Programada -> cita.setEstado(Cita.EstadoCita.Completada);
-            case Completada -> cita.setEstado(Cita.EstadoCita.Cancelada);
-            case Cancelada -> cita.setEstado(Cita.EstadoCita.Pendiente);
-            default -> cita.setEstado(Cita.EstadoCita.Pendiente);
-        }
-
-        delegateCita.actualizarCita(cita); // Llama a tu delegate para persistir cambios
-
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Estado actualizado",
-                        "Cita de " + cita.getIdPaciente().getNombre() + " ahora está " + cita.getEstado()));
-    }
-
-    public void enviarReceta(Cita cita) {
-        if (cita == null || cita.getIdPaciente() == null) return;
-
-        String destinatario = cita.getIdPaciente().getCorreo();
+        String destinatario = citaSeleccionada.getIdPaciente().getCorreo();
         String asunto = "Receta Médica - Dental Patron";
-        String cuerpo = "Hola " + cita.getIdPaciente().getNombre() + ",<br><br>" +
-                "Adjunto tu receta correspondiente a la cita del " + cita.getFecha() + ".<br><br>" +
-                "Saludos,<br>Dental Patron";
+
+        String cuerpo =
+                "Hola " + citaSeleccionada.getIdPaciente().getNombre() + ",<br><br>" +
+                        "Aquí está tu receta correspondiente a la cita del " + citaSeleccionada.getFecha() + ".<br><br>" +
+                        "<b>Observaciones:</b><br>" +
+                        observacionesReceta.replace("\n", "<br>") +
+                        "<br><br>Saludos,<br>Dental Patron";
 
         emailService.enviarCorreoIndividual(destinatario, asunto, cuerpo);
 
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         "Correo enviado",
-                        "Receta enviada a " + cita.getIdPaciente().getNombre()));
+                        "La receta fue enviada correctamente."));
     }
 
     public void actualizarEstado() {
@@ -94,4 +81,6 @@ public class ConsultaBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage("Estado actualizado", "Nuevo estado: " + estadoSeleccionado));
     }
+    public String getObservacionesReceta() { return observacionesReceta; }
+    public void setObservacionesReceta(String observacionesReceta) { this.observacionesReceta = observacionesReceta; }
 }
