@@ -15,7 +15,7 @@ public class ServiceLocator {
     private static PacienteDAO pacienteDAO;
     private static EmpleadoDAO empleadoDAO;
     private static CitaDAO citaDAO;
-    private static MensajeDAO mensajeDAO;
+    // private static MensajeDAO mensajeDAO;
     private static PagoDAO pagoDAO;
 
     private ServiceLocator() {
@@ -66,11 +66,10 @@ public class ServiceLocator {
         }
     }
 
-    /**
+    /** CANCELADO
      * Devuelve la instancia única (Singleton) del DAO para Mensajes.
      * Si no existe, la crea pasándole el EntityManager.
      * @return MensajeDAO
-     */
     public static MensajeDAO getInstanceMensajeDAO() {
         if (mensajeDAO == null) {
             mensajeDAO = new MensajeDAO(getEntityManager());
@@ -79,7 +78,7 @@ public class ServiceLocator {
             return mensajeDAO;
         }
     }
-
+     */
     public static PagoDAO getInstancePagoDAO() {
         if (pagoDAO == null) {
             pagoDAO = new PagoDAO(getEntityManager());

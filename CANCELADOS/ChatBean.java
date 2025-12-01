@@ -8,7 +8,6 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
 import mx.softdentist.delegate.DelegateMensaje;
-import mx.softdentist.entidad.Administrador;
 import mx.softdentist.entidad.Empleado;
 import mx.softdentist.entidad.Mensaje;
 import mx.softdentist.entidad.Paciente;

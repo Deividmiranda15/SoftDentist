@@ -7,7 +7,7 @@ public class ServiceFacadeLocator {
     private static FacadeAdministrador facadeAdministrador;
     private static FacadePaciente facadePaciente;
     private static FacadeCita facadeCita;
-    private static FacadeMensaje facadeMensaje;
+    // private static FacadeMensaje facadeMensaje;
     private static FacadePago facadePago;
 
     public static FacadeEmpleado getInstanceFacadeEmpleado() {
@@ -46,6 +46,7 @@ public class ServiceFacadeLocator {
         }
     }
 
+    /* CANCELADO
 
     public static FacadeMensaje getInstanceFacadeMensaje() {
         if (facadeMensaje == null) {
@@ -55,6 +56,7 @@ public class ServiceFacadeLocator {
             return facadeMensaje;
         }
     }
+    */
 
     public static FacadePago getInstanceFacadePago() {
         if (facadePago == null) {

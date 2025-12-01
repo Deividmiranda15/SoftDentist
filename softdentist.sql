@@ -26,20 +26,12 @@ CREATE TABLE `administrador` (
   `id_admin` int NOT NULL AUTO_INCREMENT,
   `correo` varchar(100) NOT NULL,
   `contrasena` varchar(100) NOT NULL,
+  `password` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id_admin`),
   UNIQUE KEY `correo` (`correo`),
   CONSTRAINT `chk_correo` CHECK ((`correo` like _utf8mb4'%_@_%._%'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `administrador`
---
-
-LOCK TABLES `administrador` WRITE;
-/*!40000 ALTER TABLE `administrador` DISABLE KEYS */;
-/*!40000 ALTER TABLE `administrador` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `citas`
@@ -50,31 +42,19 @@ DROP TABLE IF EXISTS `citas`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `citas` (
   `id_cita` int NOT NULL AUTO_INCREMENT,
+  `estado` varchar(255) DEFAULT 'Pendiente',
   `fecha` date NOT NULL,
-  `hora` time NOT NULL,
+  `hora` time(6) NOT NULL,
   `motivo` varchar(200) DEFAULT NULL,
-  `estado` enum('Programada','Completada','Cancelada') DEFAULT 'Programada',
-  `id_paciente` int NOT NULL,
   `id_empleado` int DEFAULT NULL,
-  `id_admin` int DEFAULT NULL,
+  `id_paciente` int NOT NULL,
   PRIMARY KEY (`id_cita`),
-  KEY `id_paciente` (`id_paciente`),
-  KEY `id_empleado` (`id_empleado`),
-  KEY `id_admin` (`id_admin`),
-  CONSTRAINT `citas_ibfk_1` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id_paciente`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `citas_ibfk_2` FOREIGN KEY (`id_empleado`) REFERENCES `empleado` (`id_empleado`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `citas_ibfk_3` FOREIGN KEY (`id_admin`) REFERENCES `administrador` (`id_admin`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `FKotpcf06bgm382ccc3vwg1v4jc` (`id_empleado`),
+  KEY `FKm4qycpjr2rtuo6plxholuw5wj` (`id_paciente`),
+  CONSTRAINT `FKm4qycpjr2rtuo6plxholuw5wj` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id_paciente`) ON DELETE CASCADE,
+  CONSTRAINT `FKotpcf06bgm382ccc3vwg1v4jc` FOREIGN KEY (`id_empleado`) REFERENCES `empleado` (`id_empleado`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `citas`
---
-
-LOCK TABLES `citas` WRITE;
-/*!40000 ALTER TABLE `citas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `citas` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `empleado`
@@ -87,27 +67,39 @@ CREATE TABLE `empleado` (
   `id_empleado` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL,
   `apellido` varchar(50) NOT NULL,
-  `telefono` varchar(15) DEFAULT NULL,
+  `telefono` varchar(10) DEFAULT NULL,
   `correo` varchar(50) DEFAULT NULL,
   `puesto` varchar(50) DEFAULT NULL,
-  `fecha_registro` datetime DEFAULT CURRENT_TIMESTAMP,
   `id_admin` int DEFAULT NULL,
+  `password` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id_empleado`),
   UNIQUE KEY `correo` (`correo`),
   KEY `id_admin` (`id_admin`),
   CONSTRAINT `empleado_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `administrador` (`id_admin`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `chk_correo_empleado` CHECK ((`correo` like _utf8mb4'%_@_%._%'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `empleado`
+-- Table structure for table `mensaje`
 --
 
-LOCK TABLES `empleado` WRITE;
-/*!40000 ALTER TABLE `empleado` DISABLE KEYS */;
-/*!40000 ALTER TABLE `empleado` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `mensaje`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mensaje` (
+  `id_mensaje` bigint NOT NULL AUTO_INCREMENT,
+  `contenido` varchar(2000) NOT NULL,
+  `fecha_envio` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `leido` tinyint(1) NOT NULL DEFAULT '0',
+  `id_emisor` bigint NOT NULL,
+  `tipo_emisor` varchar(10) NOT NULL,
+  `id_receptor` bigint NOT NULL,
+  `tipo_receptor` varchar(10) NOT NULL,
+  PRIMARY KEY (`id_mensaje`),
+  KEY `idx_chat_history` (`id_emisor`,`tipo_emisor`,`id_receptor`,`tipo_receptor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `paciente`
@@ -120,30 +112,34 @@ CREATE TABLE `paciente` (
   `id_paciente` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL,
   `apellido` varchar(50) NOT NULL,
-  `telefono` varchar(15) DEFAULT NULL,
+  `telefono` varchar(10) DEFAULT NULL,
   `correo` varchar(100) DEFAULT NULL,
   `direccion` varchar(150) DEFAULT NULL,
   `fecha_nacimiento` date DEFAULT NULL,
-  `fecha_registro` datetime DEFAULT CURRENT_TIMESTAMP,
-  `id_empleado` int DEFAULT NULL,
-  `id_admin` int DEFAULT NULL,
+  `password` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id_paciente`),
-  KEY `id_empleado` (`id_empleado`),
-  KEY `id_admin` (`id_admin`),
-  CONSTRAINT `paciente_ibfk_1` FOREIGN KEY (`id_empleado`) REFERENCES `empleado` (`id_empleado`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `paciente_ibfk_2` FOREIGN KEY (`id_admin`) REFERENCES `administrador` (`id_admin`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `chk_correo_paciente` CHECK ((`correo` like _utf8mb4'%_@_%._%'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `paciente`
+-- Table structure for table `pago`
 --
 
-LOCK TABLES `paciente` WRITE;
-/*!40000 ALTER TABLE `paciente` DISABLE KEYS */;
-/*!40000 ALTER TABLE `paciente` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `pago`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pago` (
+  `id_pago` int NOT NULL AUTO_INCREMENT,
+  `monto` double NOT NULL,
+  `fecha` date DEFAULT NULL,
+  `descripcion` varchar(200) DEFAULT NULL,
+  `id_cita` int DEFAULT NULL,
+  PRIMARY KEY (`id_pago`),
+  KEY `fk_pago_cita` (`id_cita`),
+  CONSTRAINT `fk_pago_cita` FOREIGN KEY (`id_cita`) REFERENCES `citas` (`id_cita`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -154,4 +150,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-13 23:37:49
+-- Dump completed on 2025-11-30 18:13:15
