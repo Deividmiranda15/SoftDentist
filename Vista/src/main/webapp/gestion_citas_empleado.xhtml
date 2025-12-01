@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Citas - Dental Patron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <h:outputStylesheet name="css/patrondental.css" />
+
+    <style>
+        /* Estilos específicos para eventos del calendario */
+        .fc-event-programada { background-color: #0288d1 !important; border-color: #0288d1 !important; }
+        .fc-event-completada { background-color: #388e3c !important; border-color: #388e3c !important; }
+        .fc-event-cancelada { background-color: #d32f2f !important; border-color: #d32f2f !important; }
+
+        .cita-card {
+            background-color: #f8f9fa;
+            border-left: 5px solid #004d40;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .cita-info { font-weight: 500; color: #333; }
+        .cita-motivo { color: #666; font-style: italic; }
+        .cita-actions { margin-top: 10px; display: flex; gap: 10px; }
+    </style>
+</h:head>
+
+<h:body>
+    <p:growl id="messages" showDetail="true" life="4000" />
+
+    <header>
+        <div class="top-bar">
+            <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="logo-img"/>
+            <h:form styleClass="logout-form">
+                <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
+                    <span class="logout-text">SALIR</span>
+                    <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png" alt="Cerrar Sesión" styleClass="logout-icon"/>
+                </p:commandLink>
+            </h:form>
+        </div>
+        <nav class="main-nav">
+            <p:link outcome="inicio_emp" value="INICIO"  />
+            <p:link outcome="pacientesem.xhtml" value="GESTIONAR PACIENTES" />
+            <p:link outcome="gestion_citas_empleado.xhtml" value="CONSULTA DE CITAS" styleClass="active"/>
+            <p:link outcome="corte_caja" value="CAJA"/>
+        </nav>
+    </header>
+
+    <main class="main-content-backdrop">
+        <div class="transparent-container">
+            <div class="full-view-card">
+
+                <h:form id="formTabs" class="card-header-tabs">
+                    <p:commandButton value="Listado de Citas"
+                                     icon="pi pi-list"
+                                     actionListener="#{citaEmpleadoBean.cambiarVista('LISTA')}"
+                                     update=":contenedorPrincipal :formTabs"
+                                     styleClass="tab-btn #{citaEmpleadoBean.vistaActual eq 'LISTA' or empty citaEmpleadoBean.vistaActual ? 'active-tab' : ''}" />
+
+                    <p:commandButton value="Calendario"
+                                     icon="pi pi-calendar"
+                                     actionListener="#{citaEmpleadoBean.cambiarVista('CALENDARIO')}"
+                                     update=":contenedorPrincipal :formTabs"
+                                     styleClass="tab-btn #{citaEmpleadoBean.vistaActual eq 'CALENDARIO' ? 'active-tab' : ''}" />
+                </h:form>
+
+                <div class="card-content">
+                    <h:panelGroup id="contenedorPrincipal">
+
+                        <h:panelGroup rendered="#{citaEmpleadoBean.vistaActual eq 'LISTA' or empty citaEmpleadoBean.vistaActual}">
+                            <h2 class="section-title">Listado General de Citas</h2>
+                            <h:form id="formLista">
+                                <ui:repeat value="#{citaEmpleadoBean.citas}" var="c">
+                                    <div class="cita-card">
+                                        <div class="cita-info">
+                                            <h:outputText value="#{c.fecha}">
+                                                <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                            -
+                                            <h:outputText value="#{c.hora}">
+                                                <f:convertDateTime type="localTime" pattern="h:mm a"/>
+                                            </h:outputText>
+                                            |
+                                            <span style="color: #004d40; font-size: 1.1em;">
+                                                #{c.idPaciente.nombre} #{c.idPaciente.apellido}
+                                            </span>
+                                        </div>
+                                        <div class="cita-motivo">
+                                            Motivo: #{c.motivo} | Estado: <strong>#{c.estado}</strong>
+                                        </div>
+
+                                        <div class="cita-actions">
+                                            <p:commandButton value="Estado" icon="pi pi-refresh"
+                                                             actionListener="#{citaEmpleadoBean.seleccionarCita(c)}"
+                                                             oncomplete="PF('dlgEstado').show()"
+                                                             update=":dlgEstadoForm"
+                                                             styleClass="ui-button-outlined" />
+
+                                            <p:commandButton value="Receta" icon="pi pi-file-pdf"
+                                                             actionListener="#{citaEmpleadoBean.seleccionarCita(c)}"
+                                                             oncomplete="PF('dlgReceta').show()"
+                                                             update=":dlgRecetaForm"
+                                                             styleClass="ui-button-success" />
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+
+                                <h:panelGroup rendered="#{empty citaEmpleadoBean.citas}">
+                                    <div style="text-align: center; padding: 20px;">No hay citas registradas.</div>
+                                </h:panelGroup>
+                            </h:form>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{citaEmpleadoBean.vistaActual eq 'CALENDARIO'}">
+                            <h2 class="section-title">Calendario de Actividades</h2>
+                            <h:form id="formCalendario">
+                                <p:schedule id="calendario"
+                                            value="#{citaEmpleadoBean.eventModel}"
+                                            widgetVar="miCalendario"
+                                            height="550"
+                                            minTime="08:00:00"
+                                            maxTime="21:00:00"
+                                            timeZone="America/Tijuana"
+                                            clientTimeZone="local">
+
+                                    <p:ajax event="eventSelect" listener="#{citaEmpleadoBean.onEventSelect}" update=":eventDialogForm" oncomplete="PF('eventDialog').show();" />
+                                </p:schedule>
+                            </h:form>
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <p:dialog id="dlgEstado" widgetVar="dlgEstado" header="Actualizar Estado" modal="true" resizable="false" responsive="true">
+        <h:form id="dlgEstadoForm">
+            <h:panelGrid columns="2" cellpadding="5" rendered="#{not empty citaEmpleadoBean.citaSeleccionada}">
+                <h:outputLabel value="Paciente:"/>
+                <h:outputText value="#{citaEmpleadoBean.citaSeleccionada.idPaciente.nombre} #{citaEmpleadoBean.citaSeleccionada.idPaciente.apellido}" style="font-weight:bold"/>
+
+                <h:outputLabel for="estadoSelect" value="Nuevo Estado:"/>
+                <p:selectOneMenu id="estadoSelect" value="#{citaEmpleadoBean.estadoSeleccionado}">
+                    <f:selectItem itemValue="Pendiente" itemLabel="Pendiente"/>
+                    <f:selectItem itemValue="Programada" itemLabel="Programada"/>
+                    <f:selectItem itemValue="Completada" itemLabel="Completada"/>
+                    <f:selectItem itemValue="Cancelada" itemLabel="Cancelada"/>
+                </p:selectOneMenu>
+            </h:panelGrid>
+            <p:separator/>
+            <p:commandButton value="Guardar" actionListener="#{citaEmpleadoBean.actualizarEstado}"
+                             update=":contenedorPrincipal :messages" oncomplete="PF('dlgEstado').hide()"/>
+        </h:form>
+    </p:dialog>
+
+    <p:dialog id="dlgReceta" widgetVar="dlgReceta" header="Generar Receta" modal="true" resizable="false" width="450" responsive="true">
+        <h:form id="dlgRecetaForm">
+            <h:panelGrid columns="1" style="width:100%;" cellpadding="5">
+                <p:outputLabel value="Instrucciones médicas:" for="obs"/>
+                <p:inputTextarea id="obs" value="#{citaEmpleadoBean.observacionesReceta}" rows="5" cols="40" autoResize="false" style="width: 100%"/>
+            </h:panelGrid>
+            <p:separator/>
+            <p:commandButton value="Generar PDF" actionListener="#{citaEmpleadoBean.enviarReceta}"
+                             update=":messages" oncomplete="PF('dlgReceta').hide()" styleClass="ui-button-success"/>
+        </h:form>
+    </p:dialog>
+
+    <p:dialog widgetVar="eventDialog" header="Detalle de Cita" showEffect="fade" hideEffect="fade" modal="true" responsive="true">
+        <h:form id="eventDialogForm">
+            <h:panelGrid columns="2" cellpadding="5" rendered="#{not empty citaEmpleadoBean.event}">
+                <h:outputLabel value="Paciente:" style="font-weight:bold"/>
+                <h:outputText value="#{citaEmpleadoBean.event.title}"/>
+
+                <h:outputLabel value="Motivo:" style="font-weight:bold"/>
+                <h:outputText value="#{citaEmpleadoBean.event.description}"/>
+
+                <h:outputLabel value="Fecha:" style="font-weight:bold"/>
+                <h:outputText value="#{citaEmpleadoBean.event.startDate}">
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime"/>
+                </h:outputText>
+            </h:panelGrid>
+        </h:form>
+    </p:dialog>
+
+    <script>
+        PrimeFaces.locales['es'] = {
+            closeText: 'Cerrar', prevText: 'Anterior', nextText: 'Siguiente',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+            dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+            weekHeader: 'Semana', firstDay: 1, isRTL: false, showMonthAfterYear: false,
+            yearSuffix: '', timeOnlyTitle: 'Sólo hora', timeText: 'Tiempo', hourText: 'Hora',
+            minuteText: 'Minuto', secondText: 'Segundo', currentText: 'Fecha actual',
+            ampm: false, month: 'Mes', week: 'Semana', day: 'Día', allDayText: 'Todo el día'
+        };
+    </script>
+</h:body>
+</html>
