@@ -451,3 +451,129 @@ body .tab-btn.ui-button:hover {
     font-size: 1.8rem;
     margin-right: 15px;
 }
+
+/* 1. Ajustes de Estructura */
+.ui-schedule, .fc {
+    height: 600px !important;
+    min-height: 600px !important;
+}
+.fc-scroller {
+    height: 100% !important;
+    overflow-y: auto !important;
+}
+.fc-timegrid-slot {
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+
+/* 2. Personalización Visual del Calendario */
+.fc .fc-toolbar-title {
+    color: #004d40 !important;
+    font-weight: 600;
+}
+.fc .fc-button-primary {
+    background-color: #004d40 !important;
+    border-color: #004d40 !important;
+    color: white !important;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+.fc .fc-button-primary:hover {
+    background-color: #00695c !important;
+    border-color: #00695c !important;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #00251a !important;
+    border-color: #00251a !important;
+}
+.fc-col-header-cell {
+    background-color: #e0f2f1 !important;
+    color: #004d40 !important;
+    padding: 10px 0 !important;
+}
+.fc-daygrid-day-number, .fc-col-header-cell-cushion {
+    color: #004d40 !important;
+    text-decoration: none !important;
+}
+
+/* --- 3. VISTA SEMANA/DÍA (TimeGrid - Bloques) --- */
+/* Forzamos el color de fondo en el bloque principal */
+.fc-timegrid-event.fc-event-programada {
+    background-color: #00897b !important;
+    border-color: #00897b !important;
+}
+.fc-timegrid-event.fc-event-completada {
+    background-color: #388e3c !important;
+    border-color: #388e3c !important;
+}
+.fc-timegrid-event.fc-event-cancelada {
+    background-color: #d32f2f !important;
+    border-color: #d32f2f !important;
+}
+
+/* REGLA DE ORO PARA VISIBILIDAD DE TEXTO EN SEMANA:
+   Aplicamos color blanco !important a TODOS los elementos internos posibles.
+   Esto soluciona el problema de "texto invisible" incluso si la estructura del DOM varía.
+*/
+.fc-timegrid-event,
+.fc-timegrid-event .fc-event-main,
+.fc-timegrid-event .fc-event-main-frame,
+.fc-timegrid-event .fc-event-time,
+.fc-timegrid-event .fc-event-title-container,
+.fc-timegrid-event .fc-event-title {
+    color: #ffffff !important;
+}
+
+
+/* --- 4. VISTA MES (DayGrid - Puntos) --- */
+/* Aquí el fondo debe ser transparente y el texto OSCURO */
+
+/* Contenedor: Fondo transparente */
+.fc-daygrid-dot-event.fc-event-programada,
+.fc-daygrid-dot-event.fc-event-completada,
+.fc-daygrid-dot-event.fc-event-cancelada {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Puntos de color */
+.fc-daygrid-dot-event.fc-event-programada .fc-daygrid-event-dot {
+    border-color: #00897b !important;
+    background-color: #00897b !important;
+}
+.fc-daygrid-dot-event.fc-event-completada .fc-daygrid-event-dot {
+    border-color: #388e3c !important;
+    background-color: #388e3c !important;
+}
+.fc-daygrid-dot-event.fc-event-cancelada .fc-daygrid-event-dot {
+    border-color: #d32f2f !important;
+    background-color: #d32f2f !important;
+}
+
+/* Texto OSCURO explícito para Mes */
+.fc-daygrid-dot-event .fc-event-time,
+.fc-daygrid-dot-event .fc-event-title {
+    color: #004d40 !important;
+    font-weight: 700 !important;
+}
+
+/* 5. VISTA DE LISTA (Opcional) */
+.fc-list-event-time, .fc-list-event-title {
+    color: #333 !important;
+}
+.fc-list-event.fc-event-programada .fc-list-event-dot { border-color: #00897b !important; }
+.fc-list-event.fc-event-completada .fc-list-event-dot { border-color: #388e3c !important; }
+.fc-list-event.fc-event-cancelada .fc-list-event-dot { border-color: #d32f2f !important; }
+
+/* 6. TARJETAS DE LA VISTA DE LISTA */
+.cita-card {
+    background-color: #f8f9fa;
+    border-left: 5px solid #004d40;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.cita-info { font-weight: 500; color: #333; }
+.cita-motivo { color: #666; font-style: italic; }
+.cita-actions { margin-top: 10px; display: flex; gap: 10px; }
