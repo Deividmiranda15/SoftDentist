@@ -41,17 +41,10 @@ public class Empleado {
     @Column(name = "password", length = 20)
     private String password;
 
-    @Size(max = 50)
-    @Column(name = "contrasena", length = 50)
-    private String contrasena;
 
     @Size(max = 50)
     @Column(name = "puesto", length = 50)
     private String puesto;
-
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "fecha_registro")
-    private Instant fechaRegistro;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
@@ -120,14 +113,6 @@ public class Empleado {
 
     public void setPuesto(String puesto) {
         this.puesto = puesto;
-    }
-
-    public Instant getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public void setFechaRegistro(Instant fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
     }
 
     public Administrador getIdAdmin() {

@@ -51,10 +51,6 @@ public class Paciente {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "fecha_registro")
-    private Instant fechaRegistro;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "id_empleado")
@@ -130,14 +126,6 @@ public class Paciente {
 
     public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public Instant getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public void setFechaRegistro(Instant fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
     }
 
     public Empleado getIdEmpleado() {
