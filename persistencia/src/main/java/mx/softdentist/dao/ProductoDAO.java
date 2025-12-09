@@ -1,24 +1,22 @@
 package mx.softdentist.dao;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.TypedQuery;
-import mx.softdentist.entidad.Pago;
+import mx.softdentist.entidad.Producto;
 import mx.softdentist.persistence.AbstractDAO;
 
 import java.util.List;
 
-public class PagoDAO extends AbstractDAO<Pago> {
+public class ProductoDAO extends AbstractDAO<Producto> {
     private final EntityManager entityManager;
 
-    public PagoDAO(EntityManager em) {
-        super(Pago.class);
+    public ProductoDAO(EntityManager em) {
+        super(Producto.class);
         this.entityManager = em;
     }
 
-    public List<Pago> obtenerTodos(){
+    public List<Producto> obtenerTodos(){
         return entityManager
-                .createQuery("SELECT p FROM Pago p", Pago.class)
+                .createQuery("SELECT p FROM Producto p", Producto.class)
                 .getResultList();
     }
 

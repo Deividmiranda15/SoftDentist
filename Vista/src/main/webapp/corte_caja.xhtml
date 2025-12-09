@@ -69,42 +69,37 @@
 
                             <h2 class="section-title">Registro de Pago en Efectivo</h2>
                             <h:form id="formCaja">
+                                <h:panelGroup rendered="#{empty pagoBean.listaProductos}">
+                                    <div class="empty-message">No hay productos registrados.
+                                        No podrás registrar pagos.</div>
+                                </h:panelGroup>
+
                                 <p:panelGrid columns="2" layout="grid"
-
                                              styleClass="ui-panelgrid-blank ui-fluid grid-mt-20"
-                                             columnClasses="ui-grid-col-6, ui-grid-col-6">
-
+                                             columnClasses="ui-grid-col-6, ui-grid-col-6"
+                                             rendered="#{not empty pagoBean.listaProductos}">
 
                                     <h:panelGroup>
-                                        <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
-                                        <p:inputText id="concepto" value="#{pagoBean.nuevoPago.descripcion}" required="true" placeholder="Ej.
-Limpieza dental, Consulta..." />
+                                        <p:outputLabel for="concepto" value="ID de Concepto / Tratamiento:" />
+                                        <p:inputNumber id="concepto" value="#{pagoBean.idProductoString}"
+                                                       minValue="1" maxValue="#{pagoBean.listaProductos.size()}"
+                                                       decimalPlaces="0">
+                                            <p:ajax event="keyup" update="infoProducto" />
+                                        </p:inputNumber>
+                                        <h:outputText id="infoProducto" value="#{pagoBean.infoProducto}" />
                                     </h:panelGroup>
 
                                     <h:panelGroup>
-
                                         <p:outputLabel for="monto" value="Monto Recibido ($):" />
-                                        <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.monto}" symbol="$" symbolPosition="p"
-
-                                                       decimalSeparator="." thousandSeparator="," required="true" placeholder="0.00"
-                                                       minValue="1" decimalPlaces="2"/>
-
+                                        <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.montoRecibido}" symbol="$"
+                                                       symbolPosition="p" decimalSeparator="." thousandSeparator=","
+                                                       required="true" placeholder="$0.00" minValue="0" decimalPlaces="2"/>
                                     </h:panelGroup>
-
-                                    <h:panelGroup>
-                                        <p:outputLabel for="fechaPago" value="Fecha del Pago:" />
-
-                                        <p:datePicker id="fechaPago" value="#{pagoBean.nuevoPago.fecha}" showIcon="true" pattern="dd/MM/yyyy"
-                                                      placeholder="(Dejar vacío para hoy)"/>
-
-                                    </h:panelGroup>
-
-                                    <h:panelGroup />
-
 
                                 </p:panelGrid>
 
-                                <h:panelGroup layout="block" styleClass="btn-wrapper-full">
+                                <h:panelGroup layout="block" styleClass="btn-wrapper-full"
+                                              rendered="#{not empty pagoBean.listaProductos}">
                                     <p:commandButton value="Registrar Ingreso"
 
                                                      icon="pi pi-check"

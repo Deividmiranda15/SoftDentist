@@ -9,6 +9,7 @@ public class ServiceFacadeLocator {
     private static FacadeCita facadeCita;
     private static FacadeMensaje facadeMensaje;
     private static FacadePago facadePago;
+    private static FacadeProducto facadeProducto;
 
     public static FacadeEmpleado getInstanceFacadeEmpleado() {
         if (facadeEmpleado == null) {
@@ -62,6 +63,15 @@ public class ServiceFacadeLocator {
             return facadePago;
         } else {
             return facadePago;
+        }
+    }
+
+    public static FacadeProducto getInstanceFacadeProducto() {
+        if (facadeProducto == null) {
+            facadeProducto = new FacadeProducto();
+            return facadeProducto;
+        } else {
+            return facadeProducto;
         }
     }
 

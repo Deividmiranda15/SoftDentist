@@ -2,45 +2,60 @@ package mx.softdentist.entidad;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "pago", schema = "softdentist")
 public class Pago {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pago", nullable = false)
     private Integer id;
 
-    @Size(max = 200)
-    @Column(name = "descripcion", length = 200)
-    private String descripcion;
+    @NotNull
+    @Column(name = "monto_recibido", nullable = false)
+    private Float montoRecibido;
 
     @NotNull
-    @Column(name = "monto", nullable = false)
-    private Double monto;
+    @Column(name = "cambio_regresado", nullable = false)
+    private Float cambioRegresado;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "fecha")
+    @NotNull
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "id_cita")
-    private Cita idCita;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_producto", nullable = false)
+    private Producto idProducto;
 
-    public Cita getIdCita() {
-        return idCita;
+
+    public Float getMontoFinal(){ return montoRecibido - cambioRegresado;}
+
+
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdCita(Cita idCita) {
-        this.idCita = idCita;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Float getMontoRecibido() {
+        return montoRecibido;
+    }
+
+    public void setMontoRecibido(Float montoRecibido) {
+        this.montoRecibido = montoRecibido;
+    }
+
+    public Float getCambioRegresado() {
+        return cambioRegresado;
+    }
+
+    public void setCambioRegresado(Float cambioRegresado) {
+        this.cambioRegresado = cambioRegresado;
     }
 
     public LocalDate getFecha() {
@@ -51,27 +66,12 @@ public class Pago {
         this.fecha = fecha;
     }
 
-    public Double getMonto() {
-        return monto;
+    public Producto getIdProducto() {
+        return idProducto;
     }
 
-    public void setMonto(Double monto) {
-        this.monto = monto;
+    public void setIdProducto(Producto idProducto) {
+        this.idProducto = idProducto;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 }

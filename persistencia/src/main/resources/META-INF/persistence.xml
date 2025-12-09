@@ -13,13 +13,14 @@
         <class>mx.softdentist.entidad.Empleado</class>
         <class>mx.softdentist.entidad.Mensaje</class>
         <class>mx.softdentist.entidad.Pago</class>
+        <class>mx.softdentist.entidad.Producto</class>
 
         <properties>
             <!-- Configuración JDBC -->
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/softdentist?useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3307/softdentist?useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
-            <property name="jakarta.persistence.jdbc.password" value="T3rr4_12"/>
+            <property name="jakarta.persistence.jdbc.password" value="12345679"/>
 
             <!-- Configuración Hibernate CRÍTICA -->
             <!-- Para MySQL 9.0, usa el dialecto de MySQL8 -->

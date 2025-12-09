@@ -17,6 +17,7 @@ public class ServiceLocator {
     private static CitaDAO citaDAO;
     private static MensajeDAO mensajeDAO;
     private static PagoDAO pagoDAO;
+    private static ProductoDAO productoDAO;
 
     private ServiceLocator() {
     }
@@ -86,6 +87,15 @@ public class ServiceLocator {
             return pagoDAO;
         } else {
             return pagoDAO;
+        }
+    }
+
+    public static ProductoDAO getInstanceProductoDAO() {
+        if (productoDAO == null) {
+            productoDAO = new ProductoDAO(getEntityManager());
+            return productoDAO;
+        } else {
+            return productoDAO;
         }
     }
 }
