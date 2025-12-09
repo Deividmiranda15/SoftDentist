@@ -82,9 +82,8 @@
                                     <h:panelGroup>
                                         <p:outputLabel for="concepto" value="ID de Concepto / Tratamiento:" />
                                         <p:inputNumber id="concepto" value="#{pagoBean.idProductoString}"
-                                                       minValue="1" maxValue="#{pagoBean.listaProductos.size()}"
-                                                       decimalPlaces="0">
-                                            <p:ajax event="keyup" update="infoProducto" />
+                                                       minValue="0" decimalPlaces="0">
+                                            <p:ajax event="valueChange" update="infoProducto" />
                                         </p:inputNumber>
                                         <h:outputText id="infoProducto" value="#{pagoBean.infoProducto}" />
                                     </h:panelGroup>

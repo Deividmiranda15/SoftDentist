@@ -59,20 +59,26 @@ public class PagoBean implements Serializable {
                 nuevoPago.setFecha(LocalDate.now());
             }
 
-            nuevoPago.setIdProducto(delegateProducto.findProductoById(Integer.parseInt(idProductoString)));
-            nuevoPago.setCambioRegresado(nuevoPago.getMontoRecibido() - nuevoPago.getIdProducto().getCosto());
+            Integer idProductoActual = Integer.parseInt(idProductoString);
+            Producto productoActual = delegateProducto.findProductoById(idProductoActual);
 
-            if (nuevoPago.getCambioRegresado() < 0) {
-                // Si el cambio a regresar resulta ser negativo, entonces no pagó lo suficiente el cliente.
-                addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "El monto registrado no es suficiente para cubrir el costo.");
+            if (productoActual != null) {
+                nuevoPago.setIdProducto(productoActual);
+                nuevoPago.setCambioRegresado(nuevoPago.getMontoRecibido() - nuevoPago.getIdProducto().getCosto());
+
+                if (nuevoPago.getCambioRegresado() < 0) {
+                    // Si el cambio a regresar resulta ser negativo, entonces no pagó lo suficiente el cliente.
+                    addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "El monto registrado no es suficiente para cubrir el costo.");
+                } else {
+                    delegatePago.savePago(nuevoPago);
+                    // El getter de la lista se encargará de recargarla y ordenarla
+                    nuevoPago = new Pago();
+
+                    addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Pago registrado correctamente.");
+                }
             } else {
-                delegatePago.savePago(nuevoPago);
-                // El getter de la lista se encargará de recargarla y ordenarla
-                nuevoPago = new Pago();
-
-                addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Pago registrado correctamente.");
+                addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "El ID registrado no es válido.");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar el pago.");
@@ -242,7 +248,11 @@ public class PagoBean implements Serializable {
             infoProducto = "Esperando valor...";
         } else {
             Producto productoSeleccionado = delegateProducto.findProductoById(Integer.parseInt(idProductoString));
-            infoProducto = productoSeleccionado.getConcepto() +": $"+ productoSeleccionado.getCosto();
+            if (productoSeleccionado != null) {
+                infoProducto = productoSeleccionado.getConcepto() +": $"+ productoSeleccionado.getCosto();
+            } else {
+                infoProducto = "ID inválido.";
+            }
         }
         return infoProducto;
     }
