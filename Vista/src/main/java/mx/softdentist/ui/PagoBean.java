@@ -32,6 +32,8 @@ public class PagoBean implements Serializable {
     private String ordenacionProductosActual = "ID_ASC"; // Por defecto órden alfabético
     private String idProductoString = "";
     private String infoProducto = "";
+    private String infoCambioADar = "";
+    private Producto productoSeleccionado;  // Usado para evitar redundancias en getInfo
 
     public PagoBean() {
         delegatePago = new DelegatePago();  // No estoy seguro si se debería crear el DelegatePago directamente o si estaría mejor crear una clase ServiceDelegateLocator.
@@ -64,7 +66,6 @@ public class PagoBean implements Serializable {
 
             if (productoActual != null) {
                 nuevoPago.setIdProducto(productoActual);
-                nuevoPago.setCambioRegresado(nuevoPago.getMontoRecibido() - nuevoPago.getIdProducto().getCosto());
 
                 if (nuevoPago.getCambioRegresado() < 0) {
                     // Si el cambio a regresar resulta ser negativo, entonces no pagó lo suficiente el cliente.
@@ -247,11 +248,11 @@ public class PagoBean implements Serializable {
         if (idProductoString.isBlank()) {
             infoProducto = "Esperando valor...";
         } else {
-            Producto productoSeleccionado = delegateProducto.findProductoById(Integer.parseInt(idProductoString));
-            if (productoSeleccionado != null) {
-                infoProducto = productoSeleccionado.getConcepto() +": $"+ productoSeleccionado.getCosto();
-            } else {
+            productoSeleccionado = delegateProducto.findProductoById(Integer.parseInt(idProductoString));
+            if (productoSeleccionado == null) {
                 infoProducto = "ID inválido.";
+            } else {
+                infoProducto = productoSeleccionado.getConcepto() +": $"+ productoSeleccionado.getCosto();
             }
         }
         return infoProducto;
@@ -259,5 +260,32 @@ public class PagoBean implements Serializable {
 
     public void setInfoProducto(String infoProducto) {
         this.infoProducto = infoProducto;
+    }
+
+    // Usado por corte_caja.xhtml para mostrar la cantidad de cambio a dar
+    public String getInfoCambioADar() {
+        if (idProductoString.isBlank()) {
+            infoCambioADar = "Selecciona un concepto.";
+        } else {
+            if (productoSeleccionado == null) {
+                infoCambioADar = "Selecciona un concepto válido.";
+            } else {
+                if (nuevoPago.getMontoRecibido() == null) {
+                    infoCambioADar = "Ingrese un monto.";
+                } else {
+                    nuevoPago.setCambioRegresado(nuevoPago.getMontoRecibido() - productoSeleccionado.getCosto());
+                    if (nuevoPago.getCambioRegresado() < 0) {
+                        infoCambioADar = "El monto ingresado no es suficiente para cubrir el costo del servicio seleccionado.";
+                    } else {
+                        infoCambioADar = "Cambio a dar al cliente: $" + nuevoPago.getCambioRegresado();
+                    }
+                }
+            }
+        }
+        return infoCambioADar;
+    }
+
+    public void setInfoCambioADar(String infoCambioADar) {
+        this.infoCambioADar = infoCambioADar;
     }
 }

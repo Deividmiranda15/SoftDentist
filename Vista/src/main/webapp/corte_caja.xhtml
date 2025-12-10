@@ -68,7 +68,9 @@
                         <h:panelGroup rendered="#{pagoBean.vistaActual eq 'ALTA' or empty pagoBean.vistaActual}">
 
                             <h2 class="section-title">Registro de Pago en Efectivo</h2>
-                            <h:form id="formCaja">
+                            <!-- El valor 'onkeypress' es para prevenir que se suba el form fuera de presionar el botón de registrar. -->
+                            <!-- Esto es para que se pueda actualizar los textos avisando el cambio a dar sin accidentalmente registrar el pago. -->
+                            <h:form id="formCaja" onkeypress="if (event.keyCode == 13) { return false; }">
                                 <h:panelGroup rendered="#{empty pagoBean.listaProductos}">
                                     <div class="empty-message">No hay productos registrados.
                                         No podrás registrar pagos.</div>
@@ -83,7 +85,7 @@
                                         <p:outputLabel for="concepto" value="ID de Concepto / Tratamiento:" />
                                         <p:inputNumber id="concepto" value="#{pagoBean.idProductoString}"
                                                        minValue="0" decimalPlaces="0">
-                                            <p:ajax event="valueChange" update="infoProducto" />
+                                            <p:ajax event="keyup" update="infoProducto" />
                                         </p:inputNumber>
                                         <h:outputText id="infoProducto" value="#{pagoBean.infoProducto}" />
                                     </h:panelGroup>
@@ -92,7 +94,10 @@
                                         <p:outputLabel for="monto" value="Monto Recibido ($):" />
                                         <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.montoRecibido}" symbol="$"
                                                        symbolPosition="p" decimalSeparator="." thousandSeparator=","
-                                                       required="true" placeholder="$0.00" minValue="0" decimalPlaces="2"/>
+                                                       required="true" placeholder="$0.00" minValue="0" decimalPlaces="2">
+                                            <p:ajax event="keyup" update="infoCambioADar" />
+                                        </p:inputNumber>
+                                        <h:outputText id="infoCambioADar" value="#{pagoBean.infoCambioADar}" />
                                     </h:panelGroup>
 
                                 </p:panelGrid>
