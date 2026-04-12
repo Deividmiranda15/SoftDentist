@@ -64,9 +64,9 @@ jobs:
       - name: Instalar Newman (Postman CLI)
         run: npm install -g newman
 
-      # 6. Ejecutar Postman
+      # 6. Ejecutar Postman (RUTA CORREGIDA)
       - name: Ejecutar pruebas de API (Postman)
-        run: newman run pruebas/postman/Proyecto_Finalpostman_collection.json
+        run: newman run .github/postman/Proyecto_Finalpostman_collection.json
         continue-on-error: true
 
       # --- PLAYWRIGHT ---
