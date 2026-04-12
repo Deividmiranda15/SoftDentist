@@ -1,0 +1,85 @@
+{
+  "info": {
+    "_postman_id": "6f6a6cf9-cfbf-43b2-9cd9-280a24250852",
+    "name": "Proyecto_Final",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52965459",
+    "_collection_link": "https://go.postman.co/collection/52965459-6f6a6cf9-cfbf-43b2-9cd9-280a24250852?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Consultar Pacientes",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Sistema responde correctamente\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/vista/pacientes.xhtml",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "vista",
+            "pacientes.xhtml"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Alta de Paciente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Tiempo de respuesta aceptable\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Cuerpo de respuesta no vacio\", function () {\r",
+              "    pm.expect(pm.response.text()).to.not.be.null;\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/vista/pacientes.xhtml",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "vista",
+            "pacientes.xhtml"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
