@@ -10,17 +10,17 @@ jobs:
   ejecutar-pruebas:
     runs-on: ubuntu-latest
 
-    # 1. Levantamos un contenedor con MySQL p ara simular tu base de datos local
+    # 1. Levantamos MySQL con la contraseña '1234' para que coincida con tu persistence.xml
     services:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: 1234
           MYSQL_DATABASE: softdentist
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -proot"
+          --health-cmd="mysqladmin ping -p1234"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -36,23 +36,26 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 2. Cargar el archivo .sql a la base de datos MySQL recién creada
+      # 2. Cargar el script SQL a la base de datos usando la contraseña 1234
       - name: Preparar Base de Datos MySQL
-        run: mysql -h 127.0.0.1 -P 3306 -u root -proot softdentist < softdentist.sql
+        run: mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist < softdentist.sql
 
-      # 3. Compilamos el código Java a un archivo WAR
+      # 3. Compilar el proyecto Java
       - name: Compilar proyecto con Maven
         run: mvn clean package -DskipTests
 
-      # 4. Dar permisos, copiar el WAR compilado a Tomcat y arrancarlo
+      # 4. Arrancar servidor Tomcat y esperar a que despliegue la app
       - name: Arrancar servidor Tomcat
         run: |
           chmod +x apache-tomcat-11.0.8/bin/*.sh
           cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
           ./apache-tomcat-11.0.8/bin/startup.sh
-          sleep 20 # Esperamos 20 segundos a que Tomcat termine de encender
+          sleep 25 # Damos 25 segundos a que Tomcat despliegue la app completa
 
-      # 5. Configurar Node.js y Postman
+      - name: Mostrar Logs de Tomcat (Para depuración)
+        run: cat apache-tomcat-11.0.8/logs/catalina.out || true
+
+      # 5. Configurar herramientas de testing
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
@@ -61,12 +64,12 @@ jobs:
       - name: Instalar Newman (Postman CLI)
         run: npm install -g newman
 
-      # 6. ¡AQUI SE EJECUTA TU ARCHIVO DE POSTMAN REAL!
+      # 6. Ejecutar Postman
       - name: Ejecutar pruebas de API (Postman)
         run: newman run pruebas/postman/Proyecto_Finalpostman_collection.json
         continue-on-error: true
 
-      # --- PLAYWRIGHT (Se queda preparado para cuando te pasen esos archivos) ---
+      # --- PLAYWRIGHT ---
       - name: Instalar Playwright
         run: |
           npm init -y
