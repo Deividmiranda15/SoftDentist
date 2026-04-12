@@ -10,7 +10,7 @@ jobs:
   ejecutar-pruebas:
     runs-on: ubuntu-latest
 
-    # 1. Levantamos MySQL con la contraseña '1234' para que coincida con tu persistence.xml
+    # 1.Levantamos MySQL con la contraseña '1234' para que coincida con tu persistence.xml
     services:
       mysql:
         image: mysql:8.0
