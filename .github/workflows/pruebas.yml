@@ -44,12 +44,13 @@ jobs:
       - name: Compilar proyecto con Maven
         run: mvn clean package -DskipTests
 
-      # 4. Arrancar servidor Tomcat y esperar a quue despliegue la app
+      # 4. Arrancar servidor Tomcat y esperar a que despliegue la app
       - name: Arrancar servidor Tomcat
         run: |
           chmod +x apache-tomcat-11.0.8/bin/*.sh
           cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
           ls -la apache-tomcat-11.0.8/webapps/
+          mkdir -p apache-tomcat-11.0.8/logs
           ./apache-tomcat-11.0.8/bin/startup.sh
           sleep 25 # Damos 25 segundos a que Tomcat despliegue la app completa
 
