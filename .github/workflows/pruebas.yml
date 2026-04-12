@@ -10,7 +10,7 @@ jobs:
   ejecutar-pruebas:
     runs-on: ubuntu-latest
 
-    # 1. Levantamos un contenedor con MySQL para simular tu base de datos local
+    # 1. Levantamos un contenedor con MySQL p ara simular tu base de datos local
     services:
       mysql:
         image: mysql:8.0
