@@ -3,7 +3,7 @@ name: Pruebas Automatizadas (Java, Postman, Playwright)
 # Se ejecuta al hacer push a la rama o creas un Pull Request
 on:
   push:
-    branches: [ "**" ] # Se ejecuta en cualquier rama temporalmente
+    branches: [ "**" ] #Se ejecuta en cualquier rama temporalmente
   pull_request:
     branches: [ "main", "master" ]
 
