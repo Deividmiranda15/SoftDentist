@@ -45,14 +45,32 @@ jobs:
         run: mvn clean package -DskipTests
 
       # 4. Arrancar servidor Tomcat y esperar a que despliegue la app
+      #- name: Arrancar servidor Tomcat
+      #  run: |
+      #    chmod +x apache-tomcat-11.0.8/bin/*.sh
+      #    cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
+      #    ls -la apache-tomcat-11.0.8/webapps/
+      #    mkdir -p apache-tomcat-11.0.8/logs
+      #    ./apache-tomcat-11.0.8/bin/startup.sh
+      #    sleep 25 # Damos 25 segundos a que Tomcat despliegue la app completa
+
+      # 4. Descargar un Tomcat oficial, instalar la app y arrancarlo
       - name: Arrancar servidor Tomcat
         run: |
+          # Descargamos el Tomcat 11.0.8 oficial desde el archivo de Apache
+          wget https://archive.apache.org/dist/tomcat/tomcat-11/v11.0.8/bin/apache-tomcat-11.0.8.tar.gz
+          # Lo descomprimimos
+          tar -xzf apache-tomcat-11.0.8.tar.gz
+          
+          # Le damos permisos, copiamos tu aplicación web y encendemos
           chmod +x apache-tomcat-11.0.8/bin/*.sh
           cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
-          ls -la apache-tomcat-11.0.8/webapps/
-          mkdir -p apache-tomcat-11.0.8/logs
           ./apache-tomcat-11.0.8/bin/startup.sh
-          sleep 25 # Damos 25 segundos a que Tomcat despliegue la app completa
+          sleep 25 # Damos 25 segundos a que Tomcat despliegue la app
+
+      - name: Mostrar Logs de Tomcat (Para depuración)
+        run: cat apache-tomcat-11.0.8/logs/catalina.out || true
+
 
       - name: Mostrar Logs de Tomcat (Para depuración)
         run: cat apache-tomcat-11.0.8/logs/catalina.out || true
@@ -71,7 +89,7 @@ jobs:
         run: newman run .github/postman/Proyecto_Finalpostman_collection.json
         continue-on-error: true
 
-      # --- PLAYWRIGHT ---
+      # --- PLAYWRIGHT -------
       - name: Instalar Playwright
         run: |
           mkdir -p pruebas/playwright
