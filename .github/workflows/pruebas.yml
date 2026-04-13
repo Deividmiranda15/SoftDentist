@@ -36,35 +36,35 @@ jobs:
           cache: maven
 
       - name: Preparar Base de Datos MySQL
-        # =====================================================================
-        # 🚨 DEMOSTRACION DE ERROR INTENCIONAL 🚨
-        # Aqui provocaremos un error de autenticacion con una contrasena mala.
-        #
-        # PARA ARREGLARLO DURANTE LA DEMO:
-        # 1. Ponle un '#' a la linea "ERROR INTENCIONAL" de abajo (para apagarla).
-        # 2. Quitale el '#' a la linea "CODIGO CORRECTO" (para encenderla).
-        # =====================================================================
+        run: mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist < softdentist.sql
 
-        # -> ERROR INTENCIONAL:
-        run: mysql -h 127.0.0.1 -P 3306 -u root -pContrasenaMala softdentist < softdentist.sql
-
-        # -> CODIGO CORRECTO:
-        # run: mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist < softdentist.sql
+      - name: 🚨 Introducir BUG INTENCIONAL en el Sistema 🚨
+        run: |
+          # =========================================================================
+          # DEMOSTRACIÓN DE QA: Simulamos que un desarrollador guardó accidentalmente 
+          # una credencial de base de datos incorrecta en el código fuente.
+          # El sistema compilará y Tomcat arrancará, pero cuando Postman intente 
+          # usar la app, arrojará un error 500 Interno ¡y el pipeline se pondrá ROJO!
+          #
+          # 🟢 PARA ARREGLARLO EN LA DEMO: Ponle un '#' a la línea 'sed' de abajo.
+          # =========================================================================
+          sed -i 's/1234/contrasena_bug/g' persistencia/src/main/resources/META-INF/persistence.xml
 
       - name: Compilar proyecto con Maven
         run: mvn clean package -DskipTests
 
-      - name: Arrancar servidor Tomcat
+      - name: Arrancar servidor Tomcat 9 (Compatible con javax)
         run: |
-          wget https://archive.apache.org/dist/tomcat/tomcat-11/v11.0.8/bin/apache-tomcat-11.0.8.tar.gz
-          tar -xzf apache-tomcat-11.0.8.tar.gz
-          chmod +x apache-tomcat-11.0.8/bin/*.sh
-          cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
-          ./apache-tomcat-11.0.8/bin/startup.sh
+          # Descargamos Tomcat 9, ya que Tomcat 11 rechazaba tu código dando el error 404
+          wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.87/bin/apache-tomcat-9.0.87.tar.gz
+          tar -xzf apache-tomcat-9.0.87.tar.gz
+          chmod +x apache-tomcat-9.0.87/bin/*.sh
+          cp Vista/target/*.war apache-tomcat-9.0.87/webapps/vista.war
+          ./apache-tomcat-9.0.87/bin/startup.sh
           sleep 25
 
       - name: Mostrar Logs de Tomcat (Para depuración)
-        run: cat apache-tomcat-11.0.8/logs/catalina.out || true
+        run: cat apache-tomcat-9.0.87/logs/catalina.out || true
 
       # --- POSTMAN ---
       - name: Configurar Node.js (Para Postman)
@@ -76,8 +76,9 @@ jobs:
         run: npm install -g newman
 
       - name: Ejecutar pruebas de API (Postman)
+        # Nota: Quitamos el "continue-on-error" para que GitHub detenga el proceso
+        # en seco y muestre la X ROJA si el test falla, tal como debe ser en CI/CD.
         run: newman run .github/postman/Proyecto_Finalpostman_collection.json
-        continue-on-error: true
 
       # --- PLAYWRIGHT (PYTHON) ---
       - name: Configurar Python
@@ -93,7 +94,6 @@ jobs:
 
       - name: Ejecutar pruebas UI (Playwright Python)
         run: pytest .github/playwright/test_login_ui.py --html=reporte-playwright/index.html
-        continue-on-error: true
 
       - name: Guardar reporte de Playwright
         uses: actions/upload-artifact@v4
