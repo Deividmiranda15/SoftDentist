@@ -10,7 +10,6 @@ jobs:
   ejecutar-pruebas:
     runs-on: ubuntu-latest
 
-    # 1. Levantamos MySQL con la contraseña '1234' para que coincida con tu persistence.xml
     services:
       mysql:
         image: mysql:8.0
@@ -36,78 +35,59 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 2. Cargar el script SQL a la base de datos usando la contraseña 1234
       - name: Preparar Base de Datos MySQL
         run: mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist < softdentist.sql
 
-      # 3. Compilar el proyecto Java
       - name: Compilar proyecto con Maven
         run: mvn clean package -DskipTests
 
-      # 4. Arrancar servidor Tomcat y esperar a que despliegue la app
-      #- name: Arrancar servidor Tomcat
-      #  run: |
-      #    chmod +x apache-tomcat-11.0.8/bin/*.sh
-      #    cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
-      #    ls -la apache-tomcat-11.0.8/webapps/
-      #    mkdir -p apache-tomcat-11.0.8/logs
-      #    ./apache-tomcat-11.0.8/bin/startup.sh
-      #    sleep 25 # Damos 25 segundos a que Tomcat despliegue la app completa
-
-      # 4. Descargar un Tomcat oficial, instalar la app y arrancarlo
       - name: Arrancar servidor Tomcat
         run: |
-          # Descargamos el Tomcat 11.0.8 oficial desde el archivo de Apache
           wget https://archive.apache.org/dist/tomcat/tomcat-11/v11.0.8/bin/apache-tomcat-11.0.8.tar.gz
-          # Lo descomprimimos
           tar -xzf apache-tomcat-11.0.8.tar.gz
-          
-          # Le damos permisos, copiamos tu aplicación web y encendemos
           chmod +x apache-tomcat-11.0.8/bin/*.sh
           cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
           ./apache-tomcat-11.0.8/bin/startup.sh
-          sleep 25 # Damos 25 segundos a que Tomcat despliegue la app
+          sleep 25
 
       - name: Mostrar Logs de Tomcat (Para depuración)
         run: cat apache-tomcat-11.0.8/logs/catalina.out || true
 
-
-      - name: Mostrar Logs de Tomcat (Para depuración)
-        run: cat apache-tomcat-11.0.8/logs/catalina.out || true
-
-      # 5. Configurar herramientas de testing
-      - name: Configurar Node.js
+      # --- POSTMAN ---
+      - name: Configurar Node.js (Para Postman)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Instalar Newman (Postman CLI)
+      - name: Instalar Newman
         run: npm install -g newman
 
-      # 6. Ejecutar Postman (RUTA CORREGIDA)
       - name: Ejecutar pruebas de API (Postman)
         run: newman run .github/postman/Proyecto_Finalpostman_collection.json
         continue-on-error: true
 
-      # --- PLAYWRIGHT -------
-      - name: Instalar Playwright
-        run: |
-          mkdir -p pruebas/playwright
-          cd pruebas/playwright
-          npm init -y
-          npm install -D @playwright/test
-          npx playwright install --with-deps
+      # --- PLAYWRIGHT (PYTHON) ---
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      - name: Ejecutar pruebas UI (Playwright)
+      - name: Instalar dependencias de Playwright (Python)
         run: |
-          cd pruebas/playwright
-          npx playwright test
+          python -m pip install --upgrade pip
+          # Instalamos pytest, playwright y una herramienta para hacer reportes HTML
+          pip install pytest playwright pytest-html
+          playwright install --with-deps
+
+      - name: Ejecutar pruebas UI (Playwright Python)
+        # Ejecuta el archivo python y genera un reporte en la carpeta reporte-playwright
+        run: pytest .github/playwright/test_login_ui.py --html=reporte-playwright/index.html
         continue-on-error: true
 
       - name: Guardar reporte de Playwright
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: reporte-playwright
-          path: playwright-report/
+          name: reporte-playwright-html
+          path: reporte-playwright/
           retention-days: 7
