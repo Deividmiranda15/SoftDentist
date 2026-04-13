@@ -36,7 +36,20 @@ jobs:
           cache: maven
 
       - name: Preparar Base de Datos MySQL
-        run: mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist < softdentist.sql
+        # =====================================================================
+        # 🚨 DEMOSTRACION DE ERROR INTENCIONAL 🚨
+        # Aqui provocaremos un error de autenticacion con una contrasena mala.
+        #
+        # PARA ARREGLARLO DURANTE LA DEMO:
+        # 1. Ponle un '#' a la linea "ERROR INTENCIONAL" de abajo (para apagarla).
+        # 2. Quitale el '#' a la linea "CODIGO CORRECTO" (para encenderla).
+        # =====================================================================
+
+        # -> ERROR INTENCIONAL:
+        run: mysql -h 127.0.0.1 -P 3306 -u root -pContrasenaMala softdentist < softdentist.sql
+
+        # -> CODIGO CORRECTO:
+        # run: mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist < softdentist.sql
 
       - name: Compilar proyecto con Maven
         run: mvn clean package -DskipTests
@@ -75,12 +88,10 @@ jobs:
       - name: Instalar dependencias de Playwright (Python)
         run: |
           python -m pip install --upgrade pip
-          # Instalamos pytest, playwright y una herramienta para hacer reportes HTML
           pip install pytest playwright pytest-html
           playwright install --with-deps
 
       - name: Ejecutar pruebas UI (Playwright Python)
-        # Ejecuta el archivo python y genera un reporte en la carpeta reporte-playwright
         run: pytest .github/playwright/test_login_ui.py --html=reporte-playwright/index.html
         continue-on-error: true
 
