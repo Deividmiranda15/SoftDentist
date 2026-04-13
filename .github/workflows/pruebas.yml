@@ -53,18 +53,18 @@ jobs:
       - name: Compilar proyecto con Maven
         run: mvn clean package -DskipTests
 
-      - name: Arrancar servidor Tomcat 9 (Compatible con javax)
+      - name: Arrancar servidor Tomcat 11 (Compatible con jakarta)
         run: |
-          # Descargamos Tomcat 9, ya que Tomcat 11 rechazaba tu código dando el error 404
-          wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.87/bin/apache-tomcat-9.0.87.tar.gz
-          tar -xzf apache-tomcat-9.0.87.tar.gz
-          chmod +x apache-tomcat-9.0.87/bin/*.sh
-          cp Vista/target/*.war apache-tomcat-9.0.87/webapps/vista.war
-          ./apache-tomcat-9.0.87/bin/startup.sh
+          # Usamos Tomcat 11 fresco para soportar tu codigo moderno de Jakarta EE
+          wget https://archive.apache.org/dist/tomcat/tomcat-11/v11.0.8/bin/apache-tomcat-11.0.8.tar.gz
+          tar -xzf apache-tomcat-11.0.8.tar.gz
+          chmod +x apache-tomcat-11.0.8/bin/*.sh
+          cp Vista/target/*.war apache-tomcat-11.0.8/webapps/vista.war
+          ./apache-tomcat-11.0.8/bin/startup.sh
           sleep 25
 
       - name: Mostrar Logs de Tomcat (Para depuración)
-        run: cat apache-tomcat-9.0.87/logs/catalina.out || true
+        run: cat apache-tomcat-11.0.8/logs/catalina.out || true
 
       # --- POSTMAN ---
       - name: Configurar Node.js (Para Postman)
@@ -76,8 +76,6 @@ jobs:
         run: npm install -g newman
 
       - name: Ejecutar pruebas de API (Postman)
-        # Nota: Quitamos el "continue-on-error" para que GitHub detenga el proceso
-        # en seco y muestre la X ROJA si el test falla, tal como debe ser en CI/CD.
         run: newman run .github/postman/Proyecto_Finalpostman_collection.json
 
       # --- PLAYWRIGHT (PYTHON) ---
@@ -93,7 +91,6 @@ jobs:
           playwright install --with-deps
 
       - name: Ejecutar pruebas UI (Playwright Python)
-        # CORRECCIÓN: Ajustamos la ruta para que coincida exactamente con la carpeta "playwritght" que creaste
         run: pytest .github/playwritght/test_login_ui.py --html=reporte-playwright/index.html
 
       - name: Guardar reporte de Playwright
