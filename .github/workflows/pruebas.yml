@@ -38,6 +38,10 @@ jobs:
       - name: Preparar Base de Datos MySQL
         run: mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist < softdentist.sql
 
+      - name: Sembrar usuario para pruebas UI
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -p1234 softdentist -e "INSERT INTO empleado (nombre, apellido, telefono, correo, puesto, id_admin, password) VALUES ('Julio', 'Dental', '6861234567', 'julio.dental@dentalpatron.com', 'Dentista', NULL, 'julio123') ON DUPLICATE KEY UPDATE password = VALUES(password), nombre = VALUES(nombre), apellido = VALUES(apellido), telefono = VALUES(telefono), puesto = VALUES(puesto);"
+
       - name: 🚨 Introducir BUG INTENCIONAL en el Sistema 🚨
         run: |
           # =========================================================================
