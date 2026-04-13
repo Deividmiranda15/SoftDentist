@@ -93,7 +93,8 @@ jobs:
           playwright install --with-deps
 
       - name: Ejecutar pruebas UI (Playwright Python)
-        run: pytest .github/playwright/test_login_ui.py --html=reporte-playwright/index.html
+        # CORRECCIÓN: Ajustamos la ruta para que coincida exactamente con la carpeta "playwritght" que creaste
+        run: pytest .github/playwritght/test_login_ui.py --html=reporte-playwright/index.html
 
       - name: Guardar reporte de Playwright
         uses: actions/upload-artifact@v4
