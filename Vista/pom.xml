@@ -150,12 +150,6 @@
             <version>3.1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.primefaces</groupId>
-            <artifactId>primefaces</artifactId>
-            <version>${primefaces.version}</version>
-            <classifier>jakarta</classifier>
-        </dependency>
 
         <dependency>
             <groupId>com.itextpdf</groupId>

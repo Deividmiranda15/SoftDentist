@@ -1,21 +1,16 @@
 package mx.softdentist.entidad;
 
-import org.junit.jupiter.api.Test;
+import junit.framework.TestCase;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+public class EntidadesBasicasTest extends TestCase {
 
-class EntidadesBasicasTest {
-
-    @Test
-    void citaIniciaConEstadoPendiente() {
+    public void testCitaIniciaConEstadoPendiente() {
         Cita cita = new Cita();
 
         assertEquals(Cita.EstadoCita.Pendiente, cita.getEstado());
     }
 
-    @Test
-    void citaPermiteCambiarEstadoACompletada() {
+    public void testCitaPermiteCambiarEstadoACompletada() {
         Cita cita = new Cita();
 
         cita.setEstado(Cita.EstadoCita.Completada);
@@ -23,8 +18,7 @@ class EntidadesBasicasTest {
         assertEquals(Cita.EstadoCita.Completada, cita.getEstado());
     }
 
-    @Test
-    void pagoCalculaMontoFinalRestandoCambio() {
+    public void testPagoCalculaMontoFinalRestandoCambio() {
         Pago pago = new Pago();
         pago.setMontoRecibido(500.0f);
         pago.setCambioRegresado(125.5f);
@@ -32,8 +26,7 @@ class EntidadesBasicasTest {
         assertEquals(374.5f, pago.getMontoFinal());
     }
 
-    @Test
-    void administradorInicializaColeccionesNoNulas() {
+    public void testAdministradorInicializaColeccionesNoNulas() {
         Administrador administrador = new Administrador();
 
         assertNotNull(administrador.getCitas());
@@ -41,4 +34,5 @@ class EntidadesBasicasTest {
         assertNotNull(administrador.getPacientes());
     }
 }
+
 
