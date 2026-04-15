@@ -54,6 +54,9 @@ jobs:
           # =========================================================================
           #sed -i 's/1234/contrasena_bug/g' persistencia/src/main/resources/META-INF/persistence.xml
 
+      - name: Ejecutar pruebas unitarias (módulo entidad)
+        run: mvn -B -pl entidad -am test
+
       - name: Compilar proyecto con Maven
         run: mvn clean package -DskipTests
 
