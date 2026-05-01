@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestión de Usuarios - Dental Patron</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
-    <!-- Enlace al archivo CSS con el nuevo nombre -->
     <h:outputStylesheet name="css/patrondental.css" />
 </h:head>
 
@@ -63,8 +62,15 @@
                                 <p:inputText id="direccion" value="#{pacienteBean.nuevoPaciente.direccion}" required="true" placeholder="Dirección del paciente"/>
                             </h:panelGroup>
                             <h:panelGroup styleClass="ui-grid-col-12">
+                                //nueva implementacion 6 meses para registros
                                 <p:outputLabel for="fechaNacimiento" value="Fecha de Nacimiento:" />
-                                <p:datePicker id="fechaNacimiento" value="#{pacienteBean.nuevoPaciente.fechaNacimiento}" showIcon="true" />
+                                <p:datePicker id="fechaNacimiento"
+                                              value="#{pacienteBean.nuevoPaciente.fechaNacimiento}"
+                                              showIcon="true"
+                                              maxdate="#{pacienteBean.maxDate}"
+                                              readonlyInput="true"
+                                              required="true"
+                                              pattern="yyyy-MM-dd" />
                             </h:panelGroup>
                             <p:commandButton value="Guardar Paciente"
                                              actionListener="#{pacienteBean.guardarPaciente}"
@@ -95,7 +101,14 @@
                                         <div class="custom-table-cell">#{p.telefono}</div>
                                         <div class="custom-table-cell">#{p.correo}</div>
                                         <div class="custom-table-actions">
-                                            <p:commandButton icon="pi pi-pencil" title="Editar" styleClass="ui-button-warning ui-button-flat" />
+                                            //PANEL EDITAR
+                                            <p:commandButton icon="pi pi-pencil"
+                                                             title="Editar"
+                                                             action="#{pacienteBean.irAEditar(p)}"
+                                                             process="@this"
+                                                             immediate="true"
+                                                             styleClass="ui-button-warning ui-button-flat">
+                                            </p:commandButton>
                                             <p:commandButton icon="pi pi-trash" title="Eliminar" styleClass="ui-button-danger ui-button-flat" />
                                         </div>
                                     </div>

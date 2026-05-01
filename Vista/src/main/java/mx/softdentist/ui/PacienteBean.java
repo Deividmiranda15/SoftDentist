@@ -11,8 +11,10 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Named("pacienteBean")
 @ViewScoped
@@ -33,26 +35,29 @@ public class PacienteBean implements Serializable{
         listaPacientes = pacienteDAO.obtenerTodos();
     }
 
+
+
     public void guardarPaciente() {
         try {
+            if (nuevoPaciente.getFechaNacimiento() != null) {
+                LocalDate limiteSeisMeses = LocalDate.now().minusMonths(6);
+
+                // Validamos que la fecha de nacimiento NO sea después del límite de 6 meses
+                if (nuevoPaciente.getFechaNacimiento().isAfter(limiteSeisMeses)) {
+                    addGlobalMessage(FacesMessage.SEVERITY_WARN, "Paciente muy joven",
+                            "El paciente debe tener al menos 6 meses de edad");
+                    return;
+                }
+            }
+
+            // Resto de tu código de guardado...
             pacienteDAO.save(nuevoPaciente);
-            listaPacientes = pacienteDAO.obtenerTodos(); // refresca tabla
-            nuevoPaciente = new Paciente(); // limpia formulario
-
-            //mensaje de exito
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Exito", "Paciente guardado"));
-
-            // mensaje de exito
-            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente registrado correctamente.");
+            listaPacientes = pacienteDAO.obtenerTodos();
+            nuevoPaciente = new Paciente();
+            addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Paciente registrado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
-
-            //menaje de error
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al guardar el paciente"));
-            // mensaje de fallo
-            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al paciente. Intente de nuevo.");
+            addGlobalMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo registrar al paciente");
         }
     }
 
@@ -62,8 +67,12 @@ public class PacienteBean implements Serializable{
     }
 
     public String irAEditar(Paciente p) {
-        // Este es para luego hacer la modificacion con un editarPaciente.xhtml
+        System.out.println("Navegando a editar paciente ID: " + p.getId());
         return "editarPaciente.xhtml?faces-redirect=true&id=" + p.getId();
+    }
+        //Calcula la fecha de 6 meses (tomando en cuenta logica de crecimiento dental)
+    public LocalDate getMaxDate() {
+        return LocalDate.now().minusMonths(6);
     }
 
     // Getters y setters
