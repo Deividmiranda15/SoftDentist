@@ -184,6 +184,15 @@
 
                 <h:panelGroup><p:outputLabel for="fechaNacimientoEd" value="Fecha de Nacimiento:" /><p:datePicker id="fechaNacimientoEd" value="#{pacienteBean.pacienteAEditar.fechaNacimiento}" showIcon="true" monthNavigator="true" yearNavigator="true" yearRange="1930:2030" /></h:panelGroup>
                 <h:panelGroup />
+
+                <h:panelGroup>
+                    <h:outputLabel for="estadoPacienteEd" value="Estado:" />
+                    <p:selectOneMenu id="estadoPacienteEd" value="#{pacienteBean.pacienteAEditar.estado}">
+                        <f:selectItem itemLabel="Activo" itemValue="Activo" />
+                        <f:selectItem itemLabel="Inactivo" itemValue="Inactivo" />
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
             </p:panelGrid>
             <p:commandButton value="Guardar Cambios" actionListener="#{pacienteBean.actualizarPaciente}" update=":formConsulta:consultaContainer :messages" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditar').hide();" styleClass="btn-full-width-mt" />
         </h:form>

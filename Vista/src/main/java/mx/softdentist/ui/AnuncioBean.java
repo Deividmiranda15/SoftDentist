@@ -33,7 +33,7 @@ public class AnuncioBean implements Serializable {
 
     public void cargarEstadisticas() {
         try {
-            List<String> correos = delegatePaciente.obtenerListaCorreos();
+            List<String> correos = delegatePaciente.obtenerCorreosActivos();
             this.totalDestinatarios = correos.size();
         } catch (Exception e) {
             this.totalDestinatarios = 0;
@@ -51,7 +51,7 @@ public class AnuncioBean implements Serializable {
 
         try {
             // Obtener la lista fresca de correos
-            List<String> destinatarios = delegatePaciente.obtenerListaCorreos();
+            List<String> destinatarios = delegatePaciente.obtenerCorreosActivos();
 
             if (destinatarios.isEmpty()) {
                 FacesContext.getCurrentInstance().addMessage(null,

@@ -29,5 +29,12 @@ public class DelegatePaciente {
         return facade.getAllEmails();
     }
 
+    // Dentro de tu DelegatePaciente
+    public List<String> obtenerCorreosActivos() {
+        // El Delegate le pide la información al Facade
+        FacadePaciente facade = ServiceFacadeLocator.getInstanceFacadePaciente();
+        return facade.obtenerCorreosActivos();
+    }
+
 }
 

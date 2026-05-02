@@ -39,6 +39,12 @@ public class Paciente {
     @Column(name = "correo", length = 100)
     private String correo;
 
+    @Size(max = 10)
+    @Column(name = "estado")
+    private String estado = "Activo";
+
+    @Column(name = "fecha_ultima_cita")
+    private LocalDate fechaUltimaCita = LocalDate.now();
 
     @Size(max = 20)
     @Column(name = "password", length = 20)
@@ -103,6 +109,14 @@ public class Paciente {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
+
+    public String getEstado() { return estado; }
+
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public LocalDate getFechaUltimaCita() { return fechaUltimaCita; }
+
+    public void setFechaUltimaCita(LocalDate fechaUltimaCita) { this.fechaUltimaCita = fechaUltimaCita; }
 
     public String getPassword() {
         return password;
