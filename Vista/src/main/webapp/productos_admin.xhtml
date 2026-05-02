@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Productos - Dental Patron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <h:outputStylesheet name="css/patrondental.css" />
+</h:head>
+
+<h:body>
+<p:growl id="messages" showDetail="true" life="4000" />
+
+<header>
+    <div class="top-bar">
+        <h:graphicImage name="images/logo.png" alt="Logo Dental Patron" styleClass="logo-img"/>
+
+        <h:form styleClass="logout-form">
+            <p:commandLink action="#{sessionBean.cerrarSesion}" styleClass="btn-logout" title="Cerrar Sesión">
+                <span class="logout-text">SALIR</span>
+                <h:graphicImage value="https://cdn-icons-png.flaticon.com/512/1828/1828479.png"
+                                alt="Cerrar Sesión" styleClass="logout-icon"/>
+            </p:commandLink>
+        </h:form>
+    </div>
+    <nav class="main-nav">
+        <p:link outcome="inicio_admin" value="INICIO"/>
+        <p:link outcome="pacientesad" value="GESTIONAR PACIENTES"/>
+        <p:link outcome="empleados" value="GESTIONAR EMPLEADOS"/>
+        <p:link outcome="productos_admin" value="GESTIONAR PRODUCTOS" styleClass="active"/>
+        <p:link outcome="corte_caja_admin" value="CAJA"/>
+        <p:link outcome="anuncio" value="HACER UN ANUNCIO"/>
+    </nav>
+</header>
+
+<main class="main-content-backdrop">
+    <div class="transparent-container">
+        <div class="full-view-card">
+
+            <h:form id="formTabs" class="card-header-tabs">
+                <p:commandButton value="Consulta de Productos"
+                                 icon="pi pi-list"
+                                 actionListener="#{productoBean.cambiarVista('CONSULTA')}"
+                                 update=":contenedorPrincipal :formTabs"
+                                 styleClass="tab-btn #{productoBean.vistaActual eq 'CONSULTA' or empty productoBean.vistaActual ? 'active-tab' : ''}" />
+
+                <p:commandButton value="Registrar Producto"
+                                 icon="pi pi-plus"
+                                 actionListener="#{productoBean.cambiarVista('ALTA')}"
+                                 update=":contenedorPrincipal :formTabs"
+                                 styleClass="tab-btn #{productoBean.vistaActual eq 'ALTA' ? 'active-tab' : ''}" />
+            </h:form>
+
+            <div class="card-content">
+                <h:panelGroup id="contenedorPrincipal">
+
+                    <!-- TAB: ALTA -->
+                    <h:panelGroup rendered="#{productoBean.vistaActual eq 'ALTA'}">
+                        <h2 class="section-title">Registro de Producto Médico</h2>
+                        <h:form id="formAlta">
+                            <p:panelGrid columns="2" layout="grid"
+                                         styleClass="ui-panelgrid-blank ui-fluid grid-mt-20"
+                                         columnClasses="ui-grid-col-6, ui-grid-col-6">
+
+                                <h:panelGroup>
+                                    <p:outputLabel for="nombre" value="Nombre:" />
+                                    <p:inputText id="nombre" value="#{productoBean.nuevoProducto.concepto}" required="true"
+                                                 placeholder="Ej. Cepillo de dientes" />
+                                </h:panelGroup>
+
+                                <h:panelGroup>
+                                    <p:outputLabel for="precio" value="Precio:" />
+                                    <p:inputNumber id="precio" value="#{productoBean.nuevoProducto.costo}" required="true"
+                                                   decimalPlaces="2" minValue="0" placeholder="0.00" />
+                                </h:panelGroup>
+
+                            </p:panelGrid>
+
+                            <h:panelGroup layout="block" styleClass="btn-wrapper-full">
+                                <p:commandButton value="Registrar Producto"
+                                                 icon="pi pi-check"
+                                                 actionListener="#{productoBean.guardarProducto}"
+                                                 update=":contenedorPrincipal :messages :formTabs formAlta"
+                                                 styleClass="ui-button-success btn-guardar-large" />
+                            </h:panelGroup>
+                        </h:form>
+                    </h:panelGroup>
+
+                    <!-- TAB: CONSULTA -->
+                    <h:panelGroup rendered="#{productoBean.vistaActual eq 'CONSULTA' or empty productoBean.vistaActual}">
+                        <h2 class="section-title">Consulta de Productos</h2>
+                        <h:form id="formConsulta">
+                            <div class="search-bar">
+                                <p:inputText id="txtBusqueda" placeholder="Buscar por nombre..." onkeyup="filtrarTablaProductos()"
+                                             style="flex-grow: 1;" />
+
+                                <p:selectOneMenu id="selectOrdenPrecio"
+                                                 value="#{productoBean.ordenPrecioActual}"
+                                                 styleClass="custom-filter-dropdown"
+                                                 panelStyleClass="custom-filter-panel">
+                                    <f:selectItem itemLabel="Sin orden" itemValue="NINGUNO" />
+                                    <f:selectItem itemLabel="Precio más alto" itemValue="PRECIO_MAS_ALTO" />
+                                    <f:selectItem itemLabel="Precio más bajo" itemValue="PRECIO_MAS_BAJO" />
+                                    <p:ajax listener="#{productoBean.onOrdenPrecioChange}"
+                                            update=":formConsulta:consultaContainer"
+                                            process="@this" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <h:panelGroup id="consultaContainer" layout="block">
+                                <div id="tablaProductos" class="custom-table">
+                                    <div class="custom-table-header">
+                                        <div>NOMBRE</div>
+                                        <div class="text-right">PRECIO</div>
+                                        <div class="text-right">ACCIONES</div>
+                                    </div>
+
+                                    <ui:repeat value="#{productoBean.listaProductos}" var="p">
+                                        <div class="custom-table-row">
+                                            <div class="custom-table-cell col-nombre">
+                                                <h:outputText value="#{p.concepto}" style="font-weight: 600;"/>
+                                            </div>
+                                            <div class="custom-table-cell text-right">
+                                                <h:outputText value="#{p.costo}">
+                                                    <f:convertNumber type="currency" currencySymbol="$" />
+                                                </h:outputText>
+                                            </div>
+                                            <div class="custom-table-actions">
+                                                <p:commandButton icon="pi pi-pencil" title="Editar"
+                                                                 update=":formEditarDialog"
+                                                                 oncomplete="PF('dlgEditarProducto').show()"
+                                                                 styleClass="ui-button-warning ui-button-flat">
+                                                    <f:setPropertyActionListener value="#{p}" target="#{productoBean.productoAEditar}" />
+                                                </p:commandButton>
+
+                                                <p:commandButton icon="pi pi-trash" title="Eliminar"
+                                                                 actionListener="#{productoBean.eliminarProducto(p)}"
+                                                                 update=":formConsulta:consultaContainer :messages"
+                                                                 styleClass="ui-button-danger ui-button-flat">
+                                                    <p:confirm header="Confirmar" message="¿Eliminar este producto?" icon="pi pi-exclamation-triangle" />
+                                                </p:commandButton>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+
+                                    <h:panelGroup rendered="#{empty productoBean.listaProductos}">
+                                        <div class="empty-message">No hay productos registrados en el sistema.</div>
+                                    </h:panelGroup>
+                                </div>
+                            </h:panelGroup>
+                        </h:form>
+                    </h:panelGroup>
+
+                </h:panelGroup>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<p:dialog header="Editar Producto" widgetVar="dlgEditarProducto" modal="true" resizable="false"
+          showEffect="fade" hideEffect="fade" width="600" responsive="true" blockScroll="true">
+    <h:form id="formEditarDialog">
+        <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+                     columnClasses="ui-grid-col-6, ui-grid-col-6"
+                     rendered="#{not empty productoBean.productoAEditar}">
+
+            <h:panelGroup>
+                <p:outputLabel for="nombreEd" value="Nombre:" />
+                <p:inputText id="nombreEd" value="#{productoBean.productoAEditar.concepto}" required="true" />
+            </h:panelGroup>
+
+            <h:panelGroup>
+                <p:outputLabel for="precioEd" value="Precio:" />
+                <p:inputNumber id="precioEd" value="#{productoBean.productoAEditar.costo}" required="true"
+                               decimalPlaces="2" minValue="0" />
+            </h:panelGroup>
+
+        </p:panelGrid>
+
+        <p:commandButton value="Guardar Cambios"
+                         icon="pi pi-check"
+                         actionListener="#{productoBean.actualizarProducto}"
+                         update=":formConsulta:consultaContainer :messages"
+                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgEditarProducto').hide();"
+                         styleClass="btn-full-width-mt" />
+    </h:form>
+</p:dialog>
+
+<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+    <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+</p:confirmDialog>
+
+<script>
+    function filtrarTablaProductos() {
+        var inputNombre = document.getElementById('formConsulta:txtBusqueda');
+        var filtroTexto = inputNombre ? inputNombre.value.toUpperCase() : '';
+
+        var tabla = document.getElementById('tablaProductos');
+        if (!tabla) return;
+
+        var filas = tabla.getElementsByClassName('custom-table-row');
+        for (var i = 0; i &lt; filas.length; i++) {
+            var fila = filas[i];
+            var celdaNombre = fila.querySelector('.col-nombre');
+            var texto = celdaNombre ? (celdaNombre.textContent || celdaNombre.innerText) : '';
+
+            if (texto.toUpperCase().indexOf(filtroTexto) &gt; -1) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        }
+    }
+</script>
+
+</h:body>
+</html>
+
+
