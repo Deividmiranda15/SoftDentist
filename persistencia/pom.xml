@@ -45,6 +45,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- MariaDB Connector (alternativa a MySQL en Linux) -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.3.3</version>
+            <scope>runtime</scope>
+        </dependency>
+
 
         <!-- Jakarta Persistence (JPA) -->
         <dependency>

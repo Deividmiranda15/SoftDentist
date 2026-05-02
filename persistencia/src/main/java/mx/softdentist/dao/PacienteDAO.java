@@ -34,6 +34,12 @@ public class PacienteDAO extends AbstractDAO<Paciente> {
         }
     }
 
+    public List<String> obtenerCorreosActivos() {
+        return getEntityManager()
+                .createQuery("SELECT p.correo FROM Paciente p WHERE p.correo IS NOT NULL AND p.correo <> '' AND p.estado = 'Activo'", String.class)
+                .getResultList();
+    }
+
     @Override
     public EntityManager getEntityManager() {
         return entityManager;

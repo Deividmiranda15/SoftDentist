@@ -23,6 +23,12 @@ public class FacadePaciente{
         return dao.obtenerTodosLosCorreos();
     }
 
+    // Dentro de tu FacadePaciente
+    public List<String> obtenerCorreosActivos() {
+        PacienteDAO dao = ServiceLocator.getInstancePacienteDAO();
+        return dao.obtenerCorreosActivos();
+    }
+
 }
 
 
