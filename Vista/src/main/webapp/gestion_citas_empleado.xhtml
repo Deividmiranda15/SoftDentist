@@ -63,8 +63,15 @@
                     <h:panelGroup id="contenedorPrincipal">
 
                         <h:panelGroup rendered="#{citaEmpleadoBean.vistaActual eq 'LISTA' or empty citaEmpleadoBean.vistaActual}">
-                            <h2 class="section-title">Listado General de Citas</h2>
                             <h:form id="formLista">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <h2 class="section-title" style="margin: 0;">Listado General de Citas</h2>
+                                    <p:commandButton value="#{citaEmpleadoBean.ordenAscendente ? 'Más recientes primero' : 'Más antiguas primero'}"
+                                                     icon="#{citaEmpleadoBean.ordenAscendente ? 'pi pi-sort-amount-down' : 'pi pi-sort-amount-up'}"
+                                                     actionListener="#{citaEmpleadoBean.toggleOrden}"
+                                                     update="formLista"
+                                                     styleClass="ui-button-outlined"/>
+                                </div>
                                 <ui:repeat value="#{citaEmpleadoBean.citas}" var="c">
                                     <div class="cita-card">
                                         <div class="cita-info">
@@ -96,6 +103,12 @@
                                                              oncomplete="PF('dlgReceta').show()"
                                                              update=":dlgRecetaForm"
                                                              styleClass="ui-button-success" />
+                                            <p:commandButton value="Reagendar"
+                                                             icon="pi pi-calendar"
+                                                             styleClass="ui-button-warning"
+                                                             actionListener="#{citaEmpleadoBean.prepararReagendamiento(c)}"
+                                                             oncomplete="PF('dlgReagendar').show()"
+                                                             rendered="#{c.estado != 'Cancelada' and c.estado != 'Completada'}"/>
                                         </div>
                                     </div>
                                 </ui:repeat>
@@ -177,6 +190,71 @@
                     <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime"/>
                 </h:outputText>
             </h:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog header="Reagendar Cita" widgetVar="dlgReagendar" modal="true"
+              resizable="false" showEffect="fade" hideEffect="fade"
+              width="600" responsive="true" blockScroll="true">
+        <h:form id="formReagendarDialog">
+
+            <h:panelGroup id="panelEncabezado" layout="block"
+                          styleClass="dialog-header-centered">
+                <h:outputText
+                        value="Paciente: #{citaEmpleadoBean.citaAReagendar.idPaciente.nombre} #{citaEmpleadoBean.citaAReagendar.idPaciente.apellido}"
+                        rendered="#{not empty citaEmpleadoBean.citaAReagendar}"
+                        styleClass="paciente-highlight"/>
+            </h:panelGroup>
+
+            <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+
+                <h:panelGroup styleClass="grid-col-span-2">
+                    <p:outputLabel for="fechaReagendar" value="Nueva Fecha:" />
+                    <p:datePicker id="fechaReagendar"
+                                  value="#{citaEmpleadoBean.fechaReagendar}"
+                                  locale="es"
+                                  mindate="#{citaEmpleadoBean.manana}"
+                                  showIcon="true"
+                                  pattern="dd/MM/yyyy"
+                                  disabledDays="#{citaEmpleadoBean.diasDeshabilitados}">
+                        <p:ajax event="dateSelect"
+                                listener="#{citaEmpleadoBean.onFechaReagendarSelect}"
+                                update="formReagendarDialog"/>
+                    </p:datePicker>
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:outputLabel for="horasReagendar" value="Nueva Hora:" />
+                    <p:selectOneMenu id="horasReagendar"
+                                     value="#{citaEmpleadoBean.horaReagendar}"
+                                     disabled="#{empty citaEmpleadoBean.horasDisponiblesReagendar}">
+                        <f:selectItem itemLabel="Seleccione fecha..." itemValue=""/>
+                        <f:selectItems value="#{citaEmpleadoBean.horasDisponiblesReagendar}"/>
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="grid-col-span-2 ui-grid-col-12">
+                    <p:outputLabel for="motivoReagendar" value="Motivo:" />
+                    <div class="grid-motivos">
+                        <p:selectOneButton id="motivoReagendar"
+                                           value="#{citaEmpleadoBean.motivoReagendar}"
+                                           required="true"
+                                           unselectable="false">
+                            <f:selectItem itemLabel="Consulta"   itemValue="Consulta"/>
+                            <f:selectItem itemLabel="Limpieza"   itemValue="Limpieza"/>
+                            <f:selectItem itemLabel="Ortodoncia" itemValue="Ortodoncia"/>
+                            <f:selectItem itemLabel="Otro"       itemValue="Otro"/>
+                        </p:selectOneButton>
+                    </div>
+                </h:panelGroup>
+
+            </p:panelGrid>
+
+            <p:commandButton value="Confirmar Reagendamiento"
+                             actionListener="#{citaEmpleadoBean.confirmarReagendamiento}"
+                             update=":messages :formLista :formCalendario"
+                             oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlgReagendar').hide();"
+                             styleClass="btn-full-width-mt"/>
+
         </h:form>
     </p:dialog>
 

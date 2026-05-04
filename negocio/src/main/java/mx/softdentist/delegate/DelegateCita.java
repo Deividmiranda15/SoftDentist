@@ -5,6 +5,8 @@ import mx.softdentist.entidad.Cita;
 import mx.softdentist.integration.ServiceFacadeLocator;
 
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class DelegateCita {
@@ -20,6 +22,10 @@ public class DelegateCita {
     public List<Cita> obtenerTodasCitas() {
         List<Cita> todasLasCitas = ServiceFacadeLocator.getInstanceFacadeCita().obtenerTodasLasCitas();
         return todasLasCitas;
+    }
+
+    public boolean reagendarCita(Integer idCita, LocalDate nuevaFecha, LocalTime nuevaHora, String motivo) {
+        return ServiceFacadeLocator.getInstanceFacadeCita().reagendarCita(idCita, nuevaFecha, nuevaHora, motivo);
     }
     public void actualizarCita(Cita cita) {
         ServiceFacadeLocator.getInstanceFacadeCita().updateCita(cita);

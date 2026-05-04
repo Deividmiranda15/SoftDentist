@@ -50,6 +50,9 @@ public class Cita {
     @JoinColumn(name = "id_admin")
     private Administrador idAdmin;
 
+    @Column(name = "fecha_anterior")
+    private LocalDate fechaAnterior;
+
     public enum EstadoCita {
         Pendiente,
         Programada,
@@ -120,5 +123,9 @@ public class Cita {
     public void setIdAdmin(Administrador idAdmin) {
         this.idAdmin = idAdmin;
     }
+
+    public LocalDate getFechaAnterior() { return fechaAnterior; }
+
+    public void setFechaAnterior(LocalDate fechaAnterior) { this.fechaAnterior = fechaAnterior; }
 
 }

@@ -1,5 +1,6 @@
 package mx.softdentist.ui;
 
+import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import jakarta.annotation.PostConstruct;
@@ -9,10 +10,12 @@ import jakarta.faces.application.FacesMessage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import mx.softdentist.entidad.Cita;
 import mx.softdentist.entidad.Paciente;
@@ -20,9 +23,9 @@ import mx.softdentist.integration.ServiceLocator;
 
 // Importaciones para PDF
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
 
 // Importaciones para Calendario
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleModel;
@@ -42,19 +45,26 @@ public class CitaEmpleadoBean implements Serializable {
     private Cita citaSeleccionada;
     private String observaciones;
 
-    // --- Interfaz ---
     private String vistaActual = "LISTA";
     private ScheduleModel eventModel;
     private ScheduleEvent<?> event;
     private String estadoSeleccionado;
     private String observacionesReceta;
+    private Cita citaAReagendar;
+    private LocalDate fechaReagendar;
+    private String horaReagendar;
+    private String motivoReagendar;
+    private boolean ordenAscendente = true;
+    private List<String> horasDisponiblesReagendar = new ArrayList<>();
+
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("HH:mm");
 
     @PostConstruct
     public void init() {
         cargarCitasConDetalles();
     }
 
-    // ================== NAVEGACIÓN Y CARGA ==================
 
     public void cambiarVista(String vista) {
         this.vistaActual = vista;
@@ -63,7 +73,10 @@ public class CitaEmpleadoBean implements Serializable {
 
     private void cargarCitasConDetalles() {
         try {
-            citas = ServiceLocator.getInstanceCitaDAO().obtenerTodasConPacientes();
+            List<Cita> todas = ServiceLocator.getInstanceCitaDAO().obtenerTodasConPacientes();
+            citas = todas.stream()
+                    .filter(c -> c.getEstado() != Cita.EstadoCita.Cancelada)
+                    .collect(Collectors.toList());
             cargarCalendario();
         } catch (Exception e) {
             mensajeError("Error al cargar citas: " + e.getMessage());
@@ -134,7 +147,6 @@ public class CitaEmpleadoBean implements Serializable {
         String correoDestino = citaSeleccionada.getIdPaciente().getCorreo();
         if (correoDestino == null || correoDestino.isEmpty()) {
             mensajeWarn("El paciente no tiene correo registrado. Solo se generará el PDF.");
-            // Podrías decidir continuar solo generando PDF aquí si quieres
             return;
         }
 
@@ -150,19 +162,15 @@ public class CitaEmpleadoBean implements Serializable {
             String nombreArchivo = "receta_" + citaSeleccionada.getId() + "_" + System.currentTimeMillis() + ".pdf";
             String rutaArchivo = recetaDir + File.separator + nombreArchivo;
 
-            // 3. Generar PDF
             generarPDF(rutaArchivo);
 
-            // 4. Enviar Correo (Lógica interna para no tocar EmailService)
             enviarCorreoInterno(correoDestino, "Receta Médica - Dental Patron",
                     "Hola " + citaSeleccionada.getIdPaciente().getNombre() + ",\n\nAdjunto encontrarás tu receta médica.",
                     rutaArchivo);
 
-            // 5. Finalizar
             actualizarEstadoCita();
             mensajeInfo("Receta generada y enviada exitosamente.");
 
-            // Limpiar
             observaciones = "";
             observacionesReceta = "";
             citaSeleccionada = null;
@@ -272,6 +280,127 @@ public class CitaEmpleadoBean implements Serializable {
         }
     }
 
+    public void prepararReagendamiento(Cita cita) {
+        System.out.println("CLICK REAGENDAR");
+        this.citaAReagendar = cita;
+        this.fechaReagendar = null;
+        this.horaReagendar = null;
+        this.horasDisponiblesReagendar = new ArrayList<>();
+    }
+
+    public void onFechaReagendarSelect(SelectEvent<LocalDate> event) {
+        this.fechaReagendar = event.getObject();
+        cargarHorasDisponiblesReagendar();
+    }
+
+    private void cargarHorasDisponiblesReagendar() {
+        if (fechaReagendar == null) {
+            horasDisponiblesReagendar = new ArrayList<>();
+            return;
+        }
+        if (!fechaReagendar.isAfter(LocalDate.now())) {
+            horasDisponiblesReagendar = new ArrayList<>();
+            mensajeError("Solo puede reagendar a partir de mañana.");
+            return;
+        }
+        if (fechaReagendar.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            horasDisponiblesReagendar = new ArrayList<>();
+            mensajeWarn("Los domingos no se atienden citas.");
+            return;
+        }
+
+        List<LocalTime> generadas = generarHoras(fechaReagendar);
+        List<LocalTime> ocupadas;
+        if (citaAReagendar != null && citaAReagendar.getId() != null) {
+            ocupadas = ServiceLocator.getInstanceCitaDAO()
+                    .obtenerHorasOcupadasExcluyendo(fechaReagendar, citaAReagendar.getId());
+        } else {
+            ocupadas = ServiceLocator.getInstanceCitaDAO()
+                    .obtenerHorasOcupadas(fechaReagendar);
+        }
+
+        horasDisponiblesReagendar = generadas.stream()
+                .filter(h -> !ocupadas.contains(h))
+                .map(h -> h.format(TIME_FORMATTER))
+                .collect(Collectors.toList());
+
+        if (horasDisponiblesReagendar.isEmpty()) {
+            mensajeInfo("No hay horarios disponibles para este día.");
+        }
+    }
+
+    private List<LocalTime> generarHoras(LocalDate fecha) {
+        List<LocalTime> horas = new ArrayList<>();
+        LocalTime inicio = LocalTime.of(10, 0);
+        LocalTime fin = fecha.getDayOfWeek() == DayOfWeek.SATURDAY
+                ? LocalTime.of(14, 0) : LocalTime.of(20, 0);
+
+        LocalTime actual = inicio;
+        while (!actual.isAfter(fin.minusMinutes(30))) {
+            horas.add(actual);
+            actual = actual.plusMinutes(30);
+        }
+        return horas;
+    }
+
+    public void confirmarReagendamiento() {
+        try {
+            if (citaAReagendar == null) {
+                mensajeWarn("No hay cita seleccionada.");
+                return;
+            }
+            if (fechaReagendar == null) {
+                mensajeError("Seleccione una nueva fecha.");
+                return;
+            }
+            if (horaReagendar == null || horaReagendar.isEmpty()) {
+                mensajeError("Seleccione una nueva hora.");
+                return;
+            }
+
+            LocalTime nuevaHora = LocalTime.parse(horaReagendar, TIME_FORMATTER);
+            boolean exito = ServiceLocator.getInstanceCitaDAO()
+                    .reagendarCita(citaAReagendar.getId(), fechaReagendar, nuevaHora, motivoReagendar);
+
+            if (exito) {
+                mensajeInfo("Cita reagendada al " + fechaReagendar + " a las " + horaReagendar + ".");
+                cargarCitasConDetalles();
+                PrimeFaces.current().executeScript("PF('dlgReagendar').hide()");
+                limpiarReagendamiento();
+            } else {
+                mensajeError("La hora seleccionada ya no está disponible. Elija otra.");
+                cargarHorasDisponiblesReagendar();
+            }
+        } catch (Exception e) {
+            mensajeError("Error al reagendar: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void limpiarReagendamiento() {
+        citaAReagendar = null;
+        fechaReagendar = null;
+        horaReagendar = null;
+        motivoReagendar = null;
+        horasDisponiblesReagendar = new ArrayList<>();
+    }
+
+    public List<Integer> getDiasDeshabilitados() { return List.of(0); }
+
+    public Date getManana() {
+        return Date.from(LocalDate.now().plusDays(1)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public void toggleOrden() {
+        ordenAscendente = !ordenAscendente;
+        if (ordenAscendente) {
+            citas.sort(Comparator.comparing(Cita::getFecha).thenComparing(Cita::getHora));
+        } else {
+            citas.sort(Comparator.comparing(Cita::getFecha).reversed().thenComparing(Comparator.comparing(Cita::getHora).reversed()));
+        }
+    }
+
     // --- Helpers de Mensajes ---
     private void mensajeInfo(String msg) { FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, msg, null)); }
     private void mensajeWarn(String msg) { FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, msg, null)); }
@@ -292,4 +421,17 @@ public class CitaEmpleadoBean implements Serializable {
     public void setEstadoSeleccionado(String estadoSeleccionado) { this.estadoSeleccionado = estadoSeleccionado; }
     public String getObservacionesReceta() { return observacionesReceta; }
     public void setObservacionesReceta(String observacionesReceta) { this.observacionesReceta = observacionesReceta; }
+    public Cita getCitaAReagendar() { return citaAReagendar; }
+    public void setCitaAReagendar(Cita c) { this.citaAReagendar = c; }
+    public LocalDate getFechaReagendar() { return fechaReagendar; }
+    public void setFechaReagendar(LocalDate f) {
+        this.fechaReagendar = f;
+        if (f != null) cargarHorasDisponiblesReagendar();
+    }
+    public String getHoraReagendar() { return horaReagendar; }
+    public void setHoraReagendar(String h) { this.horaReagendar = h; }
+    public List<String> getHorasDisponiblesReagendar() { return horasDisponiblesReagendar; }
+    public String getMotivoReagendar() { return motivoReagendar; }
+    public void setMotivoReagendar(String m) { this.motivoReagendar = m; }
+    public boolean isOrdenAscendente() { return ordenAscendente; }
 }
