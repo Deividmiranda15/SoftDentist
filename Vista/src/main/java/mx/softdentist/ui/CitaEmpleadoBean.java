@@ -298,11 +298,13 @@ public class CitaEmpleadoBean implements Serializable {
             horasDisponiblesReagendar = new ArrayList<>();
             return;
         }
-        if (!fechaReagendar.isAfter(LocalDate.now())) {
+
+        if (fechaReagendar.isBefore(LocalDate.now())) {
             horasDisponiblesReagendar = new ArrayList<>();
-            mensajeError("Solo puede reagendar a partir de mañana.");
+            mensajeError("No puede reagendar a fechas pasadas.");
             return;
         }
+
         if (fechaReagendar.getDayOfWeek() == DayOfWeek.SUNDAY) {
             horasDisponiblesReagendar = new ArrayList<>();
             mensajeWarn("Los domingos no se atienden citas.");
@@ -310,6 +312,14 @@ public class CitaEmpleadoBean implements Serializable {
         }
 
         List<LocalTime> generadas = generarHoras(fechaReagendar);
+
+        if (fechaReagendar.equals(LocalDate.now())) {
+            LocalTime ahora = LocalTime.now();
+            generadas = generadas.stream()
+                    .filter(h -> h.isAfter(ahora.plusMinutes(15))) // Margen de 15 min para cortesía
+                    .collect(Collectors.toList());
+        }
+
         List<LocalTime> ocupadas;
         if (citaAReagendar != null && citaAReagendar.getId() != null) {
             ocupadas = ServiceLocator.getInstanceCitaDAO()
@@ -319,13 +329,13 @@ public class CitaEmpleadoBean implements Serializable {
                     .obtenerHorasOcupadas(fechaReagendar);
         }
 
-        horasDisponiblesReagendar = generadas.stream()
-                .filter(h -> !ocupadas.contains(h))
+         horasDisponiblesReagendar = generadas.stream()
+                .filter(h -> ocupadas.stream().noneMatch(o -> o.getHour() == h.getHour() && o.getMinute() == h.getMinute()))
                 .map(h -> h.format(TIME_FORMATTER))
                 .collect(Collectors.toList());
 
         if (horasDisponiblesReagendar.isEmpty()) {
-            mensajeInfo("No hay horarios disponibles para este día.");
+            mensajeInfo("No hay horarios disponibles para el momento seleccionado.");
         }
     }
 
@@ -424,6 +434,10 @@ public class CitaEmpleadoBean implements Serializable {
     public Cita getCitaAReagendar() { return citaAReagendar; }
     public void setCitaAReagendar(Cita c) { this.citaAReagendar = c; }
     public LocalDate getFechaReagendar() { return fechaReagendar; }
+    public Date getHoy() {
+        return Date.from(LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
     public void setFechaReagendar(LocalDate f) {
         this.fechaReagendar = f;
         if (f != null) cargarHorasDisponiblesReagendar();
