@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "pagotieneproducto", schema = "softdentist")
 public class PagoTieneProducto {
     @EmbeddedId
-    private PagoTieneProductoId id;
+    private PagoTieneProductoId id = new PagoTieneProductoId(); // Como no tiene "ID propio", se requiere instanciar uno al construir la clase.
 
     @MapsId("idProducto")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -99,7 +99,7 @@
                                                           rendered="#{not empty pagoBean.listaProductos}">
                                                 <p:outputLabel for="cantidadProductoSeleccion" value="Cantidad:" />
                                                 <p:inputNumber id="cantidadProductoSeleccion" value="#{pagoBean.cantidadSeleccionadoString}"
-                                                               thousandSeparator="," required="true"
+                                                               thousandSeparator="," required="false"
                                                                placeholder="1" minValue="1" decimalPlaces="0"/>
                                                 <!-- ¿Cambiar condición de pagoBean.listaProductos a pagoBean.productosAgregados? -->
                                                 <p:commandButton value="Agregar Producto Seleccionado"
@@ -116,13 +116,20 @@
                                         <p:outputLabel for="monto" value="Monto Recibido ($):" />
                                         <p:inputNumber id="monto" value="#{pagoBean.nuevoPago.montoRecibido}" symbol="$"
                                                        symbolPosition="p" decimalSeparator="." thousandSeparator=","
-                                                       required="true" placeholder="$0.00" minValue="0" decimalPlaces="2">
+                                                       required="false" placeholder="$0.00" minValue="0" decimalPlaces="2">
                                             <p:ajax event="keyup" update="infoCambioADar" />
                                         </p:inputNumber>
                                         <h:outputText id="infoCambioADar" value="#{pagoBean.infoCambioADar}" />
                                     </h:panelGroup>
 
                                 </p:panelGrid>
+
+                                <div class="custom-table-actions">
+                                    <h:outputText value="#{m.fecha}">
+                                        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+
+                                    </h:outputText>
+                                </div>
 
                                 <!-- Tabla que muestra la lista de productos seleccionados para el pago a ingresar. -->
                                 <h:panelGroup id="tablaListaProductos" layout="block">
@@ -138,55 +145,16 @@
                                         </div>
 
 
-                                        <!-- TEMPORAL, SOLO PARA TENER UNA VISUAL -->
-                                        <ui:remove>
-<!--                                        <div class="custom-table-row">-->
-<!--                                            <div class="custom-table-cell">1</div>-->
-<!--                                            <div class="custom-table-cell">Limpieza dental</div>-->
-<!--                                            <div class="custom-table-cell">$600</div>-->
-<!--                                            <div class="custom-table-cell">1</div>-->
-<!--                                            <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">$600</div>-->
-<!--                                            <div class="custom-table-cell">-->
-<!--                                                &lt;!&ndash; TODO: Buscar como mandar un id específico al comando dado. (decirle que borremos ESTE producto y no el seleccionado) &ndash;&gt;-->
-<!--                                                <p:commandButton value="Remover Producto Seleccionado"-->
-<!--                                                                 icon="pi pi-check"-->
-<!--                                                                 actionListener="#{pagoBean.removerProductoSeleccionado}"-->
-<!--                                                                 update="formCaja :contenedorPrincipal messages :formTabs"-->
-<!--                                                                 styleClass="ui-button-success btn-guardar-large" />-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-<!--                                        <div class="custom-table-row">-->
-<!--                                            <div class="custom-table-cell">2</div>-->
-<!--                                            <div class="custom-table-cell">Resina dental (obturación)</div>-->
-<!--                                            <div class="custom-table-cell">$900</div>-->
-<!--                                            <div class="custom-table-cell">2</div>-->
-<!--                                            <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">$1800</div>-->
-<!--                                            <div class="custom-table-cell">-->
-<!--                                                &lt;!&ndash; TODO: Buscar como mandar un id específico al comando dado. (decirle que borremos ESTE producto y no el seleccionado) &ndash;&gt;-->
-<!--                                                <p:commandButton value="Remover Producto Seleccionado"-->
-<!--                                                                 icon="pi pi-check"-->
-<!--                                                                 actionListener="#{pagoBean.removerProductoSeleccionado}"-->
-<!--                                                                 update="formCaja :contenedorPrincipal messages :formTabs"-->
-<!--                                                                 styleClass="ui-button-success btn-guardar-large" />-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-                                        </ui:remove>
-                                        <!-- TERMINA TEMPORAL, SOLO PARA TENER UNA VISUAL -->
-
                                         <!-- Valores "reales" a usar durante codificación y pruebas iniciales del sistema.
                                         Debe de reemplazar lo dentro del custom table previo una vez que se tomen las capturas necesarias. -->
                                         <ui:repeat value="#{pagoBean.productosAgregados}" var="pa">
-                                            <!-- Utilizamos tag ui:repeat dentro de tag ui:repeat para obtener múltiples variables. -->
-                                            <!-- Usado para obtener el producto basado en el id de pa -->
-<!--                                            <ui:repeat value="#{pagoBean.delegateProducto}" var="dprod">-->
                                                 <div class="custom-table-row">
                                                     <div class="custom-table-cell">#{pa.id}</div>
                                                     <div class="custom-table-cell">#{pa.concepto}</div>
                                                     <div class="custom-table-cell">$#{pa.costo}</div>
-                                                    <div class="custom-table-cell">#{pagoBean.productosAgregadosCantidades.get(productosAgregados.indexOf(pa))}</div> <!-- Busca el índice del producto actual en la lista y usa ese índice para recuperar la cantidad guardada. -->
-                                                    <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">$#{pagoBean.productosAgregadosCantidades.get(productosAgregados.indexOf(pa)) * pa.costo}</div>
+                                                    <div class="custom-table-cell">#{pagoBean.productosAgregadosCantidades.get(productosAgregados.indexOf(pagoBean.delegateProducto.findProductoById(pa.id)))}</div> <!-- Busca el índice del producto actual en la lista y usa ese índice para recuperar la cantidad guardada. -->
+                                                    <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">$#{pagoBean.productosAgregadosCantidades.get(productosAgregados.indexOf(pagoBean.delegateProducto.findProductoById(pa.id))) * pa.costo}</div>
                                                     <div class="custom-table-cell">
-                                                        <!-- TODO: Buscar como mandar un id específico al comando dado. (decirle que borremos ESTE producto y no el seleccionado) -->
                                                         <p:commandButton value="Remover Producto Seleccionado"
                                                                          icon="pi pi-check"
                                                                          actionListener="#{pagoBean.removerProductoSeleccionado(pa)}"

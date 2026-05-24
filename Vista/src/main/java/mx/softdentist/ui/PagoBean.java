@@ -45,7 +45,6 @@ public class PagoBean implements Serializable {
     private List<Integer> productosAgregadosCantidades; // Usado como las cantidades para cada producto agregado.
 
     public PagoBean() {
-        System.out.println("DEBUG, INICIA PAGOBEAN");
         productoDAO = ServiceLocator.getInstanceProductoDAO();
         delegatePago = new DelegatePago();  // No estoy seguro si se debería crear el DelegatePago directamente o si estaría mejor crear una clase ServiceDelegateLocator.
         delegateProducto = new DelegateProducto();
@@ -60,7 +59,6 @@ public class PagoBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        System.out.println("DEBUG, INICIA POSTCONSTRUCT PAGOBEAN");
         // La inicialización se moverá al getter de la lista para asegurar la ordenación.
         try {
             aplicarOrdenacion();
@@ -69,7 +67,6 @@ public class PagoBean implements Serializable {
             System.out.println("Error al cargar productos: " + e.getMessage());
             listaProductos = new ArrayList<>();
         }
-        System.out.println("DEBUG: "+ listaProductos.getLast().getConcepto());
     }
 
     public void inicializarProductosSelectItems() {
@@ -96,8 +93,6 @@ public class PagoBean implements Serializable {
             } else {
                 // Si ha pagado suficiente. Hay que guardar el pago...
                 delegatePago.savePago(nuevoPago);
-                // Hay que obtener la id del pago que acabamos de hacer...
-                int idPago = nuevoPago.getId();
                 // ...y usamos eso para guardar todos los productos que forman parte de ese pago.
                 for (int i = 0; i < productosAgregados.toArray().length; i++) {
                     // Es necesario usar bucle "for" ya que el índice se usará para ubicar las cantidades asociadas con cada producto agregado.
@@ -121,7 +116,6 @@ public class PagoBean implements Serializable {
 
     // Método para agregar el producto seleccionado a la lista de productos agregados
     public void agregarProductoSeleccionado() {
-        System.out.println("DEBUG: CANTIDAD ACTUAL: "+ cantidadSeleccionadoString);
         productoSeleccionado = delegateProducto.findProductoById(Integer.parseInt(idProductoString));
         agregarProductoSeleccionado(productoSeleccionado, Integer.parseInt(cantidadSeleccionadoString));
     }
@@ -149,7 +143,6 @@ public class PagoBean implements Serializable {
                     actualizarCambioRegresado();
 
                     addGlobalMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Producto agregado a la lista correctamente.");
-                    System.out.println("DEBUG: PRODUCTO Y CANTIDAD: "+ productoAAgregar.getConcepto() + " | "+ cantidadAAgregar);
                 }
             }
         }
@@ -382,8 +375,6 @@ public class PagoBean implements Serializable {
 
     // Usado por corte_caja.xhtml para mostrar la cantidad de cambio a dar
     public String getInfoCambioADar() {
-        System.out.println("DEBUG: ID Producto actual: "+ idProductoString);
-        System.out.println("DEBUG: Cantidad actual: "+ cantidadSeleccionadoString);
         if (productosAgregados.isEmpty()) {
             infoCambioADar = "Agrega un producto.";
         } else {
