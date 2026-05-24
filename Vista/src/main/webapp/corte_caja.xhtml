@@ -66,7 +66,6 @@
                     <h:panelGroup id="contenedorPrincipal">
 
                         <h:panelGroup rendered="#{pagoBean.vistaActual eq 'ALTA' or empty pagoBean.vistaActual}">
-
                             <h2 class="section-title">Registro de Pago en Efectivo</h2>
                             <!-- El valor 'onkeypress' es para prevenir que se suba el form fuera de presionar el botón de registrar. -->
                             <!-- Esto es para que se pueda actualizar los textos avisando el cambio a dar sin accidentalmente registrar el pago. -->
@@ -81,13 +80,36 @@
                                              columnClasses="ui-grid-col-6, ui-grid-col-6"
                                              rendered="#{not empty pagoBean.listaProductos}">
 
+                                    <ui:remove> ESTO ES UN COMENTARIO
+                                        Aquí se muestran todos los productos a agregar desde lo guardado en productosSelectItems de PagoBean.
+                                    </ui:remove>
                                     <h:panelGroup>
-                                        <p:outputLabel for="concepto" value="ID de Concepto / Tratamiento:" />
-                                        <p:inputNumber id="concepto" value="#{pagoBean.idProductoString}"
-                                                       minValue="0" decimalPlaces="0">
-                                            <p:ajax event="keyup" update="infoProducto" />
-                                        </p:inputNumber>
-                                        <h:outputText id="infoProducto" value="#{pagoBean.infoProducto}" />
+                                        <p:outputLabel for="concepto" value="Concepto / Tratamiento:" />
+                                        <p:selectOneMenu id="concepto" value="#{pagoBean.idProductoString}">
+                                            <p:ajax event="change" update="outputWrapper" />
+                                            <f:selectItem itemLabel="Seleccione un Producto..." itemValue=""/>
+                                            <f:selectItems value="#{pagoBean.listaProductos}" var="p"
+                                                           itemLabel="#{p.concepto} : $#{p.costo}" itemValue="#{p.id.toString()}"/>
+                                        </p:selectOneMenu>
+                                        <!-- Mostrar el nombre del producto cuando se encuentra en el selectOneMenu será redundante. -->
+                                        <!-- Considera ajustar el valor de infoProducto de PagoBean o remover el texto por completo. -->
+<!--                                        <h:outputText id="infoProducto" value="#{pagoBean.infoProducto}" />-->
+                                        <h:panelGroup id="outputWrapper">
+                                            <h:panelGroup layout="block" styleClass="btn-wrapper-full"
+                                                          rendered="#{not empty pagoBean.listaProductos}">
+                                                <p:outputLabel for="cantidadProductoSeleccion" value="Cantidad:" />
+                                                <p:inputNumber id="cantidadProductoSeleccion" value="#{pagoBean.cantidadSeleccionadoString}"
+                                                               thousandSeparator="," required="true"
+                                                               placeholder="1" minValue="1" decimalPlaces="0"/>
+                                                <!-- ¿Cambiar condición de pagoBean.listaProductos a pagoBean.productosAgregados? -->
+                                                <p:commandButton value="Agregar Producto Seleccionado"
+                                                                 icon="pi pi-check"
+                                                                 actionListener="#{pagoBean.agregarProductoSeleccionado()}"
+                                                                 update="formCaja :contenedorPrincipal messages :formTabs"
+                                                                 styleClass="ui-button-success btn-guardar-large" />
+
+                                            </h:panelGroup>
+                                        </h:panelGroup>
                                     </h:panelGroup>
 
                                     <h:panelGroup>
@@ -101,6 +123,98 @@
                                     </h:panelGroup>
 
                                 </p:panelGrid>
+
+                                <!-- Tabla que muestra la lista de productos seleccionados para el pago a ingresar. -->
+                                <h:panelGroup id="tablaListaProductos" layout="block">
+                                    <div class="custom-table">
+
+                                        <div class="custom-table-header">
+                                            <div>ID</div>
+                                            <div>CONCEPTO</div>
+                                            <div>MONTO INDIVIDUAL</div>
+                                            <div>CANTIDAD</div>
+                                            <div>MONTO POR PRODUCTO</div>
+                                            <div></div> <ui:remove>COMENTARIO: Campo para agregar botón de remover producto a cada fila.</ui:remove>
+                                        </div>
+
+
+                                        <!-- TEMPORAL, SOLO PARA TENER UNA VISUAL -->
+                                        <ui:remove>
+<!--                                        <div class="custom-table-row">-->
+<!--                                            <div class="custom-table-cell">1</div>-->
+<!--                                            <div class="custom-table-cell">Limpieza dental</div>-->
+<!--                                            <div class="custom-table-cell">$600</div>-->
+<!--                                            <div class="custom-table-cell">1</div>-->
+<!--                                            <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">$600</div>-->
+<!--                                            <div class="custom-table-cell">-->
+<!--                                                &lt;!&ndash; TODO: Buscar como mandar un id específico al comando dado. (decirle que borremos ESTE producto y no el seleccionado) &ndash;&gt;-->
+<!--                                                <p:commandButton value="Remover Producto Seleccionado"-->
+<!--                                                                 icon="pi pi-check"-->
+<!--                                                                 actionListener="#{pagoBean.removerProductoSeleccionado}"-->
+<!--                                                                 update="formCaja :contenedorPrincipal messages :formTabs"-->
+<!--                                                                 styleClass="ui-button-success btn-guardar-large" />-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div class="custom-table-row">-->
+<!--                                            <div class="custom-table-cell">2</div>-->
+<!--                                            <div class="custom-table-cell">Resina dental (obturación)</div>-->
+<!--                                            <div class="custom-table-cell">$900</div>-->
+<!--                                            <div class="custom-table-cell">2</div>-->
+<!--                                            <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">$1800</div>-->
+<!--                                            <div class="custom-table-cell">-->
+<!--                                                &lt;!&ndash; TODO: Buscar como mandar un id específico al comando dado. (decirle que borremos ESTE producto y no el seleccionado) &ndash;&gt;-->
+<!--                                                <p:commandButton value="Remover Producto Seleccionado"-->
+<!--                                                                 icon="pi pi-check"-->
+<!--                                                                 actionListener="#{pagoBean.removerProductoSeleccionado}"-->
+<!--                                                                 update="formCaja :contenedorPrincipal messages :formTabs"-->
+<!--                                                                 styleClass="ui-button-success btn-guardar-large" />-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+                                        </ui:remove>
+                                        <!-- TERMINA TEMPORAL, SOLO PARA TENER UNA VISUAL -->
+
+                                        <!-- Valores "reales" a usar durante codificación y pruebas iniciales del sistema.
+                                        Debe de reemplazar lo dentro del custom table previo una vez que se tomen las capturas necesarias. -->
+                                        <ui:repeat value="#{pagoBean.productosAgregados}" var="pa">
+                                            <!-- Utilizamos tag ui:repeat dentro de tag ui:repeat para obtener múltiples variables. -->
+                                            <!-- Usado para obtener el producto basado en el id de pa -->
+<!--                                            <ui:repeat value="#{pagoBean.delegateProducto}" var="dprod">-->
+                                                <div class="custom-table-row">
+                                                    <div class="custom-table-cell">#{pa.id}</div>
+                                                    <div class="custom-table-cell">#{pa.concepto}</div>
+                                                    <div class="custom-table-cell">$#{pa.costo}</div>
+                                                    <div class="custom-table-cell">#{pagoBean.productosAgregadosCantidades.get(productosAgregados.indexOf(pa))}</div> <!-- Busca el índice del producto actual en la lista y usa ese índice para recuperar la cantidad guardada. -->
+                                                    <div class="custom-table-cell" style="font-weight: bold; color: #2e7d32;">$#{pagoBean.productosAgregadosCantidades.get(productosAgregados.indexOf(pa)) * pa.costo}</div>
+                                                    <div class="custom-table-cell">
+                                                        <!-- TODO: Buscar como mandar un id específico al comando dado. (decirle que borremos ESTE producto y no el seleccionado) -->
+                                                        <p:commandButton value="Remover Producto Seleccionado"
+                                                                         icon="pi pi-check"
+                                                                         actionListener="#{pagoBean.removerProductoSeleccionado(pa)}"
+                                                                         update="formCaja :contenedorPrincipal messages :formTabs"
+                                                                         styleClass="ui-button-success btn-guardar-large" />
+                                                    </div>
+                                                </div>
+<!--                                            </ui:repeat>-->
+
+                                            <!-- No recuerdo el propósito de esto.
+                                                <div class="custom-table-actions">
+
+                                                    <h:outputText value="#{m.fecha}">
+                                                        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+
+                                                    </h:outputText>
+                                                </div>
+
+                                            </div> -->
+                                        </ui:repeat>
+
+                                        <!-- No recuerdo el propósito de este tag tampoco. ¿No debería de ir en la consulta de ingresos?-->
+                                        <h:panelGroup rendered="#{empty pagoBean.listaPagos}">
+                                            <div class="empty-message">No hay movimientos registrados hoy.</div>
+                                        </h:panelGroup>
+
+                                    </div>
+                                </h:panelGroup>
 
                                 <h:panelGroup layout="block" styleClass="btn-wrapper-full"
                                               rendered="#{not empty pagoBean.listaProductos}">
@@ -134,7 +248,7 @@
                                     <h:panelGroup>
 
                                         <p:selectOneMenu id="selectOrden"
-                                                         value="#{pagoBean.ordenacionActual}"
+                                                         value="#{pagoBean.ordenacionPagosActual}"
                                                          styleClass="custom-filter-dropdown"
                                                          panelStyleClass="custom-filter-panel">
 
@@ -158,7 +272,7 @@
                                         <div class="custom-table-header">
                                             <div>ID</div>
 
-                                            <div>CONCEPTO</div>
+                                            <ui:remove><div>CONCEPTO</div></ui:remove>
                                             <div>MONTO</div>
 
                                             <div class="text-right">FECHA</div>
@@ -169,10 +283,10 @@
                                             <div class="custom-table-row">
                                                 <div class="custom-table-cell">#{m.id}</div>
 
-                                                <div class="custom-table-cell">#{m.descripcion}</div>
+                                                <ui:remove><div class="custom-table-cell">#{m.descripcion}</div></ui:remove>
                                                 <div class="custom-table-cell" style="font-weight: bold;
 color: #2e7d32;">
-                                                    $#{m.monto}
+                                                    $#{m.getMontoFinal()}
 
                                                 </div>
                                                 <div class="custom-table-actions">
