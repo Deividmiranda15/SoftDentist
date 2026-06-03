@@ -14,6 +14,7 @@
         <!-- <class>mx.softdentist.entidad.Mensaje</class> CANCELADO -->
         <class>mx.softdentist.entidad.Pago</class>
         <class>mx.softdentist.entidad.Producto</class>
+        <class>mx.softdentist.entidad.PagoTieneProducto</class>
 
         <properties>
             <!-- Configuración JDBC -->

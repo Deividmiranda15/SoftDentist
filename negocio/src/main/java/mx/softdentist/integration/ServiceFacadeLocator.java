@@ -10,6 +10,7 @@ public class ServiceFacadeLocator {
     // private static FacadeMensaje facadeMensaje;
     private static FacadePago facadePago;
     private static FacadeProducto facadeProducto;
+    private static FacadePagoTieneProducto facadePagoTieneProducto;
 
     public static FacadeEmpleado getInstanceFacadeEmpleado() {
         if (facadeEmpleado == null) {
@@ -74,6 +75,15 @@ public class ServiceFacadeLocator {
             return facadeProducto;
         } else {
             return facadeProducto;
+        }
+    }
+
+    public static FacadePagoTieneProducto getInstanceFacadePagoTieneProducto() {
+        if (facadePagoTieneProducto == null) {
+            facadePagoTieneProducto = new FacadePagoTieneProducto();
+            return facadePagoTieneProducto;
+        } else {
+            return facadePagoTieneProducto;
         }
     }
 
