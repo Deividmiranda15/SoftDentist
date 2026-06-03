@@ -25,11 +25,6 @@ public class Pago {
     @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_producto", nullable = false)
-    private Producto idProducto;
-
 
     public Float getMontoFinal(){ return montoRecibido - cambioRegresado;}
 
@@ -64,14 +59,6 @@ public class Pago {
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
-    }
-
-    public Producto getIdProducto() {
-        return idProducto;
-    }
-
-    public void setIdProducto(Producto idProducto) {
-        this.idProducto = idProducto;
     }
 
 }

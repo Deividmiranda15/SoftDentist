@@ -2,6 +2,8 @@ package mx.softdentist.integration;
 
 import jakarta.persistence.EntityManager;
 import mx.softdentist.dao.*;
+import mx.softdentist.entidad.PagoTieneProducto;
+import mx.softdentist.persistence.AbstractDAO;
 import mx.softdentist.persistence.HibernateUtil;
 
 /**
@@ -18,6 +20,7 @@ public class ServiceLocator {
     // private static MensajeDAO mensajeDAO;
     private static PagoDAO pagoDAO;
     private static ProductoDAO productoDAO;
+    private static PagoTieneProductoDAO pagoTieneProductoDAO;
 
     private ServiceLocator() {
     }
@@ -95,6 +98,15 @@ public class ServiceLocator {
             return productoDAO;
         } else {
             return productoDAO;
+        }
+    }
+
+    public static PagoTieneProductoDAO getInstancePagoTieneProductoDAO() {
+        if (pagoTieneProductoDAO == null) {
+            pagoTieneProductoDAO = new PagoTieneProductoDAO(getEntityManager());
+            return pagoTieneProductoDAO;
+        } else {
+            return pagoTieneProductoDAO;
         }
     }
 }
