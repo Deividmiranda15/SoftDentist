@@ -3,6 +3,8 @@ package mx.softdentist.facade;
 import mx.softdentist.entidad.Cita;
 import mx.softdentist.integration.ServiceLocator;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class FacadeCita {
@@ -33,6 +35,15 @@ public class FacadeCita {
             ServiceLocator.getInstanceCitaDAO().update(cita);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean reagendarCita(Integer idCita, LocalDate nuevaFecha, LocalTime nuevaHora, String motivo) {
+        try {
+            return ServiceLocator.getInstanceCitaDAO().reagendarCita(idCita, nuevaFecha, nuevaHora, motivo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

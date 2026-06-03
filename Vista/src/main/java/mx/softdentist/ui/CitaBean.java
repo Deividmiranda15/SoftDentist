@@ -40,6 +40,11 @@ public class CitaBean implements Serializable {
     private Paciente pacienteObjetivo;
     private Empleado dentistaSeleccionado;
     private List<Empleado> listaDentistas;
+    private Cita citaAReagendar;
+    private LocalDate fechaReagendar;
+    private String horaReagendar;
+    private String motivoReagendar;
+    private List<String> horasDisponiblesReagendar = new ArrayList<>();
 
     private CitaDAO citaDAO;
 
@@ -319,12 +324,14 @@ public class CitaBean implements Serializable {
             return;
         }
 
-        citasRegistradas = ServiceLocator.getInstanceCitaDAO().obtenerPorPaciente(pacienteLogueado.getId());
+        List<Cita> todas = ServiceLocator.getInstanceCitaDAO().obtenerPorPaciente(pacienteLogueado.getId());
 
-        if (citasRegistradas != null) {
-            citasRegistradas = citasRegistradas.stream()
+        if (todas != null) {
+            this.citasRegistradas = todas.stream()
                     .filter(c -> c.getEstado() != Cita.EstadoCita.Cancelada)
-                    .toList();
+                    .collect(Collectors.toList());
+        } else {
+            this.citasRegistradas = new ArrayList<>();
         }
     }
 
