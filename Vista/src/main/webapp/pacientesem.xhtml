@@ -96,15 +96,10 @@
                                         <p:outputLabel for="fechaNacimiento" value="Fecha de Nacimiento:" />
                                         <p:datePicker id="fechaNacimiento"
                                                       value="#{pacienteBean.nuevoPaciente.fechaNacimiento}"
-                                                      maxdate="#{pacienteBean.maxDate}"
-                                                      readonlyInput="true"
                                                       showIcon="true"
                                                       monthNavigator="true"
                                                       yearNavigator="true"
-                                                      yearRange="1930:2026"
-                                                      pattern="dd/MM/yyyy">
-                                            <f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
-                                        </p:datePicker>
+                                                      yearRange="1930:2050" />
                                     </h:panelGroup>
 
                                 </p:panelGrid>
@@ -187,20 +182,6 @@
                     <p:inputText id="direccionEd" value="#{pacienteBean.pacienteAEditar.direccion}" required="true" />
                 </h:panelGroup>
 
-                <h:panelGroup>
-                    <p:outputLabel for="fechaNacimientoEd" value="Fecha de Nacimiento:" />
-                    <p:datePicker id="fechaNacimientoEd"
-                                  value="#{pacienteBean.pacienteAEditar.fechaNacimiento}"
-                                  maxdate="#{pacienteBean.maxDate}"
-                                  readonlyInput="true"
-                                  showIcon="true"
-                                  monthNavigator="true"
-                                  yearNavigator="true"
-                                  yearRange="1930:2026"
-                                  pattern="dd/MM/yyyy">
-                        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
-                    </p:datePicker>
-                </h:panelGroup>
                 <h:panelGroup><p:outputLabel for="fechaNacimientoEd" value="Fecha de Nacimiento:" /><p:datePicker id="fechaNacimientoEd" value="#{pacienteBean.pacienteAEditar.fechaNacimiento}" showIcon="true" monthNavigator="true" yearNavigator="true" yearRange="1930:2030" /></h:panelGroup>
                 <h:panelGroup />
 
