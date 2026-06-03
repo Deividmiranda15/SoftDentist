@@ -125,9 +125,8 @@ public class CitaBean implements Serializable {
                 return;
             }
 
-            if (!fecha.isAfter(LocalDate.now())) {
-                showToastMessage("error", "Fecha no permitida",
-                        "No puede agendar citas hoy ni en días anteriores.");
+            if (fecha.isBefore(LocalDate.now())) {
+                showToastMessage("error", "Fecha no permitida", "No puede agendar citas en días anteriores.");
                 return;
             }
 
@@ -181,7 +180,6 @@ public class CitaBean implements Serializable {
 
 
     public void onDateSelect(SelectEvent<LocalDate> event) {
-
         this.fecha = event.getObject();
 
         if (fecha == null) {
@@ -191,15 +189,13 @@ public class CitaBean implements Serializable {
 
         if (fecha.getDayOfWeek() == DayOfWeek.SUNDAY) {
             horasDisponibles = new ArrayList<>();
-            showToastMessage("warn", "Consultorio cerrado",
-                    "Los domingos no se atienden citas.");
+            showToastMessage("warn", "Consultorio cerrado", "Los domingos no se atienden citas.");
             return;
         }
 
-        if (!fecha.isAfter(LocalDate.now())) {
+        if (fecha.isBefore(LocalDate.now())) {
             horasDisponibles = new ArrayList<>();
-            showToastMessage("error", "Fecha inválida",
-                    "Solo puede agendar citas desde mañana en adelante.");
+            showToastMessage("error", "Fecha inválida", "No puede agendar citas en días anteriores.");
             return;
         }
 
@@ -268,30 +264,35 @@ public class CitaBean implements Serializable {
 
 
     private void cargarHorasDisponibles() {
-
         if (fecha == null) {
             horasDisponibles = new ArrayList<>();
             return;
         }
 
-        if (!fecha.isAfter(LocalDate.now())) {
+        if (fecha.isBefore(LocalDate.now())) {
             horasDisponibles = new ArrayList<>();
-            showToastMessage("error", "Fecha no válida",
-                    "Solo puede seleccionar fechas posteriores a hoy.");
+            showToastMessage("error", "Fecha no válida", "Seleccione una fecha actual o futura.");
             return;
         }
 
         List<LocalTime> generadas = generarHorasDisponiblesLocalTime(fecha);
+
+        if (fecha.equals(LocalDate.now())) {
+            LocalTime ahora = LocalTime.now();
+            generadas = generadas.stream()
+                    .filter(h -> h.isAfter(ahora.plusMinutes(20)))
+                    .collect(Collectors.toList());
+        }
+
         List<LocalTime> ocupadas = citaDAO.obtenerHorasOcupadas(fecha);
 
         horasDisponibles = generadas.stream()
-                .filter(h -> !ocupadas.contains(h))
-                .map(h -> h.format(DateTimeFormatter.ofPattern("HH:mm")))
+                .filter(h -> ocupadas.stream().noneMatch(o -> o.getHour() == h.getHour() && o.getMinute() == h.getMinute()))
+                .map(h -> h.format(TIME_FORMATTER))
                 .toList();
 
         if (horasDisponibles.isEmpty()) {
-            showToastMessage("info", "Sin disponibilidad",
-                    "No hay horarios disponibles para este día.");
+            showToastMessage("info", "Sin disponibilidad", "No hay horarios disponibles para este momento.");
         }
     }
 
@@ -381,7 +382,9 @@ public class CitaBean implements Serializable {
     public List<String> getHorasDisponibles() { return horasDisponibles; }
     public List<LocalDate> getFechasDisponibles() { return fechasDisponibles; }
     public List<Cita> getCitasRegistradas() { return citasRegistradas; }
-
+    public Date getHoy() {
+        return Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
     public Date getManana() {
         LocalDate manana = LocalDate.now().plusDays(1);
         return Date.from(manana.atStartOfDay(ZoneId.systemDefault()).toInstant());

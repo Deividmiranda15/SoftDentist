@@ -47,11 +47,15 @@ public class CitaDAO extends AbstractDAO<Cita> {
     public List<LocalTime> obtenerHorasOcupadasExcluyendo(LocalDate fecha, Integer idCita) {
         try {
             return entityManager.createQuery(
-                            "SELECT c.hora FROM Cita c WHERE c.fecha = :fecha AND c.id != :idCita AND c.estado <> :cancelada",
+                            "SELECT c.hora FROM Cita c " +
+                                    "WHERE c.fecha = :fecha " +
+                                    "AND c.id != :idCita " +
+                                    "AND c.estado NOT IN (:cancelada, :completada)",
                             LocalTime.class)
                     .setParameter("fecha", fecha)
                     .setParameter("idCita", idCita)
                     .setParameter("cancelada", Cita.EstadoCita.Cancelada)
+                    .setParameter("completada", Cita.EstadoCita.Completada)
                     .getResultList();
         } catch (Exception e) {
             e.printStackTrace();

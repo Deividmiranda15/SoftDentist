@@ -217,7 +217,7 @@
 
                     <!--                <h:panelGroup>-->
                     <p:outputLabel for="fecha" value="Fecha:" />
-                    <p:datePicker id="fecha" value="#{citaBean.fecha}" locale="es" minDate="#{citaBean.manana}" showIcon="true" pattern="dd/MM/yyyy">
+                    <p:datePicker id="fecha" value="#{citaBean.fecha}" locale="es" minDate="#{citaBean.hoy}" showIcon="true" pattern="dd/MM/yyyy">
                         <p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" update="horas"/>
                     </p:datePicker>
                 </h:panelGroup>
